@@ -1,0 +1,16 @@
+<form method="POST">
+{% csrf_token %}
+
+<select name="loan_type">
+<option value="Business Loan">Business Loan</option>
+<option value="Term Loan">Term Loan</option>
+<option value="Personal Loan">Personal Loan</option>
+<option value="Home Loan">Home Loan</option>
+<option value="LAP Loan">LAP Loan</option>
+<option value="OD Limit">OD Limit</option>
+<option value="CC Limit">CC Limit</option>
+</select>
+
+<button type="submit">Submit</button>
+
+</form>

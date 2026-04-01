@@ -1,0 +1,344 @@
+import React from "react";
+import {
+  Box,
+  Typography,
+  Container,
+  Grid,
+  Paper,
+  Divider,
+  Stack,
+  Card
+} from "@mui/material";
+
+import MdImg from "../assets/MD_img.png";
+import BusinessHead from "../assets/Bussiness_Head.png";
+
+function About() {
+
+  const sectionTitleStyle = {
+    fontWeight: 800,
+    color: "#1a237e",
+    mb: 3,
+    position: "relative",
+    display: "inline-block",
+    "&::after": {
+      content: '""',
+      display: "block",
+      width: "50px",
+      height: "4px",
+      backgroundColor: "#4caf50",
+      mt: 1
+    }
+  };
+
+  return (
+    <Box sx={{ bgcolor: "#f8f9fa" }}>
+
+      {/* HERO */}
+
+      <Box
+        sx={{
+          background: "linear-gradient(135deg,#1a237e,#0d47a1)",
+          color: "white",
+          pt: { xs: 12, md: 16 },
+          pb: { xs: 10, md: 14 },
+          textAlign: "center"
+        }}
+      >
+        <Container maxWidth="lg">
+
+          <Typography
+            variant="h2"
+            sx={{
+              fontWeight: 900,
+              mb: 2,
+              fontSize: { xs: "2.4rem", md: "4rem" }
+            }}
+          >
+            PMB AGRI & <span style={{ color: "#81c784" }}>LEASING</span>
+          </Typography>
+
+          <Typography
+            variant="h6"
+            sx={{
+              opacity: 0.9,
+              fontWeight: 300,
+              maxWidth: "800px",
+              mx: "auto"
+            }}
+          >
+            Empowering Financial Growth & Promoting Sustainable Organic Living
+          </Typography>
+
+        </Container>
+      </Box>
+
+
+      <Container sx={{ mt: -6, pb: 10 }}>
+
+        <Grid container spacing={4}>
+
+          {/* ABOUT */}
+
+          <Grid item xs={12} md={7}>
+
+            <Paper
+              sx={{
+                p: { xs: 3, md: 5 },
+                borderRadius: 5,
+                boxShadow: "0 10px 40px rgba(0,0,0,0.05)"
+              }}
+            >
+
+              <Typography variant="h4" sx={sectionTitleStyle}>
+                About Us
+              </Typography>
+
+              <Typography sx={{ fontSize: 18, color: "#444", lineHeight: 1.8, mb: 3 }}>
+                We are a dynamic and customer-focused organization committed to providing comprehensive financial solutions 
+                and quality organic products under one platform.
+              </Typography>
+
+              <Typography sx={{ fontSize: 18, color: "#444", lineHeight: 1.8, mb: 4 }}>
+                With strong industry knowledge and partnerships with leading banks, we assist in securing:
+                Business Loans, Term Loans, OD Limits, Cash Credit Limits, Loan Against Property,
+                Home Loans, NBFC Loans and Machinery Loans.
+              </Typography>
+
+              <Divider sx={{ my: 4 }} />
+
+              <Grid container spacing={3}>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography sx={{ fontWeight: "bold", color: "#1a237e" }}>
+                    Our Mission
+                  </Typography>
+
+                  <Typography variant="body2" color="text.secondary">
+                    To empower businesses with transparent financial solutions while encouraging healthier lifestyles.
+                  </Typography>
+                </Grid>
+
+                <Grid item xs={12} sm={6}>
+                  <Typography sx={{ fontWeight: "bold", color: "#1a237e" }}>
+                    Our Vision
+                  </Typography>
+
+                  <Typography variant="body2" color="text.secondary">
+                    To become India's trusted platform bridging financial services and sustainable living.
+                  </Typography>
+                </Grid>
+
+              </Grid>
+
+            </Paper>
+
+          </Grid>
+
+
+          {/* MANAGING DIRECTOR */}
+
+          <Grid item xs={12} md={5}>
+
+            <Stack spacing={4}>
+
+              <Paper
+                sx={{
+                  p: 4,
+                  borderRadius: 5,
+                  background: "linear-gradient(135deg,#ffffff,#f8faff)",
+                  boxShadow: "0 15px 40px rgba(0,0,0,0.08)",
+                  borderLeft: "6px solid #1a237e"
+                }}
+              >
+
+                <Typography
+                  variant="overline"
+                  sx={{
+                    color: "#1a237e",
+                    fontWeight: 800,
+                    letterSpacing: 2
+                  }}
+                >
+                  Managing Director
+                </Typography>
+
+                <Typography variant="h4" sx={{ fontWeight: 900, mt: 1 }}>
+                  Mr. Manvendra Singh
+                </Typography>
+
+                <Divider sx={{ my: 3 }} />
+
+                <Box sx={{ mb: 2 }}>
+                  <Typography sx={{ fontWeight: 700, color: "#555" }}>
+                    📍 Office Address
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    605, Okay Plus Square <br />
+                    Patel Marg, Mansarover <br />
+                    Jaipur, Rajasthan – 302020 <br />
+                    India
+                  </Typography>
+                </Box>
+
+                <Box sx={{ mb: 2 }}>
+                  <Typography sx={{ fontWeight: 700, color: "#555" }}>
+                    📞 Phone
+                  </Typography>
+
+                  <Typography variant="body2">
+                    +91 9784863800
+                  </Typography>
+                </Box>
+
+                <Box>
+                  <Typography sx={{ fontWeight: 700, color: "#555" }}>
+                    ✉ Email
+                  </Typography>
+
+                  <Typography variant="body2">
+                    pmbagrileasingcorporation@gmail.com
+                  </Typography>
+                </Box>
+
+              </Paper>
+
+            </Stack>
+
+          </Grid>
+
+        </Grid>
+
+
+        {/* COMPANY STATS */}
+
+        <Box sx={{ mt: 10 }}>
+
+          <Typography
+            variant="h4"
+            align="center"
+            sx={{ fontWeight: 800, color: "#1a237e", mb: 6 }}
+          >
+            Our Achievements
+          </Typography>
+
+          <Grid container spacing={4} justifyContent="center">
+
+            {[
+              ["150+", "Banking & NBFC Partners"],
+              ["1200+", "Trusted Customers"],
+              ["1 Lac – 50Cr+", "Loans Approved"],
+              ["100%", "Customer Satisfaction"]
+            ].map((item, index) => (
+
+              <Grid item xs={6} md={3} key={index}>
+
+                <Paper
+                  sx={{
+                    p: 4,
+                    textAlign: "center",
+                    borderRadius: 4,
+                    background: "linear-gradient(135deg,#ffffff,#f1f5ff)",
+                    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+                    transition: "0.3s",
+
+                    "&:hover": {
+                      transform: "translateY(-6px)"
+                    }
+                  }}
+                >
+
+                  <Typography variant="h4" sx={{ fontWeight: 900, color: "#1a237e" }}>
+                    {item[0]}
+                  </Typography>
+
+                  <Typography variant="body2" sx={{ mt: 1 }}>
+                    {item[1]}
+                  </Typography>
+
+                </Paper>
+
+              </Grid>
+
+            ))}
+
+          </Grid>
+
+        </Box>
+
+
+        {/* LEADERSHIP */}
+
+        <Box sx={{ mt: 12 }}>
+
+          <Typography
+            variant="h4"
+            align="center"
+            sx={{ fontWeight: 800, color: "#1a237e", mb: 6 }}
+          >
+            Our Leadership
+          </Typography>
+
+          <Grid container spacing={4} justifyContent="center">
+
+            {/* MD */}
+
+            <Grid item xs={12} sm={6} md={4}>
+
+              <Card sx={{ p:3, textAlign:"center", borderRadius:4 }}>
+
+                <img src={MdImg} style={{width:"120px",borderRadius:"50%"}} />
+
+                <Typography sx={{fontWeight:800,mt:2}}>
+                  Mr. Manvendra Singh
+                </Typography>
+
+                <Typography sx={{color:"#2e7d32"}}>
+                  Founder & Managing Director
+                </Typography>
+
+                <Typography variant="body2" sx={{mt:1}}>
+                  Leading the company with a strong vision to simplify financial solutions and promote sustainable agriculture.
+                </Typography>
+
+              </Card>
+
+            </Grid>
+
+
+            {/* BH */}
+
+            <Grid item xs={12} sm={6} md={4}>
+
+              <Card sx={{ p:3, textAlign:"center", borderRadius:4 }}>
+
+                <img src={BusinessHead} style={{width:"120px",borderRadius:"50%"}} />
+
+                <Typography sx={{fontWeight:800,mt:2}}>
+                  Mr. Atar Singh
+                </Typography>
+
+                <Typography sx={{color:"#1565c0"}}>
+                  Business Head
+                </Typography>
+
+                <Typography variant="body2" sx={{mt:1}}>
+                  Driving business growth through strategic leadership, operational excellence, and strong market partnerships.
+                </Typography>
+
+              </Card>
+
+            </Grid>
+
+          </Grid>
+
+        </Box>
+
+      </Container>
+
+    </Box>
+  );
+}
+
+export default About;
