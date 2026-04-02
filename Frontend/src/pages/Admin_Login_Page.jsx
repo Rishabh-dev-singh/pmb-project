@@ -9,8 +9,7 @@ import {
   InputAdornment,
   Container 
 } from "@mui/material";
-// Icons ke liye emojis use kiye hain taaki error na aaye
-// Agar icons install hain toh Visibility/VisibilityOff use kar sakte hain
+
 
 function AdminLogin() {
   const [showPassword, setShowPassword] = useState(false);

@@ -9,8 +9,6 @@ import {
   Container,
 } from "@mui/material";
 
-// Icons (Using Emojis for zero-dependency/no-error loading)
-// If icons are installed, replace with <BadgeIcon /> and <LockIcon />
 function EmployeeLogin() {
   const [formData, setFormData] = useState({
     employeeId: "",
