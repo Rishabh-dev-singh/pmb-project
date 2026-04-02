@@ -38,7 +38,6 @@ function LoanType() {
 
   return (
     <Box>
-      <Navbar />
       <Box
         sx={{
           minHeight: "90vh",

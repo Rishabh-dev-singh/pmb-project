@@ -48,7 +48,6 @@ function AgroProduct() {
 
   return (
     <Box>
-      <Navbar />
       <Box
         sx={{
           minHeight: "90vh",
