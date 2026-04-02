@@ -2,139 +2,135 @@ import Navbar from "../components/Navbar"
 import { Box, Typography, TextField, MenuItem, Button, Paper } from "@mui/material"
 import { useState } from "react"
 
-function LoanType(){
-
-const [loan,setLoan] = useState("")
-const [success,setSuccess] = useState(false)
-
-const handleSubmit = async ()=>{
-
-if(!loan){
-alert("Please select loan type")
-return
+// CSRF Token nikalne ke liye helper function
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
 }
 
-try{
+function LoanType() {
+  const [loan, setLoan] = useState("")
+  const [success, setSuccess] = useState(false)
 
-const leadId = localStorage.getItem("lead_id")
+  const handleSubmit = async () => {
+    if (!loan) {
+      alert("Please select loan type")
+      return
+    }
 
-await fetch("http://127.0.0.1:8000/api/update-loan-type/",{
+    try {
+      const leadId = localStorage.getItem("lead_id")
+      const csrftoken = getCookie('csrftoken'); // Token fetch kiya
 
-method:"POST",
+      const response = await fetch("http://127.0.0.1:8000/api/update-loan-type/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrftoken // Header me token add kiya
+        },
+        body: JSON.stringify({
+          id: leadId,
+          loan_type: loan
+        })
+      })
 
-headers:{
-"Content-Type":"application/json"
-},
+      if (response.ok) {
+        setSuccess(true)
+      } else {
+        const errorData = await response.json()
+        console.error("Backend Error:", errorData)
+        alert("Submission failed. Please check the console.")
+      }
 
-body:JSON.stringify({
-id:leadId,
-loan_type:loan
-})
+    } catch (error) {
+      console.error("Connection Error:", error)
+      alert("Network issue, try again later.")
+    }
+  }
 
-})
+  return (
+    <Box>
+      <Navbar />
+      <Box
+        sx={{
+          minHeight: "90vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          background: "#f4f7fb"
+        }}
+      >
+        {success ? (
+          <Paper
+            sx={{
+              p: 6,
+              width: 450,
+              borderRadius: "20px",
+              textAlign: "center",
+              background: "linear-gradient(135deg,#1a237e,#0d47a1)",
+              color: "#fff"
+            }}
+          >
+            <Typography variant="h3" sx={{ mb: 2 }}>
+              🎉 Thank You
+            </Typography>
+            <Typography sx={{ fontSize: "18px", mb: 2 }}>
+              Your query has been submitted successfully.
+            </Typography>
+            <Typography sx={{ fontSize: "16px" }}>
+              Our team will contact you shortly.
+            </Typography>
+            <Typography sx={{ mt: 3, fontWeight: "bold" }}>
+              PMB Financial Services
+            </Typography>
+          </Paper>
+        ) : (
+          <Paper sx={{ p: 5, width: 420, borderRadius: "12px" }}>
+            <Typography variant="h4" sx={{ mb: 3 }}>
+              Select Loan Type
+            </Typography>
 
-setSuccess(true)
+            <TextField
+              select
+              label="Loan Type"
+              fullWidth
+              sx={{ mb: 3 }}
+              value={loan}
+              onChange={(e) => setLoan(e.target.value)}
+            >
+              <MenuItem value="Business Loan">Business Loan</MenuItem>
+              <MenuItem value="Term Loan">Term Loan</MenuItem>
+              <MenuItem value="Personal Loan">Personal Loan</MenuItem>
+              <MenuItem value="Home Loan">Home Loan</MenuItem>
+              <MenuItem value="LAP Loan">LAP Loan</MenuItem>
+              <MenuItem value="OD Limit">OD (Overdraft Limit)</MenuItem>
+              <MenuItem value="CC Limit">CC Limit</MenuItem>
+              <MenuItem value="Solar Loan">Solar Loan</MenuItem>
+              <MenuItem value="CV && CE">CV / CE</MenuItem>
+            </TextField>
 
-}catch(error){
-
-console.log(error)
-
-}
-
-}
-
-return(
-
-<Box>
-
-
-<Box
-sx={{
-minHeight:"90vh",
-display:"flex",
-justifyContent:"center",
-alignItems:"center",
-background:"#f4f7fb"
-}}
->
-
-{success ? (
-
-<Paper
-sx={{
-p:6,
-width:450,
-borderRadius:"20px",
-textAlign:"center",
-background:"linear-gradient(135deg,#1a237e,#0d47a1)",
-color:"#fff"
-}}
->
-
-<Typography variant="h3" sx={{mb:2}}>
-🎉 Thank You
-</Typography>
-
-<Typography sx={{fontSize:"18px",mb:2}}>
-Your query has been submitted successfully.
-</Typography>
-
-<Typography sx={{fontSize:"16px"}}>
-Our team will contact you shortly.
-</Typography>
-
-<Typography sx={{mt:3,fontWeight:"bold"}}>
-PMB Financial Services
-</Typography>
-
-</Paper>
-
-) : (
-
-<Paper sx={{p:5,width:420,borderRadius:"12px"}}>
-
-<Typography variant="h4" sx={{mb:3}}>
-Select Loan Type
-</Typography>
-
-<TextField
-select
-label="Loan Type"
-fullWidth
-sx={{mb:3}}
-value={loan}
-onChange={(e)=>setLoan(e.target.value)}
->
-
-<MenuItem value="Business Loan">Business Loan</MenuItem>
-<MenuItem value="Term Loan">Term Loan</MenuItem>
-<MenuItem value="Personal Loan">Personal Loan</MenuItem>
-<MenuItem value="Home Loan">Home Loan</MenuItem>
-<MenuItem value="LAP Loan">LAP Loan</MenuItem>
-<MenuItem value="OD Limit">OD (Overdraft Limit)</MenuItem>
-<MenuItem value="CC Limit">CC Limit</MenuItem>
-<MenuItem vlaue ="Solar Loan">Solar Loan</MenuItem>
-<MenuItem value ="CV && CE" >CV / CE</MenuItem>
-</TextField>
-
-<Button
-variant="contained"
-fullWidth
-onClick={handleSubmit}
->
-Submit
-</Button>
-
-</Paper>
-
-)}
-
-</Box>
-
-</Box>
-
-)
-
+            <Button
+              variant="contained"
+              fullWidth
+              onClick={handleSubmit}
+            >
+              Submit
+            </Button>
+          </Paper>
+        )}
+      </Box>
+    </Box>
+  )
 }
 
 export default LoanType
