@@ -13,7 +13,7 @@ import { useState } from "react"
 
 function Career(){
 
-// dummy jobs (later Django API se replace karna)
+
 const jobs = [
 {
 id:1,
