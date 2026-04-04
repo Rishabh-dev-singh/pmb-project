@@ -24,7 +24,8 @@ function AgroProduct() {
 
     try {
       const agriId = localStorage.getItem("agri_id")
-      const response = await fetch("http://srv1551351.hstgr.cloud/api/update-product/", {
+      // URL UPDATE: srv1551351... se badal kar pmb.finance kar diya gaya hai
+      const response = await fetch("http://pmb.finance/api/update-product/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -42,7 +43,7 @@ function AgroProduct() {
       }
     } catch (error) {
       console.error(error)
-      alert("Something went wrong")
+      alert("Something went wrong. Connection to pmb.finance failed.")
     }
   }
 
@@ -76,6 +77,9 @@ function AgroProduct() {
             </Typography>
             <Typography sx={{ mt: 2 }}>
               Our team will contact you shortly.
+            </Typography>
+            <Typography sx={{ mt: 3, fontWeight: "bold" }}>
+              PMB Agri & Leasing Corporation
             </Typography>
           </Paper>
         ) : (

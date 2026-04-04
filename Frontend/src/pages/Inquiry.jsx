@@ -37,7 +37,7 @@ function LoanInquiry() {
   const successGreen = "#2e7d32";
 
   // =========================
-  // LOAN SUBMIT (Sahi Address: /api/)
+  // LOAN SUBMIT (Updated with pmb.finance)
   // =========================
   const handleLoanSubmit = async () => {
     if (loanData.name.trim() === "" || loanData.phone.trim() === "") {
@@ -46,8 +46,8 @@ function LoanInquiry() {
     }
 
     try {
-      // Yahan localhost hata diya hai taaki server par chale
-      const response = await fetch("/api/inquiry/", {
+      // Relative path ko badal kar full domain URL kar diya gaya hai
+      const response = await fetch("http://pmb.finance/api/inquiry/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -57,17 +57,21 @@ function LoanInquiry() {
         })
       });
 
+      if (!response.ok) {
+        throw new Error("Server Error");
+      }
+
       const data = await response.json();
       localStorage.setItem("lead_id", data.id);
       navigate("/loan-type");
     } catch (error) {
       console.error("Loan Error:", error);
-      alert("Connection Error. Please check your internet.");
+      alert("Connection Error. Please check if the server is running.");
     }
   };
 
   // =========================
-  // AGRO SUBMIT (Sahi Address: /api/)
+  // AGRO SUBMIT (Updated with pmb.finance)
   // =========================
   const handleAgroSubmit = async () => {
     if (agroData.name.trim() === "" || agroData.phone.trim() === "") {
@@ -76,8 +80,8 @@ function LoanInquiry() {
     }
 
     try {
-      // Yahan bhi localhost hata diya gaya hai
-      const response = await fetch("/api/agro-inquiry/", {
+      // Relative path ko badal kar full domain URL kar diya gaya hai
+      const response = await fetch("http://pmb.finance/api/agro-inquiry/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -86,6 +90,10 @@ function LoanInquiry() {
           email: agroData.email
         })
       });
+
+      if (!response.ok) {
+        throw new Error("Server Error");
+      }
 
       const data = await response.json();
       localStorage.setItem("agri_id", data.id);
@@ -149,7 +157,8 @@ function LoanInquiry() {
         minHeight: "100vh",
         background: "linear-gradient(135deg,#1a237e,#0d47a1)",
         display: "flex",
-        alignItems: "center"
+        alignItems: "center",
+        py: 4
       }}
     >
       <Container maxWidth="lg">

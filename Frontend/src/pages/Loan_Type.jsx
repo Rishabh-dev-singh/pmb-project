@@ -14,7 +14,8 @@ function LoanType() {
 
     try {
       const leadId = localStorage.getItem("lead_id")
-      const response = await fetch("http://srv1551351.hstgr.cloud/api/update-loan-type/", {
+      // URL UPDATE: srv1551351... se badal kar pmb.finance kar diya gaya hai
+      const response = await fetch("http://pmb.finance/api/update-loan-type/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

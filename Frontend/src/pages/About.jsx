@@ -10,7 +10,7 @@ import {
   Card
 } from "@mui/material";
 
-import MdImg from "../assets/MD_img.png";
+import MdImg from "../assets/MD_img.jpeg";
 import BusinessHead from "../assets/Bussiness_Head.png";
 
 function About() {
