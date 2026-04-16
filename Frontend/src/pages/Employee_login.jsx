@@ -25,7 +25,7 @@ function EmployeeLogin() {
   const BASE_URL = "https://pmb.finance";
 
   const handleChange = (e) => {
-    setErrorMsg(""); // 🔥 error reset
+    setErrorMsg("");
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -36,35 +36,30 @@ function EmployeeLogin() {
     e.preventDefault();
 
     if (!formData.employeeId || !formData.password) {
-      setErrorMsg("Please fill all fields ⚠️");
+      setErrorMsg("Please fill all fields");
       return;
     }
 
     setLoading(true);
 
     try {
-      const res = await axios.post(
-        `${BASE_URL}/api/login/`,
-        {
-          emp_id: formData.employeeId,
-          password: formData.password,
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const res = await axios.post(`${BASE_URL}/api/login/`, {
+        emp_id: formData.employeeId,
+        password: formData.password,
+      });
 
-      if (res.data.status === "success") {
-        // ✅ Save data
+      // 🔥 DEBUG (MOST IMPORTANT)
+      console.log("FULL API RESPONSE:", res.data);
+
+      // 🔥 SAFE CONDITION (fix)
+      if (res.data.status === "success" || res.data.emp_id) {
+
         localStorage.setItem("emp_id", res.data.emp_id);
         localStorage.setItem("name", res.data.name);
         localStorage.setItem("department", res.data.department);
         localStorage.setItem("designation", res.data.designation);
 
-        // 🔥 Better UX
-        alert(`Welcome ${res.data.name} 🎉`);
+        alert(`Welcome ${res.data.name} ✅`);
 
         navigate("/employee-dashboard");
 
@@ -73,14 +68,8 @@ function EmployeeLogin() {
       }
 
     } catch (error) {
-      console.error(error);
-
-      if (error.response) {
-        setErrorMsg(error.response.data?.message || "Server error ❌");
-      } else {
-        setErrorMsg("Network error ❌ Check backend");
-      }
-
+      console.error("LOGIN ERROR:", error);
+      setErrorMsg("Server Error / Network Issue ❌");
     } finally {
       setLoading(false);
     }
@@ -135,7 +124,7 @@ function EmployeeLogin() {
               Employee Login
             </Typography>
 
-            {/* 🔥 ERROR MESSAGE */}
+            {/* ERROR */}
             {errorMsg && (
               <Typography color="error" sx={{ mb: 2 }}>
                 {errorMsg}
