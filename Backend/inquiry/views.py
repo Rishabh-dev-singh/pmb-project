@@ -2,7 +2,6 @@ import json
 from datetime import datetime
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.hashers import check_password
 from .models import LoanInquiry, AgriInquiry, Employee, Attendance
 
 
@@ -95,7 +94,7 @@ def update_product(request):
 
 
 # ==============================
-# EMPLOYEE LOGIN
+# EMPLOYEE LOGIN (FIXED 🔥)
 # ==============================
 @csrf_exempt
 def employee_login(request):
@@ -106,13 +105,24 @@ def employee_login(request):
             emp_id = str(data.get("emp_id")).strip()
             password = str(data.get("password")).strip()
 
+            print("LOGIN INPUT:", emp_id, password)
+
             emp = Employee.objects.filter(emp_id=emp_id).first()
 
             if not emp:
-                return JsonResponse({"status": "error", "message": "Employee not found"})
+                return JsonResponse({
+                    "status": "error",
+                    "message": "Employee not found"
+                })
 
-            if not check_password(password, emp.password):
-                return JsonResponse({"status": "error", "message": "Wrong password"})
+            # 🔥 FIX (plain password match)
+            if emp.password != password:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "Wrong password"
+                })
+
+            print("LOGIN SUCCESS:", emp.emp_name)
 
             return JsonResponse({
                 "status": "success",
@@ -122,12 +132,16 @@ def employee_login(request):
                 "designation": emp.designation
             })
 
-        except Exception:
-            return JsonResponse({"status": "error", "message": "Server Error"})
+        except Exception as e:
+            print("LOGIN ERROR:", e)
+            return JsonResponse({
+                "status": "error",
+                "message": "Server Error"
+            })
 
 
 # ==============================
-# ATTENDANCE API 🔥
+# ATTENDANCE API
 # ==============================
 @csrf_exempt
 def attendance_api(request):
