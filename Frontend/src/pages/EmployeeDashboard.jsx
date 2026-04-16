@@ -3,8 +3,10 @@ import React, { useState, useEffect } from "react";
 function EmployeeDashboard() {
 
   const name = localStorage.getItem("name");
+  const emp_id = localStorage.getItem("emp_id");
 
   const [activePanel, setActivePanel] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
 
   const [timer, setTimer] = useState(8 * 60 * 60);
   const [isRunning, setIsRunning] = useState(false);
@@ -12,15 +14,14 @@ function EmployeeDashboard() {
   const [punchInTime, setPunchInTime] = useState(null);
   const [punchOutTime, setPunchOutTime] = useState(null);
 
-  const [lunchStart, setLunchStart] = useState(null);
-  const [lunchEnd, setLunchEnd] = useState(null);
-
   const [attendance, setAttendance] = useState("Not Marked");
 
   const [loanAmount, setLoanAmount] = useState("");
   const [interestRate, setInterestRate] = useState("");
   const [tenure, setTenure] = useState("");
   const [emi, setEmi] = useState(null);
+
+  const API = "https://pmb.finance/api/attendance/";
 
   useEffect(() => {
     let interval;
@@ -34,39 +35,57 @@ function EmployeeDashboard() {
     const h = Math.floor(sec / 3600);
     const m = Math.floor((sec % 3600) / 60);
     const s = sec % 60;
-    return `${h.toString().padStart(2,"0")}:${m.toString().padStart(2,"0")}:${s.toString().padStart(2,"0")}`;
+    return `${h}:${m}:${s}`;
   };
 
   const now = () => new Date().toLocaleTimeString();
 
+  // 🔥 API CALL
+  const sendAttendance = async (action) => {
+    try {
+      await fetch(API, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          emp_id: emp_id,
+          action: action,
+        }),
+      });
+    } catch (err) {
+      console.log("API ERROR", err);
+    }
+  };
+
   const handlePunchIn = () => {
     setAttendance("Punched In ✅");
     setIsRunning(true);
-    setTimer(8 * 60 * 60);
     setPunchInTime(now());
-    setPunchOutTime(null);
+    sendAttendance("punch_in");
   };
 
   const handlePunchOut = () => {
     setAttendance("Punched Out ❌");
     setIsRunning(false);
     setPunchOutTime(now());
+    sendAttendance("punch_out");
   };
 
   const handleLunchStart = () => {
-    setLunchStart(now());
-    setIsRunning(false);
+    sendAttendance("lunch_start");
   };
 
   const handleLunchEnd = () => {
-    setLunchEnd(now());
-    setIsRunning(true);
+    sendAttendance("lunch_end");
   };
 
   const calculateEMI = () => {
-    const P = loanAmount;
-    const R = interestRate / 12 / 100;
-    const N = tenure * 12;
+    if (!loanAmount || !interestRate || !tenure) return;
+
+    const P = parseFloat(loanAmount);
+    const R = parseFloat(interestRate) / 12 / 100;
+    const N = parseFloat(tenure) * 12;
 
     const emiValue =
       (P * R * Math.pow(1 + R, N)) /
@@ -76,110 +95,88 @@ function EmployeeDashboard() {
   };
 
   return (
-    <div style={container}>
+    <div style={{ padding: "20px" }}>
 
-      <h1 style={heading}>
-        <h3>WELCOME</h3>
-        <h5>{name}</h5>
-      </h1>
+      <h2>Welcome {name}</h2>
 
-      <div style={cardGrid}>
+      <button onClick={() => {
+        localStorage.clear();
+        window.location.href = "/";
+      }}>
+        Logout
+      </button>
 
-        <div
-          style={luxCard}
-          onClick={() => setActivePanel("attendance")}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-10px) scale(1.05)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        >
+      {/* 🔥 CARDS */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(200px,1fr))",
+        gap: "20px",
+        marginTop: "30px"
+      }}>
+
+        <div style={card} onClick={() => setActivePanel("attendance")}>
           ⏱️ Attendance
         </div>
 
-        <div
-          style={luxCard}
-          onClick={() => setActivePanel("emi")}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-10px) scale(1.05)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        >
-          💰 EMI Calculator
+        <div style={card} onClick={() => setActivePanel("emi")}>
+          💰 EMI
         </div>
 
-        <div
-          style={luxCard}
-          onClick={() => setActivePanel("lead")}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-10px) scale(1.05)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        >
+        <div style={card} onClick={() => setShowPopup(true)}>
           📊 Add Lead
         </div>
 
-        <div
-          style={luxCard}
-          onClick={() => setActivePanel("leave")}
-          onMouseEnter={(e) => e.currentTarget.style.transform = "translateY(-10px) scale(1.05)"}
-          onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-        >
+        <div style={card} onClick={() => setShowPopup(true)}>
           📝 Leave
         </div>
 
       </div>
 
-      {activePanel && (
-        <div style={overlay} onClick={() => setActivePanel(null)}></div>
+      {/* 🔥 ATTENDANCE PANEL */}
+      {activePanel === "attendance" && (
+        <div style={panel}>
+          <h3>Attendance</h3>
+
+          <p>{attendance}</p>
+          <h2>{formatTime(timer)}</h2>
+
+          <p>In: {punchInTime || "--"}</p>
+          <p>Out: {punchOutTime || "--"}</p>
+
+          <button onClick={handlePunchIn}>Punch In</button>
+          <button onClick={handlePunchOut}>Punch Out</button>
+          <button onClick={handleLunchStart}>Lunch Start</button>
+          <button onClick={handleLunchEnd}>Lunch End</button>
+        </div>
       )}
 
-      {activePanel && (
+      {/* 🔥 EMI PANEL */}
+      {activePanel === "emi" && (
         <div style={panel}>
+          <h3>EMI Calculator</h3>
 
-          <button onClick={() => setActivePanel(null)} style={closeBtn}>✖</button>
+          <input type="number" placeholder="Loan Amount"
+            onChange={(e)=>setLoanAmount(e.target.value)} />
 
-          {activePanel === "attendance" && (
-            <>
-              <h2 style={panelHeading}>⏱️ Attendance</h2>
-              <p>{attendance}</p>
-              <h2>{formatTime(timer)}</h2>
+          <input type="number" placeholder="Interest %"
+            onChange={(e)=>setInterestRate(e.target.value)} />
 
-              <p>🟢 In: {punchInTime || "--"}</p>
-              <p>🔴 Out: {punchOutTime || "--"}</p>
-              <p>🍱 Lunch: {lunchStart || "--"} → {lunchEnd || "--"}</p>
+          <input type="number" placeholder="Years"
+            onChange={(e)=>setTenure(e.target.value)} />
 
-              <button onClick={handlePunchIn} style={btnGreen}>Punch In</button>
-              <button onClick={handlePunchOut} style={btnRed}>Punch Out</button>
-              <button onClick={handleLunchStart} style={btnBlue}>Lunch Start</button>
-              <button onClick={handleLunchEnd} style={btnBlue}>Lunch End</button>
-            </>
-          )}
-          
+          <button onClick={calculateEMI}>Calculate</button>
 
-          {activePanel === "emi" && (
-            <>
-              <h2 style={panelHeading}>💰 EMI Calculator</h2>
+          {emi && <h3>₹ {emi}</h3>}
+        </div>
+      )}
 
-              <input placeholder="Loan Amount" onChange={(e)=>setLoanAmount(e.target.value)} style={input}/>
-              <input placeholder="Interest %" onChange={(e)=>setInterestRate(e.target.value)} style={input}/>
-              <input placeholder="Years" onChange={(e)=>setTenure(e.target.value)} style={input}/>
-
-              <button onClick={calculateEMI} style={btnBlue}>Calculate</button>
-
-              {emi && <h3>₹ {emi}</h3>}
-            </>
-          )}
-
-          {activePanel === "lead" && (
-            <>
-              <h2 style={panelHeading}>📊 Add Lead</h2>
-              <textarea style={input}></textarea>
-              <button style={btnBlue}>Submit</button>
-            </>
-          )}
-
-          {activePanel === "leave" && (
-            <>
-              <h2 style={panelHeading}>📝 Leave</h2>
-              <textarea style={input}></textarea>
-              <button style={btnBlue}>Apply</button>
-            </>
-          )}
-
+      {/* 🔥 POPUP */}
+      {showPopup && (
+        <div style={overlay}>
+          <div style={popup}>
+            <h2>🚧 Under Working</h2>
+            <button onClick={() => setShowPopup(false)}>Close</button>
+          </div>
         </div>
       )}
 
@@ -188,98 +185,37 @@ function EmployeeDashboard() {
 }
 
 /* 🔥 STYLES */
-
-const container = {
+const card = {
   padding: "30px",
-  background: "#ffffff",
-  minHeight: "100vh",
-  color: "#000"
-};
-
-const heading = {
-  fontSize: "28px",
-  color: "#0ea5e9",
-  fontWeight: "bold"
-};
-
-const cardGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(4, 1fr)",
-  gap: "25px",
-  marginTop: "40px"
-};
-
-const luxCard = {
-  height: "180px",
-  borderRadius: "20px",
-  background: "linear-gradient(135deg, #0f172a, #1e3a8a, #2563eb)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  cursor: "pointer",
-  transition: "all 0.4s ease",
-  boxShadow: "0 15px 40px rgba(37,99,235,0.4)",
+  background: "#2563eb",
   color: "#fff",
-  fontSize: "18px",
-  fontWeight: "600"
+  borderRadius: "10px",
+  textAlign: "center",
+  cursor: "pointer"
+};
+
+const panel = {
+  marginTop: "20px",
+  padding: "20px",
+  background: "#eee"
 };
 
 const overlay = {
   position: "fixed",
-  top: "70px",
+  top: 0,
   left: 0,
   width: "100%",
-  height: "calc(100% - 70px)",
-  background: "rgba(0,0,0,0.3)",
-  backdropFilter: "blur(4px)",
-  zIndex: 998
+  height: "100%",
+  background: "rgba(0,0,0,0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center"
 };
 
-const panel = {
-  position: "fixed",
-  top: "70px",
-  right: 0,
-  width: "350px",
-  height: "calc(100% - 70px)",
-  background: "#ffffff",
-  color: "#000",
-  padding: "20px",
-  zIndex: 999,
-  overflowY: "auto",
-  boxShadow: "-10px 0 40px rgba(0,0,0,0.2)",
-  borderLeft: "2px solid #e5e7eb"
+const popup = {
+  background: "#fff",
+  padding: "30px",
+  borderRadius: "10px"
 };
-
-const panelHeading = {
-  color: "#2563eb"
-};
-
-const closeBtn = {
-  float: "right",
-  background: "red",
-  color: "#fff",
-  border: "none",
-  padding: "5px",
-  cursor: "pointer"
-};
-
-const input = {
-  width: "100%",
-  marginTop: "10px",
-  padding: "10px",
-  borderRadius: "8px",
-  border: "1px solid #ccc"
-};
-
-const btnGreen = { margin:"5px", padding:"8px", background:"#22c55e", color:"#fff", border:"none" };
-const btnRed = { ...btnGreen, background:"#ef4444" };
-const btnBlue = { ...btnGreen, background:"#3b82f6" };
 
 export default EmployeeDashboard;
-
-
-
-
-
-
-

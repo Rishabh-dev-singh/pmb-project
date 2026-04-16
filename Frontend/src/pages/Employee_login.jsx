@@ -6,6 +6,7 @@ import {
   Button,
   InputAdornment,
   Container,
+  CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -13,65 +14,86 @@ import axios from "axios";
 function EmployeeLogin() {
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
   const [formData, setFormData] = useState({
     employeeId: "",
     password: "",
   });
 
+  const BASE_URL = "https://pmb.finance";
+
   const handleChange = (e) => {
+    setErrorMsg(""); // 🔥 error reset
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
 
-  // 🔥 LOGIN FUNCTION
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const res = await axios.post("http://127.0.0.1:8000/api/login/", {
-        emp_id: formData.employeeId,
-        password: formData.password,
-      });
+    if (!formData.employeeId || !formData.password) {
+      setErrorMsg("Please fill all fields ⚠️");
+      return;
+    }
 
-      // 🔍 DEBUG (VERY IMPORTANT)
-      console.log("FULL API RESPONSE:", res.data);
+    setLoading(true);
+
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/api/login/`,
+        {
+          emp_id: formData.employeeId,
+          password: formData.password,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (res.data.status === "success") {
-
-        // ✅ SAVE ALL DATA (IMPORTANT FIX)
+        // ✅ Save data
         localStorage.setItem("emp_id", res.data.emp_id);
         localStorage.setItem("name", res.data.name);
         localStorage.setItem("department", res.data.department);
         localStorage.setItem("designation", res.data.designation);
 
-        alert("Login Successful ✅");
+        // 🔥 Better UX
+        alert(`Welcome ${res.data.name} 🎉`);
 
-        // ✅ Redirect
         navigate("/employee-dashboard");
 
       } else {
-        alert("Invalid ID or Password ❌");
+        setErrorMsg(res.data.message || "Invalid credentials ❌");
       }
 
     } catch (error) {
-      console.error("LOGIN ERROR:", error);
-      alert("Server Error ❌");
+      console.error(error);
+
+      if (error.response) {
+        setErrorMsg(error.response.data?.message || "Server error ❌");
+      } else {
+        setErrorMsg("Network error ❌ Check backend");
+      }
+
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Box sx={{ bgcolor: "#f0f2f5", minHeight: "100vh" }}>
-
+    <Box sx={{ bgcolor: "#f5f7fa", minHeight: "100vh" }}>
       <Container
         maxWidth="lg"
         sx={{
-          height: "90vh",
+          minHeight: "100vh",
           display: "flex",
-          justifyContent: "center",
           alignItems: "center",
-          px: 2,
         }}
       >
         <Box
@@ -79,49 +101,46 @@ function EmployeeLogin() {
             display: "flex",
             flexDirection: { xs: "column", md: "row" },
             width: "100%",
-            maxWidth: "1000px",
-            background: "white",
-            borderRadius: "24px",
-            boxShadow: "0 25px 50px rgba(0,0,0,0.15)",
+            borderRadius: "20px",
             overflow: "hidden",
+            boxShadow: 5,
+            bgcolor: "#fff",
           }}
         >
 
-          {/* LEFT PANEL */}
-          <Box
-            sx={{
-              flex: 1.2,
-              background: "linear-gradient(135deg, #1a237e, #0d47a1)",
-              color: "white",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              p: { xs: 4, md: 8 },
-            }}
-          >
-            <Typography variant="h3" sx={{ mb: 2, fontWeight: 900 }}>
-              PMB <span style={{ color: "#4caf50" }}>Portal</span>
-            </Typography>
-
-            <Typography variant="h6" sx={{ textAlign: "center", opacity: 0.9 }}>
-              Secure Employee Login System 🔒
-            </Typography>
-          </Box>
-
-          {/* RIGHT PANEL */}
+          {/* LEFT */}
           <Box
             sx={{
               flex: 1,
-              p: { xs: 4, md: 6 },
-              display: "flex",
+              bgcolor: "#0d47a1",
+              color: "#fff",
+              display: { xs: "none", md: "flex" },
               flexDirection: "column",
               justifyContent: "center",
+              alignItems: "center",
+              p: 5,
             }}
           >
-            <Typography variant="h4" sx={{ mb: 2, fontWeight: 800 }}>
+            <Typography variant="h3" fontWeight="bold">
+              PMB Portal
+            </Typography>
+            <Typography sx={{ mt: 2 }}>
+              Secure Login 🔒
+            </Typography>
+          </Box>
+
+          {/* RIGHT */}
+          <Box sx={{ flex: 1, p: 4 }}>
+            <Typography variant="h4" mb={3}>
               Employee Login
             </Typography>
+
+            {/* 🔥 ERROR MESSAGE */}
+            {errorMsg && (
+              <Typography color="error" sx={{ mb: 2 }}>
+                {errorMsg}
+              </Typography>
+            )}
 
             <form onSubmit={handleSubmit}>
               <TextField
@@ -129,7 +148,7 @@ function EmployeeLogin() {
                 name="employeeId"
                 fullWidth
                 required
-                sx={{ mb: 3 }}
+                sx={{ mb: 2 }}
                 value={formData.employeeId}
                 onChange={handleChange}
                 InputProps={{
@@ -148,24 +167,15 @@ function EmployeeLogin() {
                 sx={{ mb: 3 }}
                 value={formData.password}
                 onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">🔑</InputAdornment>
-                  ),
-                }}
               />
 
               <Button
                 type="submit"
-                variant="contained"
                 fullWidth
-                sx={{
-                  height: 50,
-                  fontWeight: 700,
-                  borderRadius: "10px",
-                }}
+                variant="contained"
+                disabled={loading}
               >
-                Login
+                {loading ? <CircularProgress size={20} /> : "Login"}
               </Button>
             </form>
           </Box>

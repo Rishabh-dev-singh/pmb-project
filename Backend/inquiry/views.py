@@ -1,101 +1,102 @@
 import json
+from datetime import datetime
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import LoanInquiry, AgriInquiry, Employee
+from django.contrib.auth.hashers import check_password
+from .models import LoanInquiry, AgriInquiry, Employee, Attendance
 
 
 # ==============================
-# SAVE LOAN INQUIRY
+# LOAN INQUIRY
 # ==============================
-
 @csrf_exempt
 def save_inquiry(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
 
-        inquiry = LoanInquiry.objects.create(
-            full_name=data.get("full_name"),
-            email=data.get("email"),
-            mobile=data.get("mobile"),
-            loan_type=""
-        )
+            if not data.get("full_name") or not data.get("mobile"):
+                return JsonResponse({"status": "error", "message": "Missing fields"})
 
-        return JsonResponse({
-            "status": "success",
-            "id": inquiry.id
-        })
+            inquiry = LoanInquiry.objects.create(
+                full_name=data.get("full_name"),
+                email=data.get("email"),
+                mobile=data.get("mobile"),
+                loan_type=""
+            )
+
+            return JsonResponse({"status": "success", "id": inquiry.id})
+
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
 
 
 # ==============================
 # UPDATE LOAN TYPE
 # ==============================
-
 @csrf_exempt
 def update_loan_type(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
 
-        lead_id = data.get("id")
-        loan_type = data.get("loan_type")
+            inquiry = LoanInquiry.objects.get(id=data.get("id"))
+            inquiry.loan_type = data.get("loan_type")
+            inquiry.save()
 
-        inquiry = LoanInquiry.objects.get(id=lead_id)
+            return JsonResponse({"status": "updated"})
 
-        inquiry.loan_type = loan_type
-        inquiry.save()
-
-        return JsonResponse({
-            "status": "updated"
-        })
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
 
 
 # ==============================
-# SAVE AGRO INQUIRY
+# AGRO INQUIRY
 # ==============================
-
 @csrf_exempt
 def agro_inquiry(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
 
-        inquiry = AgriInquiry.objects.create(
-            full_name=data.get("full_name"),
-            email=data.get("email"),
-            mobile=data.get("mobile"),
-            product_name=""
-        )
+            if not data.get("full_name") or not data.get("mobile"):
+                return JsonResponse({"status": "error", "message": "Missing fields"})
 
-        return JsonResponse({
-            "status": "success",
-            "id": inquiry.id
-        })
+            inquiry = AgriInquiry.objects.create(
+                full_name=data.get("full_name"),
+                email=data.get("email"),
+                mobile=data.get("mobile"),
+                product_name=""
+            )
+
+            return JsonResponse({"status": "success", "id": inquiry.id})
+
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
 
 
 # ==============================
 # UPDATE PRODUCT
 # ==============================
-
 @csrf_exempt
 def update_product(request):
     if request.method == "POST":
-        data = json.loads(request.body)
+        try:
+            data = json.loads(request.body)
 
-        agri_id = data.get("id")
-        product = data.get("product_name")
+            inquiry = AgriInquiry.objects.get(id=data.get("id"))
+            inquiry.product_name = data.get("product_name")
+            inquiry.save()
 
-        inquiry = AgriInquiry.objects.get(id=agri_id)
+            return JsonResponse({"status": "updated"})
 
-        inquiry.product_name = product
-        inquiry.save()
-
-        return JsonResponse({
-            "status": "updated"
-        })
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
 
 
 # ==============================
-# EMPLOYEE LOGIN (FINAL FIXED ✅)
+# EMPLOYEE LOGIN
 # ==============================
-
 @csrf_exempt
 def employee_login(request):
     if request.method == "POST":
@@ -105,61 +106,77 @@ def employee_login(request):
             emp_id = str(data.get("emp_id")).strip()
             password = str(data.get("password")).strip()
 
-            print("INPUT:", emp_id, password)
-
-            # 🔍 Find employee
             emp = Employee.objects.filter(emp_id=emp_id).first()
 
             if not emp:
-                return JsonResponse({
-                    "status": "error",
-                    "message": "Employee not found"
-                })
+                return JsonResponse({"status": "error", "message": "Employee not found"})
 
-            # 🔐 Password check
-            if emp.password != password:
-                return JsonResponse({
-                    "status": "error",
-                    "message": "Wrong password"
-                })
+            if not check_password(password, emp.password):
+                return JsonResponse({"status": "error", "message": "Wrong password"})
 
-            # 🔥 DEBUG (check values)
-            print("EMP DATA:", emp.emp_name, emp.department, emp.designation)
-
-            # ✅ FINAL RESPONSE (FIXED)
             return JsonResponse({
                 "status": "success",
                 "emp_id": emp.emp_id,
                 "name": emp.emp_name,
                 "department": emp.department,
-                "designation": emp.designation   
+                "designation": emp.designation
+            })
+
+        except Exception:
+            return JsonResponse({"status": "error", "message": "Server Error"})
+
+
+# ==============================
+# ATTENDANCE API 🔥
+# ==============================
+@csrf_exempt
+def attendance_api(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+
+            emp_id = data.get("emp_id")
+            action = data.get("action")
+
+            today = datetime.now().date()
+
+            obj, created = Attendance.objects.get_or_create(
+                emp_id=emp_id,
+                date=today
+            )
+
+            current_time = datetime.now().time()
+
+            if action == "punch_in":
+                obj.punch_in = current_time
+
+            elif action == "punch_out":
+                obj.punch_out = current_time
+
+            elif action == "lunch_start":
+                obj.lunch_start = current_time
+
+            elif action == "lunch_end":
+                obj.lunch_end = current_time
+
+            obj.save()
+
+            return JsonResponse({
+                "status": "success",
+                "action": action
             })
 
         except Exception as e:
-            print("ERROR:", e)
-
             return JsonResponse({
                 "status": "error",
-                "message": "Server Error"
+                "message": str(e)
             })
 
 
 # ==============================
-# GET EMPLOYEES LIST
+# GET EMPLOYEES
 # ==============================
-
-@csrf_exempt
 def get_employees(request):
     if request.method == "GET":
-        try:
-            employees = Employee.objects.all().values()
-
-            return JsonResponse(list(employees), safe=False)
-
-        except Exception as e:
-            print("ERROR:", e)
-
-            return JsonResponse({
-                "status": "error",
-                "message": "Server Error"
-            })
+        employees = list(Employee.objects.all().values())
+        return JsonResponse(employees, safe=False)
