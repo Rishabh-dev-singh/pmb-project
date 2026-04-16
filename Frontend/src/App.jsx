@@ -1,69 +1,67 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { Box } from "@mui/material"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Box } from "@mui/material";
 
-import Navbar from "./components/Navbar"
-import Footer from "./components/Footer"
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
-import Home from "./pages/Home"
-import Inquiry from "./pages/Inquiry"
-import AdminLogin from "./pages/Admin_Login_Page"
-import EmployeeLogin from "./pages/Employee_login"
-import About from "./pages/About"
-import Career from "./pages/Career"
-import LoanType from "./pages/Loan_Type"
-import AgroProduct from "./pages/AgroProduct"
+import Home from "./pages/Home";
+import Inquiry from "./pages/Inquiry";
+import AdminLogin from "./pages/Admin_Login_Page";
+import EmployeeLogin from "./pages/Employee_login";
+import EmployeeDashboard from "./pages/EmployeeDashboard"; // 🔥 ADD THIS
+import About from "./pages/About";
+import Career from "./pages/Career";
+import LoanType from "./pages/Loan_Type";
+import AgroProduct from "./pages/AgroProduct";
 
-function App(){
+function App() {
+  return (
+    <BrowserRouter>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: "100vh"
+        }}
+      >
 
-return(
+        {/* NAVBAR */}
+        <Navbar />
 
-<BrowserRouter>
+        {/* PAGE CONTENT */}
+        <Box sx={{ flex: 1 }}>
 
-<Box
-sx={{
-display: "flex",
-flexDirection: "column",
-minHeight: "100vh"
-}}
->
+          <Routes>
 
-{/* NAVBAR */}
-<Navbar />
+            <Route path="/" element={<Home />} />
 
-{/* PAGE CONTENT */}
-<Box sx={{ flex: 1 }}>
+            <Route path="/inquiry" element={<Inquiry />} />
 
-<Routes>
+            <Route path="/admin-login" element={<AdminLogin />} />
 
-<Route path="/" element={<Home />} />
+            <Route path="/employee-login" element={<EmployeeLogin />} />
 
-<Route path="/inquiry" element={<Inquiry />} />
+            {/* 🔥 IMPORTANT ROUTE */}
+            <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
 
-<Route path="/admin-login" element={<AdminLogin />} />
+            <Route path="/careers" element={<Career />} />
 
-<Route path="/employee-login" element={<EmployeeLogin />} />
+            <Route path="/about" element={<About />} />
 
-<Route path="/careers" element={<Career />} />
+            <Route path="/loan-type" element={<LoanType />} />
 
-<Route path="/about" element={<About />} />
+            <Route path="/agro-product" element={<AgroProduct />} />
 
-<Route path="/loan-type" element={<LoanType />} />
+          </Routes>
 
-<Route path="/agro-product" element={<AgroProduct />} />
+        </Box>
 
-</Routes>
+        {/* FOOTER */}
+        <Footer />
 
-</Box>
-
-{/* FOOTER */}
-<Footer />
-
-</Box>
-
-</BrowserRouter>
-
-)
-
+      </Box>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

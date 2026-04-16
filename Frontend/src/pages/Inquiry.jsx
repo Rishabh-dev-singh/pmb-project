@@ -46,8 +46,7 @@ function LoanInquiry() {
     }
 
     try {
-      // Relative path ko badal kar full domain URL kar diya gaya hai
-      const response = await fetch("http://pmb.finance/api/inquiry/", {
+      const response = await fetch("https://pmb.finance/api/inquiry/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -81,7 +80,7 @@ function LoanInquiry() {
 
     try {
       // Relative path ko badal kar full domain URL kar diya gaya hai
-      const response = await fetch("http://pmb.finance/api/agro-inquiry/", {
+      const response = await fetch("https://pmb.finance/api/agro-inquiry/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -103,7 +102,7 @@ function LoanInquiry() {
       alert("Connection Error. Please try again.");
     }
   };
-
+  
   // =========================
   // UI STYLES
   // =========================
@@ -150,7 +149,7 @@ function LoanInquiry() {
       transform: "translateY(-2px)"
     }
   };
-
+  
   return (
     <Box
       sx={{
@@ -270,7 +269,8 @@ function LoanInquiry() {
               <Typography variant="body2" sx={{ mb: 3 }}>
                 PMB Organic Products Center
               </Typography>
-
+       
+        
               <TextField
                 label="Full Name"
                 fullWidth

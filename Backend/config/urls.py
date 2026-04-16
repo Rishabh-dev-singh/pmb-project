@@ -17,4 +17,7 @@ urlpatterns = [
 
     path('api/update-product/', views.update_product),
 
+   # Employee APIs
+   path('api/login/', views.employee_login),
+   path('api/employees/', views.get_employees),
 ]

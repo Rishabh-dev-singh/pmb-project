@@ -22,11 +22,11 @@ function AdminLogin() {
       <Box
         sx={{
           height: "90vh",
-          display: "flex",
+          display: "flex", 
           justifyContent: "center",
           alignItems: "center",
           // Blue-Indigo Gradient for Corporate feel
-          background: "linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)",
+          background: "linear-gradient(135deg, #1b2485 0%, #0d47a1 100%)",
           position: "relative",
           overflow: "hidden"
         }}
@@ -96,7 +96,6 @@ function AdminLogin() {
                   ),
                 }}
               />
-
               <Button 
                 variant="contained" 
                 fullWidth
@@ -121,7 +120,7 @@ function AdminLogin() {
                 Sign In
               </Button>
             </Stack>
-
+         
             <Typography 
               variant="caption" 
               display="block" 
@@ -135,7 +134,6 @@ function AdminLogin() {
     </Box>
   );
 }
-
 // Helper component to replace Stack if not imported
 function Stack({ children, spacing }) {
   return (
@@ -146,3 +144,13 @@ function Stack({ children, spacing }) {
 }
 
 export default AdminLogin;
+
+
+
+
+
+
+
+
+
+

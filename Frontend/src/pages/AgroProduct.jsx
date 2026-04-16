@@ -7,7 +7,7 @@ function AgroProduct() {
   const navigate = useNavigate()
   const [product, setProduct] = useState("")
   const [success, setSuccess] = useState(false)
-
+  
   useEffect(() => {
     const agriId = localStorage.getItem("agri_id")
     if (!agriId) {
@@ -24,7 +24,6 @@ function AgroProduct() {
 
     try {
       const agriId = localStorage.getItem("agri_id")
-      // URL UPDATE: srv1551351... se badal kar pmb.finance kar diya gaya hai
       const response = await fetch("http://pmb.finance/api/update-product/", {
         method: "POST",
         headers: {

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Navbar from "../components/Navbar";
 import {
   Box,
   Typography,
@@ -8,8 +7,12 @@ import {
   InputAdornment,
   Container,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function EmployeeLogin() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     employeeId: "",
     password: "",
@@ -22,14 +25,44 @@ function EmployeeLogin() {
     });
   };
 
-  const handleSubmit = (e) => {
+  // 🔥 LOGIN FUNCTION
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("PMB Employee Login Data:", formData);
+
+    try {
+      const res = await axios.post("http://127.0.0.1:8000/api/login/", {
+        emp_id: formData.employeeId,
+        password: formData.password,
+      });
+
+      // 🔍 DEBUG (VERY IMPORTANT)
+      console.log("FULL API RESPONSE:", res.data);
+
+      if (res.data.status === "success") {
+
+        // ✅ SAVE ALL DATA (IMPORTANT FIX)
+        localStorage.setItem("emp_id", res.data.emp_id);
+        localStorage.setItem("name", res.data.name);
+        localStorage.setItem("department", res.data.department);
+        localStorage.setItem("designation", res.data.designation);
+
+        alert("Login Successful ✅");
+
+        // ✅ Redirect
+        navigate("/employee-dashboard");
+
+      } else {
+        alert("Invalid ID or Password ❌");
+      }
+
+    } catch (error) {
+      console.error("LOGIN ERROR:", error);
+      alert("Server Error ❌");
+    }
   };
 
   return (
     <Box sx={{ bgcolor: "#f0f2f5", minHeight: "100vh" }}>
-     
 
       <Container
         maxWidth="lg"
@@ -44,7 +77,7 @@ function EmployeeLogin() {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { xs: "column", md: "row" }, // Mobile pe column, desktop pe row
+            flexDirection: { xs: "column", md: "row" },
             width: "100%",
             maxWidth: "1000px",
             background: "white",
@@ -53,61 +86,30 @@ function EmployeeLogin() {
             overflow: "hidden",
           }}
         >
-          {/* --- LEFT PANEL: BRANDING --- */}
+
+          {/* LEFT PANEL */}
           <Box
             sx={{
               flex: 1.2,
-              background: "linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)",
+              background: "linear-gradient(135deg, #1a237e, #0d47a1)",
               color: "white",
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
               alignItems: "center",
               p: { xs: 4, md: 8 },
-              position: "relative",
             }}
           >
-            {/* Background Decorative Circle */}
-            <Box
-              sx={{
-                position: "absolute",
-                top: -50,
-                left: -50,
-                width: 200,
-                height: 200,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.05)",
-              }}
-            />
-
-            <Typography
-              variant="h3"
-              sx={{ mb: 2, fontWeight: 900, textAlign: "center", letterSpacing: -1 }}
-            >
+            <Typography variant="h3" sx={{ mb: 2, fontWeight: 900 }}>
               PMB <span style={{ color: "#4caf50" }}>Portal</span>
             </Typography>
-            <Typography
-              variant="h6"
-              sx={{ textAlign: "center", opacity: 0.9, fontWeight: 300, mb: 4 }}
-            >
-              Efficiency in Finance, <br /> Excellence in Service.
-            </Typography>
 
-            <Box
-              sx={{
-                bgcolor: "rgba(255,255,255,0.1)",
-                p: 2,
-                borderRadius: "12px",
-                border: "1px solid rgba(255,255,255,0.2)",
-              }}
-            >
-              <Typography variant="body2" sx={{ fontSize: "0.85rem" }}>
-                🔒 Secure Employee Access Area
-              </Typography>
-            </Box>
+            <Typography variant="h6" sx={{ textAlign: "center", opacity: 0.9 }}>
+              Secure Employee Login System 🔒
+            </Typography>
           </Box>
 
-          {/* --- RIGHT PANEL: LOGIN FORM --- */}
+          {/* RIGHT PANEL */}
           <Box
             sx={{
               flex: 1,
@@ -117,27 +119,23 @@ function EmployeeLogin() {
               justifyContent: "center",
             }}
           >
-            <Typography variant="h4" sx={{ mb: 1, fontWeight: 800, color: "#1a237e" }}>
+            <Typography variant="h4" sx={{ mb: 2, fontWeight: 800 }}>
               Employee Login
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 4, color: "text.secondary" }}>
-              Please enter your credentials to continue.
             </Typography>
 
             <form onSubmit={handleSubmit}>
               <TextField
                 label="Employee ID"
                 name="employeeId"
-                required
                 fullWidth
-                placeholder="E-10023"
+                required
                 sx={{ mb: 3 }}
+                value={formData.employeeId}
                 onChange={handleChange}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">🪪</InputAdornment>
                   ),
-                  sx: { borderRadius: "12px" },
                 }}
               />
 
@@ -145,65 +143,33 @@ function EmployeeLogin() {
                 label="Password"
                 name="password"
                 type="password"
-                required
                 fullWidth
-                sx={{ mb: 1 }}
+                required
+                sx={{ mb: 3 }}
+                value={formData.password}
                 onChange={handleChange}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">🔑</InputAdornment>
                   ),
-                  sx: { borderRadius: "12px" },
                 }}
               />
 
-              <Typography
-                variant="caption"
-                sx={{
-                  display: "block",
-                  textAlign: "right",
-                  mb: 3,
-                  color: "primary.main",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
-              >
-                Forgot Password?
-              </Typography>
-
               <Button
-                variant="contained"
                 type="submit"
+                variant="contained"
                 fullWidth
                 sx={{
-                  height: 54,
-                  fontSize: 17,
+                  height: 50,
                   fontWeight: 700,
-                  borderRadius: "12px",
-                  textTransform: "none",
-                  background: "linear-gradient(90deg, #1a237e, #0d47a1)",
-                  boxShadow: "0 10px 20px rgba(26, 35, 126, 0.3)",
-                  transition: "0.3s",
-                  "&:hover": {
-                    transform: "translateY(-3px)",
-                    boxShadow: "0 15px 25px rgba(26, 35, 126, 0.4)",
-                    background: "#1a237e",
-                  },
+                  borderRadius: "10px",
                 }}
               >
-                Access Portal
+                Login
               </Button>
             </form>
-
-            <Typography
-              variant="caption"
-              align="center"
-              sx={{ mt: 4, color: "text.disabled", fontSize: "0.75rem" }}
-            >
-              © 2026 PMB Agri & Leasing Corporation <br />
-              Authorized Access Only
-            </Typography>
           </Box>
+
         </Box>
       </Container>
     </Box>

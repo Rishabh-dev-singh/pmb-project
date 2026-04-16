@@ -23,3 +23,43 @@ class AgriInquiry(models.Model):
 
     def __str__(self):
         return self.full_name
+
+
+
+    
+class Employee(models.Model):
+    emp_id = models.CharField(max_length=10, primary_key=True)
+    emp_name = models.CharField(max_length=100)
+    father_name = models.CharField(max_length=100, null=True, blank=True)
+    department = models.CharField(max_length=50, null=True, blank=True)
+    designation = models.CharField(max_length=50, null=True, blank=True)
+    password = models.CharField(max_length=255)
+
+    class Meta:
+        db_table = "employees"
+        managed = False 
+    
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
