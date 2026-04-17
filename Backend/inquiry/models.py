@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # ==============================
 # LOAN INQUIRY
 # ==============================
@@ -29,7 +30,7 @@ class AgriInquiry(models.Model):
 
 
 # ==============================
-# EMPLOYEE MODEL
+# EMPLOYEE (🔥 FIXED)
 # ==============================
 class Employee(models.Model):
     emp_id = models.CharField(max_length=10, primary_key=True)
@@ -40,15 +41,15 @@ class Employee(models.Model):
     password = models.CharField(max_length=255)
 
     class Meta:
-        db_table = "employees"
-        managed = False  
+        db_table = "inquiry_employee"   # 🔥 FIXED TABLE NAME
+        managed = False
 
     def __str__(self):
         return self.emp_name
 
 
 # ==============================
-# ATTENDANCE MODEL (SEPARATE)
+# ATTENDANCE
 # ==============================
 class Attendance(models.Model):
     emp_id = models.CharField(max_length=10)
@@ -61,4 +62,4 @@ class Attendance(models.Model):
     lunch_end = models.TimeField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.emp_id} - {self.date}"
+        return self.emp_id

@@ -3,13 +3,9 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 🔐 SECRET KEY (env se lo)
-SECRET_KEY = os.environ.get('SECRET_KEY', 'fallback-secret')
-
-# ❌ DEBUG off
+SECRET_KEY = 'fallback-secret'
 DEBUG = False
 
-# 🌐 ALLOWED HOSTS
 ALLOWED_HOSTS = ['pmb.finance', 'www.pmb.finance']
 
 
@@ -34,10 +30,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    
-    # 🔥 add this for static (important)
     'whitenoise.middleware.WhiteNoiseMiddleware',
-
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -51,6 +44,26 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # ==============================
+# TEMPLATES
+# ==============================
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
+
+# ==============================
 # DATABASE
 # ==============================
 DATABASES = {
@@ -58,11 +71,20 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'pmb_db',
         'USER': 'postgres',
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'your_password'),
+        'PASSWORD': 'rishabh123',
         'HOST': 'localhost',
         'PORT': '5432',
     }
 }
+
+
+# ==============================
+# 🔥 TIME ZONE FIX (IMPORTANT)
+# ==============================
+LANGUAGE_CODE = 'en-us'
+TIME_ZONE = 'Asia/Kolkata'   # ✅ INDIA TIME
+USE_I18N = True
+USE_TZ = True
 
 
 # ==============================
@@ -71,17 +93,15 @@ DATABASES = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# 🔥 whitenoise config
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 
 # ==============================
-# SECURITY (IMPORTANT 🔥)
+# SECURITY
 # ==============================
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
-# HTTPS force (agar SSL hai)
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -90,7 +110,7 @@ CSRF_COOKIE_SECURE = True
 # ==============================
 # CORS
 # ==============================
-CORS_ALLOW_ALL_ORIGINS = False  # ❌ sabko allow mat karo
+CORS_ALLOW_ALL_ORIGINS = False
 
 CORS_ALLOWED_ORIGINS = [
     "https://pmb.finance",
