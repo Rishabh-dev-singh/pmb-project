@@ -14,7 +14,7 @@ import {
 
 import MenuIcon from "@mui/icons-material/Menu";
 import { Link, useLocation } from "react-router-dom";
-import logo from "../assets/logo.jpeg";
+import logo from "../assets/logo.png";
 
 function Navbar() {
 
@@ -49,165 +49,173 @@ function Navbar() {
   });
 
   return (
-    <AppBar
-      position="sticky"
-      sx={{
-        background: "linear-gradient(90deg,#0f3c6e,#1f6ed4)",
-        backdropFilter: "blur(10px)",
-        boxShadow: "0 4px 20px rgba(0,0,0,0.25)"
-      }}
-    >
-      <Toolbar
+    <>
+      {/*  Animation CSS */}
+      <style>
+        {`
+          @keyframes logoFloat {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-6px) scale(1.05); }
+            100% { transform: translateY(0px) scale(1); }
+          }
+
+          .logo {
+            transition: all 0.4s ease;
+          }
+
+          .logo:hover {
+            transform: scale(1.1) rotate(5deg);
+          }
+        `}
+      </style>
+
+      <AppBar
+        position="sticky"
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          px: { xs: 2, md: 4 }
+          background: "linear-gradient(90deg,#0f3c6e,#1f6ed4)",
+          backdropFilter: "blur(10px)",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.25)"
         }}
       >
-
-        {/* LOGO */}
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Link to="/">
-            <img
-              src={logo}
-              alt="PMB Logo"
-              style={{
-                height: "58px",
-                objectFit: "contain"
-              }}
-            />
-          </Link>
-        </Box>
-
-
-        {/* DESKTOP MENU */}
-        <Box
+        <Toolbar
           sx={{
-            display: { xs: "none", md: "flex" },
-            alignItems: "center"
+            display: "flex",
+            justifyContent: "space-between",
+            px: { xs: 2, md: 4 }
           }}
         >
 
-          {navItems.map((item) => (
-            <Button
-              key={item.text}
-              component={Link}
-              to={item.path}
-              sx={navButtonStyle(item.path)}
-            >
-              {item.text}
-            </Button>
-          ))}
+          {/*  LOGO */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <Link to="/">
+              <img
+                src={logo}
+                alt="PMB Logo"
+                className="logo"
+                style={{
+                  height: "80px",
+                  width: "80px",
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: "3px solid white",
+                  boxShadow: "0 6px 20px rgba(0,0,0,0.4)",
+                  animation: "logoFloat 3s ease-in-out infinite"
+                }}
+              />
+            </Link>
+          </Box>
 
-        </Box>
-
-
-        {/* RIGHT SIDE */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-
-          {/* EMPLOYEE BUTTON */}
-          <Button
-            component={Link}
-            to="/employee-login"
+          {/* DESKTOP MENU */}
+          <Box
             sx={{
               display: { xs: "none", md: "flex" },
-              background: "linear-gradient(45deg,#22c55e,#16a34a)",
-              color: "white",
-              borderRadius: "30px",
-              px: 3,
-              fontWeight: 600,
-              textTransform: "none",
-              boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-              transition: "0.3s",
-
-              "&:hover": {
-                transform: "translateY(-2px)",
-                boxShadow: "0 6px 18px rgba(0,0,0,0.35)"
-              }
+              alignItems: "center"
             }}
           >
-            Employee Portal
-          </Button>
-
-
-          {/* MOBILE MENU ICON */}
-          <IconButton
-            sx={{ display: { xs: "flex", md: "none" }, color: "white" }}
-            onClick={() => setOpen(true)}
-          >
-            <MenuIcon />
-          </IconButton>
-
-        </Box>
-
-      </Toolbar>
-
-
-      {/* MOBILE DRAWER */}
-      <Drawer
-        anchor="left"
-        open={open}
-        onClose={() => setOpen(false)}
-      >
-
-        <Box
-          sx={{
-            width: 260,
-            pt: 3
-          }}
-        >
-
-          <List>
-
             {navItems.map((item) => (
-              <ListItemButton
+              <Button
                 key={item.text}
                 component={Link}
                 to={item.path}
-                onClick={() => setOpen(false)}
-                sx={{
-                  py: 1.5
-                }}
+                sx={navButtonStyle(item.path)}
               >
-                <ListItemText
-                  primary={item.text}
-                  primaryTypographyProps={{
-                    fontWeight: 600
-                  }}
-                />
-              </ListItemButton>
+                {item.text}
+              </Button>
             ))}
+          </Box>
 
-          </List>
+          {/* RIGHT SIDE */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
-          <Divider sx={{ my: 2 }} />
-
-          <Box sx={{ px: 2 }}>
-
+            {/* EMPLOYEE BUTTON */}
             <Button
               component={Link}
               to="/employee-login"
-              fullWidth
-              onClick={() => setOpen(false)}
               sx={{
+                display: { xs: "none", md: "flex" },
                 background: "linear-gradient(45deg,#22c55e,#16a34a)",
                 color: "white",
                 borderRadius: "30px",
-                py: 1.2,
+                px: 3,
                 fontWeight: 600,
-                textTransform: "none"
+                textTransform: "none",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                transition: "0.3s",
+
+                "&:hover": {
+                  transform: "translateY(-2px)",
+                  boxShadow: "0 6px 18px rgba(0,0,0,0.35)"
+                }
               }}
             >
               Employee Portal
             </Button>
 
+            {/* MOBILE MENU ICON */}
+            <IconButton
+              sx={{ display: { xs: "flex", md: "none" }, color: "white" }}
+              onClick={() => setOpen(true)}
+            >
+              <MenuIcon />
+            </IconButton>
+
           </Box>
 
-        </Box>
+        </Toolbar>
 
-      </Drawer>
+        {/* MOBILE DRAWER */}
+        <Drawer
+          anchor="left"
+          open={open}
+          onClose={() => setOpen(false)}
+        >
+          <Box sx={{ width: 260, pt: 3 }}>
 
-    </AppBar>
+            <List>
+              {navItems.map((item) => (
+                <ListItemButton
+                  key={item.text}
+                  component={Link}
+                  to={item.path}
+                  onClick={() => setOpen(false)}
+                  sx={{ py: 1.5 }}
+                >
+                  <ListItemText
+                    primary={item.text}
+                    primaryTypographyProps={{
+                      fontWeight: 600
+                    }}
+                  />
+                </ListItemButton>
+              ))}
+            </List>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ px: 2 }}>
+              <Button
+                component={Link}
+                to="/employee-login"
+                fullWidth
+                onClick={() => setOpen(false)}
+                sx={{
+                  background: "linear-gradient(45deg,#22c55e,#16a34a)",
+                  color: "white",
+                  borderRadius: "30px",
+                  py: 1.2,
+                  fontWeight: 600,
+                  textTransform: "none"
+                }}
+              >
+                Employee Portal
+              </Button>
+            </Box>
+
+          </Box>
+        </Drawer>
+
+      </AppBar>
+    </>
   );
 }
 

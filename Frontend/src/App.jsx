@@ -8,11 +8,12 @@ import Home from "./pages/Home";
 import Inquiry from "./pages/Inquiry";
 import AdminLogin from "./pages/Admin_Login_Page";
 import EmployeeLogin from "./pages/Employee_login";
-import EmployeeDashboard from "./pages/EmployeeDashboard"; // 🔥 ADD THIS
+import EmployeeDashboard from "./pages/EmployeeDashboard";
 import About from "./pages/About";
 import Career from "./pages/Career";
 import LoanType from "./pages/Loan_Type";
 import AgroProduct from "./pages/AgroProduct";
+import AddLead from "./pages/AddLead";
 
 function App() {
   return (
@@ -41,8 +42,10 @@ function App() {
 
             <Route path="/employee-login" element={<EmployeeLogin />} />
 
-            {/* 🔥 IMPORTANT ROUTE */}
             <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
+            <Route path="/add-lead" element={<AddLead />} />
+
+            {/* 🔥 NEW ROUTE ADDED */}
 
             <Route path="/careers" element={<Career />} />
 

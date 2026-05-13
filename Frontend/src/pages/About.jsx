@@ -198,7 +198,7 @@ function About() {
                   </Typography>
 
                   <Typography variant="body2">
-                    pmbagrileasingcorporation@gmail.com
+                    info@pmb.finance
                   </Typography>
                 </Box>
 

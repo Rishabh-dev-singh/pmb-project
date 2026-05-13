@@ -8,6 +8,32 @@ from { opacity:0; transform: translateY(40px); }
 to { opacity:1; transform: translateY(0); }
 `;
 
+
+console.log(
+  "%c Developer Console",
+  `
+  color: #00ffe1;
+  font-size: 24px;
+  font-weight: bold;
+  font-family: monospace;
+  `
+);
+
+console.log(
+  "%cWebsite developed and maintained by Rishabh Dev Singh",
+  "color: #ffffff; font-size: 14px; font-family: monospace;"
+);
+
+console.table({
+  Developer: "Rishabh Dev Singh",
+  Email: "devrishabh804@gmail.com",
+  Status: "Active"
+});
+
+console.log(
+  "%cThanks for visiting 💻",
+  "color:#00ffe1; font-style:italic;"
+);
 function Home() {
 
 return (

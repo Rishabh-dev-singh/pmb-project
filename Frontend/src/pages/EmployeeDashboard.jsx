@@ -1,221 +1,794 @@
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+  Suspense
+} from "react";
+
+import {
+  Box,
+  Grid,
+  Paper,
+  Typography,
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  TextField,
+  CssBaseline,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+  Button,
+  Avatar,
+  Menu,
+  MenuItem,
+  Divider
+} from "@mui/material";
+
+import {
+  Dashboard as DashIcon,
+  Assignment,
+  Calculate,
+  AddCircle,
+  Dialpad,
+  ListAlt,
+  Edit as EditIcon,
+  Logout as LogoutIcon
+} from "@mui/icons-material";
+
+import { useNavigate, useLocation } from "react-router-dom";
+
+import Attendance from "./Attendance";
+
+// FAST EMI LOAD
+const EMI = React.lazy(() => import("./EMI"));
 
 function EmployeeDashboard() {
 
-  const name = localStorage.getItem("name");
-  const emp_id = localStorage.getItem("emp_id");
+  const [activePanel, setActivePanel] = useState("overview");
+  const [leads, setLeads] = useState([]);
+  const [search, setSearch] = useState("");
 
-  const [activePanel, setActivePanel] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
 
-  const [timer, setTimer] = useState(8 * 60 * 60);
-  const [isRunning, setIsRunning] = useState(false);
+  const open = Boolean(anchorEl);
 
-  const [punchInTime, setPunchInTime] = useState(null);
-  const [punchOutTime, setPunchOutTime] = useState(null);
+  const [employeeData, setEmployeeData] = useState({
+    name: "",
+    id: "",
+    designation: "",
+    department: ""
+  });
 
-  const [attendance, setAttendance] = useState("Not Marked");
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  const [loanAmount, setLoanAmount] = useState("");
-  const [interestRate, setInterestRate] = useState("");
-  const [tenure, setTenure] = useState("");
-  const [emi, setEmi] = useState(null);
-
-  const API = "https://pmb.finance/api/attendance/";
-
+  // LOAD USER DATA
   useEffect(() => {
-    let interval;
-    if (isRunning && timer > 0) {
-      interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isRunning, timer]);
 
-  const formatTime = (sec) => {
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const s = sec % 60;
-    return `${h}:${m}:${s}`;
+    setEmployeeData({
+      name:
+        localStorage.getItem("employeeName")
+        || "Employee",
+
+      id:
+        localStorage.getItem("employeeId")
+        || "N/A",
+
+      designation:
+        localStorage.getItem("designation")
+        || "N/A",
+
+      department:
+        localStorage.getItem("department")
+        || "N/A",
+    });
+
+    fetchLeads();
+
+  }, []);
+
+  // PROFILE MENU
+  const handleMenuClick = (event) => {
+    setAnchorEl(event.currentTarget);
   };
 
-  const now = () => new Date().toLocaleTimeString();
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
-  // 🔥 API CALL
-  const sendAttendance = async (action) => {
+  // LOGOUT
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
+  // FETCH LEADS
+  const fetchLeads = () => {
+
+    fetch("http://127.0.0.1:8000/api/leads/")
+      .then((res) => res.json())
+      .then((data) => setLeads(data))
+      .catch((err) => console.error(err));
+  };
+
+  // REFRESH LEADS
+  useEffect(() => {
+
+    if (location.state?.refresh) {
+      fetchLeads();
+    }
+
+  }, [location]);
+
+  // FORMAT AMOUNT
+  const formatAmount = (value) => {
+
+    const num = parseFloat(value);
+
+    if (isNaN(num)) return value;
+
+    if (num >= 10000000)
+      return (num / 10000000).toFixed(2) + " Cr";
+
+    if (num >= 100000)
+      return (num / 100000).toFixed(2) + " Lakh";
+
+    if (num >= 1000)
+      return (num / 1000).toFixed(2) + " Thousand";
+
+    return num;
+  };
+
+  // UPDATE STATUS
+  const updateStatus = async (
+    lead,
+    newStatus
+  ) => {
+
+    if (!newStatus) return;
+
+    const confirmChange = window.confirm(
+      `Progress change kare?\n\nFrom: ${lead.progress}\nTo: ${newStatus}`
+    );
+
+    if (!confirmChange) return;
+
     try {
-      await fetch(API, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          emp_id: emp_id,
-          action: action,
-        }),
-      });
+
+      const res = await fetch(
+        `http://127.0.0.1:8000/api/leads/${lead.id}/update/`,
+        {
+          method: "PUT",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            progress: newStatus,
+            updated_by: "Rishabh",
+            updated_at: new Date().toISOString()
+          })
+        }
+      );
+
+      if (res.ok) {
+
+        alert("✅ Progress updated");
+
+        setLeads((prev) =>
+          prev.map((l) =>
+            l.id === lead.id
+              ? {
+                  ...l,
+                  progress: newStatus
+                }
+              : l
+          )
+        );
+
+      } else {
+        alert("❌ Update failed");
+      }
+
     } catch (err) {
-      console.log("API ERROR", err);
+
+      console.error(err);
+      alert("❌ Server error");
     }
   };
 
-  const handlePunchIn = () => {
-    setAttendance("Punched In ✅");
-    setIsRunning(true);
-    setPunchInTime(now());
-    sendAttendance("punch_in");
+  // EDIT LEAD
+  const handleEdit = (lead) => {
+    navigate("/add-lead", {
+      state: { lead }
+    });
   };
 
-  const handlePunchOut = () => {
-    setAttendance("Punched Out ❌");
-    setIsRunning(false);
-    setPunchOutTime(now());
-    sendAttendance("punch_out");
+  // FILTER LEADS
+  const filteredLeads = leads.filter(
+    (l) =>
+      l.fullName
+        ?.toLowerCase()
+        .includes(search.toLowerCase()) ||
+
+      l.mobile?.includes(search)
+  );
+
+  // DOWNLOAD EXCEL
+  const downloadExcel = () => {
+
+    const headers = [
+      "SR",
+      "Name",
+      "Mobile",
+      "Address",
+      "Owner",
+      "Amount",
+      "Progress"
+    ];
+
+    const rows = filteredLeads.map((l, i) => [
+      i + 1,
+      l.fullName,
+      l.mobile,
+      l.location,
+      l.owner,
+      formatAmount(l.requiredLoanAmount),
+      l.progress
+    ]);
+
+    let csv =
+      "data:text/csv;charset=utf-8," +
+      [headers, ...rows]
+        .map((e) => e.join(","))
+        .join("\n");
+
+    const link = document.createElement("a");
+
+    link.href = encodeURI(csv);
+    link.download = "leads.csv";
+
+    link.click();
   };
 
-  const handleLunchStart = () => {
-    sendAttendance("lunch_start");
-  };
+  // CARD STYLE
+  const card = {
 
-  const handleLunchEnd = () => {
-    sendAttendance("lunch_end");
-  };
+    p: 3,
 
-  const calculateEMI = () => {
-    if (!loanAmount || !interestRate || !tenure) return;
+    borderRadius: "20px",
 
-    const P = parseFloat(loanAmount);
-    const R = parseFloat(interestRate) / 12 / 100;
-    const N = parseFloat(tenure) * 12;
+    background:
+      "rgba(255,255,255,0.7)",
 
-    const emiValue =
-      (P * R * Math.pow(1 + R, N)) /
-      (Math.pow(1 + R, N) - 1);
+    backdropFilter: "blur(10px)",
 
-    setEmi(emiValue.toFixed(2));
+    boxShadow:
+      "0 10px 40px rgba(0,0,0,0.08)"
   };
 
   return (
-    <div style={{ padding: "20px" }}>
 
-      <h2>Welcome {name}</h2>
+    <Box
+      sx={{
+        display: "flex",
+        bgcolor: "#eef2ff",
+        minHeight: "100vh"
+      }}
+    >
 
-      <button onClick={() => {
-        localStorage.clear();
-        window.location.href = "/";
-      }}>
-        Logout
-      </button>
+      <CssBaseline />
 
-      {/* 🔥 CARDS */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px,1fr))",
-        gap: "20px",
-        marginTop: "30px"
-      }}>
+      {/* SIDEBAR */}
+      <Drawer
+        variant="permanent"
 
-        <div style={card} onClick={() => setActivePanel("attendance")}>
-          ⏱️ Attendance
-        </div>
+        sx={{
+          width: {
+            xs: 70,
+            md: 240
+          },
 
-        <div style={card} onClick={() => setActivePanel("emi")}>
-          💰 EMI
-        </div>
+          "& .MuiDrawer-paper": {
 
-        <div style={card} onClick={() => setShowPopup(true)}>
-          📊 Add Lead
-        </div>
+            width: {
+              xs: 70,
+              md: 240
+            },
 
-        <div style={card} onClick={() => setShowPopup(true)}>
-          📝 Leave
-        </div>
+            bgcolor: "#020617",
+            color: "#fff",
 
-      </div>
+            borderRight:
+              "1px solid rgba(255,255,255,0.05)"
+          }
+        }}
+      >
 
-      {/* 🔥 ATTENDANCE PANEL */}
-      {activePanel === "attendance" && (
-        <div style={panel}>
-          <h3>Attendance</h3>
+        {/* LOGO */}
+        <Box
+          sx={{
+            p: 2,
+            textAlign: "center"
+          }}
+        >
 
-          <p>{attendance}</p>
-          <h2>{formatTime(timer)}</h2>
+          <Typography
+            sx={{
+              color: "#38bdf8",
+              fontWeight: "bold",
+              fontSize: "20px"
+            }}
+          >
+            PMB CRM SOFTWARE
+          </Typography>
 
-          <p>In: {punchInTime || "--"}</p>
-          <p>Out: {punchOutTime || "--"}</p>
+        </Box>
 
-          <button onClick={handlePunchIn}>Punch In</button>
-          <button onClick={handlePunchOut}>Punch Out</button>
-          <button onClick={handleLunchStart}>Lunch Start</button>
-          <button onClick={handleLunchEnd}>Lunch End</button>
-        </div>
-      )}
+        {/* MENU */}
+        <List>
 
-      {/* 🔥 EMI PANEL */}
-      {activePanel === "emi" && (
-        <div style={panel}>
-          <h3>EMI Calculator</h3>
+          {[
+            {
+              text: "Overview",
+              icon: <DashIcon />,
+              id: "overview"
+            },
 
-          <input type="number" placeholder="Loan Amount"
-            onChange={(e)=>setLoanAmount(e.target.value)} />
+            {
+              text: "Leads",
+              icon: <ListAlt />,
+              id: "leads"
+            },
 
-          <input type="number" placeholder="Interest %"
-            onChange={(e)=>setInterestRate(e.target.value)} />
+            {
+              text: "Attendance",
+              icon: <Assignment />,
+              id: "attendance"
+            },
 
-          <input type="number" placeholder="Years"
-            onChange={(e)=>setTenure(e.target.value)} />
+            {
+              text: "EMI",
+              icon: <Calculate />,
+              id: "emi"
+            },
 
-          <button onClick={calculateEMI}>Calculate</button>
 
-          {emi && <h3>₹ {emi}</h3>}
-        </div>
-      )}
+          ].map((item) => (
 
-      {/* 🔥 POPUP */}
-      {showPopup && (
-        <div style={overlay}>
-          <div style={popup}>
-            <h2>🚧 Under Working</h2>
-            <button onClick={() => setShowPopup(false)}>Close</button>
-          </div>
-        </div>
-      )}
+            <ListItem
 
-    </div>
+              key={item.id}
+
+              onClick={() => {
+
+                setActivePanel(item.id);
+
+                if (item.id === "leads") {
+                  fetchLeads();
+                }
+              }}
+
+              sx={{
+                cursor: "pointer",
+
+                mx: 1,
+                mb: 1,
+
+                borderRadius: "14px",
+
+                transition: "0.25s ease",
+
+                bgcolor:
+                  activePanel === item.id
+                    ? "rgba(56,189,248,0.15)"
+                    : "transparent",
+
+                "&:hover": {
+                  bgcolor:
+                    "rgba(56,189,248,0.10)"
+                }
+              }}
+            >
+
+              <ListItemIcon
+                sx={{
+                  color:
+                    activePanel === item.id
+                      ? "#38bdf8"
+                      : "#94a3b8",
+
+                  minWidth: "42px"
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+
+              <ListItemText
+                primary={item.text}
+
+                primaryTypographyProps={{
+                  fontSize: "15px",
+
+                  fontWeight:
+                    activePanel === item.id
+                      ? "600"
+                      : "400"
+                }}
+              />
+
+            </ListItem>
+
+          ))}
+
+        </List>
+
+      </Drawer>
+
+      {/* MAIN */}
+      <Box sx={{ flexGrow: 1 }}>
+
+        {/* TOP HEADER */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "flex-end",
+            p: 2,
+            bgcolor: "#fff",
+            boxShadow: 1
+          }}
+        >
+
+          <IconButton onClick={handleMenuClick}>
+
+            <Avatar
+              sx={{
+                bgcolor: "#38bdf8"
+              }}
+            >
+              {employeeData.name
+                .charAt(0)
+                .toUpperCase()}
+            </Avatar>
+
+          </IconButton>
+
+          {/* PROFILE MENU */}
+          <Menu
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleMenuClose}
+          >
+
+            <Box
+              sx={{
+                px: 2,
+                py: 1,
+                minWidth: "200px"
+              }}
+            >
+
+              <Typography
+                fontWeight="bold"
+                sx={{ mb: 1 }}
+              >
+                {employeeData.name}
+              </Typography>
+
+              <Divider sx={{ mb: 1 }} />
+
+              <Typography variant="body2">
+                <strong>ID:</strong>
+                {" "}
+                {employeeData.id}
+              </Typography>
+
+              <Typography variant="body2">
+                <strong>DEPARTMENT:</strong>
+                {" "}
+                {employeeData.department}
+              </Typography>
+
+              <Typography variant="body2">
+                <strong>DESIGNATION:</strong>
+                {" "}
+                {employeeData.designation}
+              </Typography>
+
+            </Box>
+
+            <Divider />
+
+            <MenuItem
+              onClick={handleLogout}
+              sx={{ color: "red" }}
+            >
+
+              <LogoutIcon
+                fontSize="small"
+                sx={{ mr: 1 }}
+              />
+
+              Logout
+
+            </MenuItem>
+
+          </Menu>
+
+        </Box>
+
+        {/* CONTENT */}
+        <Box sx={{ p: 4 }}>
+
+          {/* OVERVIEW */}
+          {activePanel === "overview" && (
+
+            <Grid container spacing={3}>
+
+              <Grid item xs={12} md={4}>
+
+                <Paper
+                  sx={{
+                    ...card,
+
+                    minHeight: "120px",
+
+                    display: "flex",
+
+                    justifyContent: "center",
+
+                    alignItems: "center",
+
+                    cursor: "pointer"
+                  }}
+
+                  onClick={() =>
+                    navigate("/add-lead")
+                  }
+                >
+
+                  <AddCircle
+                    sx={{ fontSize: 50 }}
+                  />
+
+                  <Typography>
+                    Add New Lead
+                  </Typography>
+
+                </Paper>
+
+              </Grid>
+
+            </Grid>
+          )}
+
+          {/* LEADS */}
+          {activePanel === "leads" && (
+
+            <Paper sx={card}>
+
+              <Typography
+                variant="h5"
+                sx={{ mb: 2 }}
+              >
+                Lead Tracker
+              </Typography>
+
+              <Button
+                variant="contained"
+                onClick={downloadExcel}
+
+                sx={{
+                  mb: 2,
+                  background: "#16a34a"
+                }}
+              >
+                Download Your Lead
+              </Button>
+
+              <TextField
+                label="Search by name or mobile"
+
+                fullWidth
+
+                value={search}
+
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
+
+                sx={{ mb: 2 }}
+              />
+
+              <TableContainer>
+
+                <Table>
+
+                  <TableHead>
+
+                    <TableRow>
+
+                      <TableCell>SR</TableCell>
+                      <TableCell>Customer Name</TableCell>
+                      <TableCell>Contact</TableCell>
+                      <TableCell>Address</TableCell>
+                      <TableCell>Created By</TableCell>
+                      <TableCell>Amount</TableCell>
+                      <TableCell>Progress</TableCell>
+                      <TableCell>Edit</TableCell>
+
+                    </TableRow>
+
+                  </TableHead>
+
+                  <TableBody>
+
+                    {filteredLeads.map((l, i) => (
+
+                      <TableRow key={l.id}>
+
+                        <TableCell>
+                          {i + 1}
+                        </TableCell>
+
+                        <TableCell>
+                          {l.fullName}
+                        </TableCell>
+
+                        <TableCell>
+                          {l.mobile}
+                        </TableCell>
+
+                        <TableCell>
+                          {l.location}
+                        </TableCell>
+
+                        <TableCell>
+                          {l.owner}
+                        </TableCell>
+
+                        <TableCell>
+                          {formatAmount(
+                            l.requiredLoanAmount
+                          )}
+                        </TableCell>
+
+                        <TableCell>
+
+                          <select
+                            value={l.progress || ""}
+
+                            onChange={(e) =>
+                              updateStatus(
+                                l,
+                                e.target.value
+                              )
+                            }
+                          >
+
+                            <option value="">
+                              Select
+                            </option>
+
+                            <option>
+                              PIPELINE
+                            </option>
+
+                            <option>
+                              DOCUMENT LIST SEND
+                            </option>
+
+                            <option>
+                              DOCUMENT RECIEVED
+                            </option>
+
+                            <option>
+                              DOCUMENTS COMPLETE
+                            </option>
+
+                            <option>
+                              QUERY
+                            </option>
+
+                            <option>
+                              LOGIN
+                            </option>
+
+                            <option>
+                              SUBMITTED TO BANK
+                            </option>
+
+                            <option>
+                              REJECTED
+                            </option>
+
+                            <option>
+                              DOCUMENT PENDING
+                            </option>
+
+                          </select>
+
+                        </TableCell>
+
+                        <TableCell>
+
+                          <IconButton
+                            onClick={() =>
+                              handleEdit(l)
+                            }
+                          >
+
+                            <EditIcon color="primary" />
+
+                          </IconButton>
+
+                        </TableCell>
+
+                      </TableRow>
+
+                    ))}
+
+                  </TableBody>
+
+                </Table>
+
+              </TableContainer>
+
+            </Paper>
+          )}
+
+          {/* ATTENDANCE */}
+          {activePanel === "attendance" && (
+            <Attendance />
+          )}
+
+          {/* EMI */}
+          {activePanel === "emi" && (
+
+            <Suspense
+              fallback={
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "300px"
+                  }}
+                >
+
+                  <Typography
+                    sx={{
+                      color: "#38bdf8",
+                      fontSize: "22px",
+                      fontWeight: "bold"
+                    }}
+                  >
+                    Loading EMI Calculator...
+                  </Typography>
+
+                </Box>
+              }
+            >
+
+              <EMI />
+
+            </Suspense>
+          )}
+
+        </Box>
+
+      </Box>
+
+    </Box>
   );
 }
-
-/* 🔥 STYLES */
-const card = {
-  padding: "30px",
-  background: "#2563eb",
-  color: "#fff",
-  borderRadius: "10px",
-  textAlign: "center",
-  cursor: "pointer"
-};
-
-const panel = {
-  marginTop: "20px",
-  padding: "20px",
-  background: "#eee"
-};
-
-const overlay = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  width: "100%",
-  height: "100%",
-  background: "rgba(0,0,0,0.5)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center"
-};
-
-const popup = {
-  background: "#fff",
-  padding: "30px",
-  borderRadius: "10px"
-};
 
 export default EmployeeDashboard;

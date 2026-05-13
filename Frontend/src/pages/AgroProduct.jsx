@@ -3,6 +3,11 @@ import { Box, Typography, TextField, MenuItem, Button, Paper } from "@mui/materi
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
+// ==========================================
+// 💡 CONFIGURATION (Localhost connection fix)
+// ==========================================
+const API_BASE_URL = "http://127.0.0.1:8000"; 
+
 function AgroProduct() {
   const navigate = useNavigate()
   const [product, setProduct] = useState("")
@@ -24,7 +29,9 @@ function AgroProduct() {
 
     try {
       const agriId = localStorage.getItem("agri_id")
-      const response = await fetch("http://pmb.finance/api/update-product/", {
+      
+      // ✅ URL updated to use API_BASE_URL
+      const response = await fetch(`${API_BASE_URL}/api/update-product/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -42,7 +49,7 @@ function AgroProduct() {
       }
     } catch (error) {
       console.error(error)
-      alert("Something went wrong. Connection to pmb.finance failed.")
+      alert("Something went wrong. Connection to local server failed.")
     }
   }
 

@@ -18,6 +18,12 @@ import AgricultureIcon from "@mui/icons-material/Agriculture";
 
 import { useNavigate } from "react-router-dom";
 
+// ==========================================
+//  CONFIGURATION 
+// ==========================================
+const API_BASE_URL = "http://127.0.0.1:8000"; // Localhost ke liye
+// const API_BASE_URL = "https://pmb.finance"; // Production (VPS) ke liye
+
 function LoanInquiry() {
   const navigate = useNavigate();
 
@@ -37,7 +43,7 @@ function LoanInquiry() {
   const successGreen = "#2e7d32";
 
   // =========================
-  // LOAN SUBMIT (Updated with pmb.finance)
+  // LOAN SUBMIT
   // =========================
   const handleLoanSubmit = async () => {
     if (loanData.name.trim() === "" || loanData.phone.trim() === "") {
@@ -46,7 +52,7 @@ function LoanInquiry() {
     }
 
     try {
-      const response = await fetch("https://pmb.finance/api/inquiry/", {
+      const response = await fetch(`${API_BASE_URL}/api/inquiry/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -65,12 +71,12 @@ function LoanInquiry() {
       navigate("/loan-type");
     } catch (error) {
       console.error("Loan Error:", error);
-      alert("Connection Error. Please check if the server is running.");
+      alert("Connection Error. Please check if your Local Server is running.");
     }
   };
 
   // =========================
-  // AGRO SUBMIT (Updated with pmb.finance)
+  // AGRO SUBMIT
   // =========================
   const handleAgroSubmit = async () => {
     if (agroData.name.trim() === "" || agroData.phone.trim() === "") {
@@ -79,8 +85,7 @@ function LoanInquiry() {
     }
 
     try {
-      // Relative path ko badal kar full domain URL kar diya gaya hai
-      const response = await fetch("https://pmb.finance/api/agro-inquiry/", {
+      const response = await fetch(`${API_BASE_URL}/api/agro-inquiry/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -99,10 +104,10 @@ function LoanInquiry() {
       navigate("/agro-product");
     } catch (error) {
       console.error("Agro Error:", error);
-      alert("Connection Error. Please try again.");
+      alert("Connection Error. Please check if your Local Server is running.");
     }
   };
-  
+
   // =========================
   // UI STYLES
   // =========================
@@ -149,7 +154,7 @@ function LoanInquiry() {
       transform: "translateY(-2px)"
     }
   };
-  
+
   return (
     <Box
       sx={{
@@ -269,8 +274,7 @@ function LoanInquiry() {
               <Typography variant="body2" sx={{ mb: 3 }}>
                 PMB Organic Products Center
               </Typography>
-       
-        
+
               <TextField
                 label="Full Name"
                 fullWidth

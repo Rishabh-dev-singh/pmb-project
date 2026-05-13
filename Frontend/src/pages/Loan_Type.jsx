@@ -2,6 +2,11 @@ import Navbar from "../components/Navbar"
 import { Box, Typography, TextField, MenuItem, Button, Paper } from "@mui/material"
 import { useState } from "react"
 
+// ==========================================
+// 💡 CONFIGURATION (Localhost connection fix)
+// ==========================================
+const API_BASE_URL = "http://127.0.0.1:8000"; 
+
 function LoanType() {
   const [loan, setLoan] = useState("")
   const [success, setSuccess] = useState(false)
@@ -14,8 +19,9 @@ function LoanType() {
 
     try {
       const leadId = localStorage.getItem("lead_id")
-      // URL UPDATE: srv1551351... se badal kar pmb.finance kar diya gaya hai
-      const response = await fetch("https://pmb.finance/api/update-loan-type/", {
+      
+      // ✅ URL updated to use API_BASE_URL (Localhost)
+      const response = await fetch(`${API_BASE_URL}/api/update-loan-type/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -33,12 +39,13 @@ function LoanType() {
       }
     } catch (error) {
       console.error(error)
-      alert("Connection failed. Make sure backend is running.")
+      alert("Connection failed. Make sure your local Django server is running.")
     }
   }
 
   return (
     <Box>
+    
       <Box
         sx={{
           minHeight: "90vh",
