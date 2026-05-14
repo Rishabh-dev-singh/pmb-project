@@ -78,7 +78,19 @@ function EmployeeDashboard() {
 
   const [mobileOpen, setMobileOpen] =
     useState(false);
+useEffect(() => {
 
+  const token =
+    localStorage.getItem("accessToken");
+
+  if (!token) {
+
+    navigate("/employee-login");
+
+    return;
+  }
+
+}, [navigate]);
   // LOAD USER DATA
   useEffect(() => {
 
