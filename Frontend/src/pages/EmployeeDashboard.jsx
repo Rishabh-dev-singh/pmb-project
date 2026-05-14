@@ -27,7 +27,9 @@ import {
   Avatar,
   Menu,
   MenuItem,
-  Divider
+  Divider,
+  useMediaQuery,
+  useTheme
 } from "@mui/material";
 
 import {
@@ -35,10 +37,10 @@ import {
   Assignment,
   Calculate,
   AddCircle,
-  Dialpad,
   ListAlt,
   Edit as EditIcon,
-  Logout as LogoutIcon
+  Logout as LogoutIcon,
+  Menu as MenuIcon
 } from "@mui/icons-material";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -67,6 +69,15 @@ function EmployeeDashboard() {
 
   const navigate = useNavigate();
   const location = useLocation();
+
+  const theme = useTheme();
+
+  const isMobile = useMediaQuery(
+    theme.breakpoints.down("md")
+  );
+
+  const [mobileOpen, setMobileOpen] =
+    useState(false);
 
   // LOAD USER DATA
   useEffect(() => {
@@ -261,7 +272,10 @@ function EmployeeDashboard() {
   // CARD STYLE
   const card = {
 
-    p: 3,
+    p: {
+      xs: 2,
+      md: 3
+    },
 
     borderRadius: "20px",
 
@@ -273,6 +287,32 @@ function EmployeeDashboard() {
     boxShadow:
       "0 10px 40px rgba(0,0,0,0.08)"
   };
+
+  const menuItems = [
+    {
+      text: "Overview",
+      icon: <DashIcon />,
+      id: "overview"
+    },
+
+    {
+      text: "Leads",
+      icon: <ListAlt />,
+      id: "leads"
+    },
+
+    {
+      text: "Attendance",
+      icon: <Assignment />,
+      id: "attendance"
+    },
+
+    {
+      text: "EMI",
+      icon: <Calculate />,
+      id: "emi"
+    }
+  ];
 
   return (
 
@@ -288,7 +328,11 @@ function EmployeeDashboard() {
 
       {/* SIDEBAR */}
       <Drawer
-        variant="permanent"
+        variant={isMobile ? "temporary" : "permanent"}
+
+        open={isMobile ? mobileOpen : true}
+
+        onClose={() => setMobileOpen(false)}
 
         sx={{
           width: {
@@ -296,12 +340,16 @@ function EmployeeDashboard() {
             md: 240
           },
 
+          flexShrink: 0,
+
           "& .MuiDrawer-paper": {
 
             width: {
               xs: 70,
               md: 240
             },
+
+            boxSizing: "border-box",
 
             bgcolor: "#020617",
             color: "#fff",
@@ -324,7 +372,13 @@ function EmployeeDashboard() {
             sx={{
               color: "#38bdf8",
               fontWeight: "bold",
-              fontSize: "20px"
+
+              fontSize: {
+                xs: "11px",
+                md: "20px"
+              },
+
+              lineHeight: 1.3
             }}
           >
             PMB CRM SOFTWARE
@@ -335,33 +389,7 @@ function EmployeeDashboard() {
         {/* MENU */}
         <List>
 
-          {[
-            {
-              text: "Overview",
-              icon: <DashIcon />,
-              id: "overview"
-            },
-
-            {
-              text: "Leads",
-              icon: <ListAlt />,
-              id: "leads"
-            },
-
-            {
-              text: "Attendance",
-              icon: <Assignment />,
-              id: "attendance"
-            },
-
-            {
-              text: "EMI",
-              icon: <Calculate />,
-              id: "emi"
-            },
-
-
-          ].map((item) => (
+          {menuItems.map((item) => (
 
             <ListItem
 
@@ -374,6 +402,10 @@ function EmployeeDashboard() {
                 if (item.id === "leads") {
                   fetchLeads();
                 }
+
+                if (isMobile) {
+                  setMobileOpen(false);
+                }
               }}
 
               sx={{
@@ -385,6 +417,11 @@ function EmployeeDashboard() {
                 borderRadius: "14px",
 
                 transition: "0.25s ease",
+
+                justifyContent: {
+                  xs: "center",
+                  md: "flex-start"
+                },
 
                 bgcolor:
                   activePanel === item.id
@@ -405,7 +442,10 @@ function EmployeeDashboard() {
                       ? "#38bdf8"
                       : "#94a3b8",
 
-                  minWidth: "42px"
+                  minWidth: {
+                    xs: "auto",
+                    md: "42px"
+                  }
                 }}
               >
                 {item.icon}
@@ -413,6 +453,13 @@ function EmployeeDashboard() {
 
               <ListItemText
                 primary={item.text}
+
+                sx={{
+                  display: {
+                    xs: "none",
+                    md: "block"
+                  }
+                }}
 
                 primaryTypographyProps={{
                   fontSize: "15px",
@@ -433,32 +480,61 @@ function EmployeeDashboard() {
       </Drawer>
 
       {/* MAIN */}
-      <Box sx={{ flexGrow: 1 }}>
+      <Box
+        sx={{
+          flexGrow: 1,
+          width: "100%",
+          overflow: "hidden"
+        }}
+      >
 
         {/* TOP HEADER */}
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-end",
-            p: 2,
+            justifyContent: "space-between",
+            alignItems: "center",
+
+            p: {
+              xs: 1.5,
+              md: 2
+            },
+
             bgcolor: "#fff",
             boxShadow: 1
           }}
         >
 
-          <IconButton onClick={handleMenuClick}>
+          {isMobile && (
 
-            <Avatar
-              sx={{
-                bgcolor: "#38bdf8"
-              }}
+            <IconButton
+              onClick={() =>
+                setMobileOpen(true)
+              }
             >
-              {employeeData.name
-                .charAt(0)
-                .toUpperCase()}
-            </Avatar>
 
-          </IconButton>
+              <MenuIcon />
+
+            </IconButton>
+          )}
+
+          <Box sx={{ ml: "auto" }}>
+
+            <IconButton onClick={handleMenuClick}>
+
+              <Avatar
+                sx={{
+                  bgcolor: "#38bdf8"
+                }}
+              >
+                {employeeData.name
+                  .charAt(0)
+                  .toUpperCase()}
+              </Avatar>
+
+            </IconButton>
+
+          </Box>
 
           {/* PROFILE MENU */}
           <Menu
@@ -471,7 +547,7 @@ function EmployeeDashboard() {
               sx={{
                 px: 2,
                 py: 1,
-                minWidth: "200px"
+                minWidth: "220px"
               }}
             >
 
@@ -525,14 +601,21 @@ function EmployeeDashboard() {
         </Box>
 
         {/* CONTENT */}
-        <Box sx={{ p: 4 }}>
+        <Box
+          sx={{
+            p: {
+              xs: 1.5,
+              md: 4
+            }
+          }}
+        >
 
           {/* OVERVIEW */}
           {activePanel === "overview" && (
 
             <Grid container spacing={3}>
 
-              <Grid item xs={12} md={4}>
+              <Grid item xs={12} sm={6} md={4}>
 
                 <Paper
                   sx={{
@@ -542,11 +625,17 @@ function EmployeeDashboard() {
 
                     display: "flex",
 
+                    flexDirection: "column",
+
+                    gap: 1,
+
                     justifyContent: "center",
 
                     alignItems: "center",
 
-                    cursor: "pointer"
+                    cursor: "pointer",
+
+                    textAlign: "center"
                   }}
 
                   onClick={() =>
@@ -555,7 +644,9 @@ function EmployeeDashboard() {
                 >
 
                   <AddCircle
-                    sx={{ fontSize: 50 }}
+                    sx={{
+                      fontSize: 50
+                    }}
                   />
 
                   <Typography>
@@ -576,14 +667,25 @@ function EmployeeDashboard() {
 
               <Typography
                 variant="h5"
-                sx={{ mb: 2 }}
+
+                sx={{
+                  mb: 2,
+
+                  fontSize: {
+                    xs: "20px",
+                    md: "30px"
+                  }
+                }}
               >
                 Lead Tracker
               </Typography>
 
               <Button
                 variant="contained"
+
                 onClick={downloadExcel}
+
+                fullWidth={isMobile}
 
                 sx={{
                   mb: 2,
@@ -607,9 +709,17 @@ function EmployeeDashboard() {
                 sx={{ mb: 2 }}
               />
 
-              <TableContainer>
+              <TableContainer
+                sx={{
+                  overflowX: "auto"
+                }}
+              >
 
-                <Table>
+                <Table
+                  sx={{
+                    minWidth: 1000
+                  }}
+                >
 
                   <TableHead>
 
@@ -671,6 +781,12 @@ function EmployeeDashboard() {
                                 e.target.value
                               )
                             }
+
+                            style={{
+                              padding: "8px",
+                              borderRadius: "8px",
+                              minWidth: "170px"
+                            }}
                           >
 
                             <option value="">
@@ -768,7 +884,8 @@ function EmployeeDashboard() {
                     sx={{
                       color: "#38bdf8",
                       fontSize: "22px",
-                      fontWeight: "bold"
+                      fontWeight: "bold",
+                      textAlign: "center"
                     }}
                   >
                     Loading EMI Calculator...
