@@ -309,28 +309,35 @@ function About() {
 
             {/* BH */}
 
-            <Grid item xs={12} sm={6} md={4}>
+           <Grid item xs={12} sm={6} md={4}>
+  <Card sx={{ p:3, textAlign:"center", borderRadius:4 }}>
+    
+    <img 
+      src={BusinessHead} 
+      style={{ width:"120px", borderRadius:"50%" }} 
+    />
 
-              <Card sx={{ p:3, textAlign:"center", borderRadius:4 }}>
+    <Typography sx={{ fontWeight:800, mt:2 }}>
+      Mr. Atar Singh
+    </Typography>
 
-                <img src={BusinessHead} style={{width:"120px",borderRadius:"50%"}} />
+    <Typography sx={{ color:"#1565c0", fontWeight:600 }}>
+      Business Head
+    </Typography>
 
-                <Typography sx={{fontWeight:800,mt:2}}>
-                  Mr. Atar Singh
-                </Typography>
+    <Typography variant="body2" sx={{ mt:1 }}>
+      Driving business growth through strategic leadership, operational excellence, and strong market partnerships.
+    </Typography>
 
-                <Typography sx={{color:"#1565c0"}}>
-                  Business Head
-                </Typography>
+    <Typography 
+      variant="body2" 
+      sx={{ mt:1, fontWeight:600, color:"#555" }}
+    >
+      Having 20+ years of experience in Banking and NBFCs.
+    </Typography>
 
-                <Typography variant="body2" sx={{mt:1}}>
-                  Driving business growth through strategic leadership, operational excellence, and strong market partnerships.
-                </Typography>
-
-              </Card>
-
-            </Grid>
-
+  </Card>
+</Grid>
           </Grid>
 
         </Box>
