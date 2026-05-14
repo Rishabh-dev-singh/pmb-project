@@ -99,8 +99,8 @@ function AddLead() {
 
     // URL and Method selection (Edit vs Add)
     const url = isEditing 
-      ? `http://127.0.0.1:8000/api/leads/${existingLead.id}/update/` 
-      : "http://127.0.0.1:8000/api/leads/";
+      ? `https://pmb.finance/api/leads/${existingLead.id}/update/` 
+      : "https://pmb.finance/api/leads/";
       
     const method = isEditing ? "PUT" : "POST";
 

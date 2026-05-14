@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 // ==========================================
 //  CONFIGURATION 
 // ==========================================
-const API_BASE_URL = "http://127.0.0.1:8000"; // Localhost ke liye
+const API_BASE_URL = "https://pmb.finance"; // Localhost ke liye
 // const API_BASE_URL = "https://pmb.finance"; // Production (VPS) ke liye
 
 function LoanInquiry() {

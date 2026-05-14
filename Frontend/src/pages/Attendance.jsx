@@ -74,7 +74,7 @@ function Attendance() {
 
     // Backend API Call
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/attendance/", {
+      const response = await axios.post("https://pmb.finance/api/attendance/", {
         employee_id: empId,
         type: type, // "IN" or "OUT"
         time: timeStr,

@@ -1,51 +1,41 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+
 from inquiry import views
 
 urlpatterns = [
-
     path('admin/', admin.site.urls),
 
-    # Loan APIs
+    path('api/', include('accounts.urls')),
+
     path('api/inquiry/', views.save_inquiry),
     path('api/update-loan-type/', views.update_loan_type),
 
-    # Agro APIs
     path('api/agro-inquiry/', views.agro_inquiry),
     path('api/update-product/', views.update_product),
 
-    # Employee APIs
-    path('api/login/', views.employee_login),
-    path('api/employees/', views.get_employees),
-]
-from django.contrib import admin
-from django.urls import path
-from inquiry import views
-
-urlpatterns = [
-
-    path('admin/', admin.site.urls),
-
-    # ==============================
-    # LOAN APIs
-    # ==============================
-    path('api/inquiry/', views.save_inquiry),
-    path('api/update-loan-type/', views.update_loan_type),
-
-    # ==============================
-    # AGRO APIs
-    # ==============================
-    path('api/agro-inquiry/', views.agro_inquiry),
-    path('api/update-product/', views.update_product),
-
-    # ==============================
-    # EMPLOYEE APIs
-    # ==============================
-    path('api/login/', views.employee_login),
     path('api/employees/', views.get_employees),
 
-    # ==============================
-    # ATTENDANCE API 🔥 (IMPORTANT)
-    # ==============================
     path('api/attendance/', views.attendance_api),
+
+    path('api/leads/', views.lead_list_create),
+
+    path(
+        'api/leads/<int:pk>/update/',
+        views.update_lead,
+        name='update_lead'
+    ),
+
+    path(
+        'api/leads/<int:pk>/delete/',
+        views.delete_lead,
+        name='delete_lead'
+    ),
 ]
+
+urlpatterns += static(
+    settings.MEDIA_URL,
+    document_root=settings.MEDIA_ROOT
+)

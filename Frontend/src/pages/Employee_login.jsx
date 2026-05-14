@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 // Backend URL
-const BASE_URL = "http://127.0.0.1:8000";
+const BASE_URL = "https://pmb.finance";
 
 function EmployeeLogin() {
   const navigate = useNavigate();
@@ -55,7 +55,7 @@ function EmployeeLogin() {
         localStorage.setItem("employeeName", res.data.name);
         localStorage.setItem("designation", res.data.designation);
         localStorage.setItem("department", res.data.department);
-        localStorage.setItem("employeeId", formData.employeeId); // Save ID for dashboard
+        localStorage.setItem("employeeId", formData.employeeId);
         
         alert("Login Successful! ✅");
         navigate("/employee-dashboard");

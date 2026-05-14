@@ -3,10 +3,8 @@ import { Box, Typography, TextField, MenuItem, Button, Paper } from "@mui/materi
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
-// ==========================================
-// 💡 CONFIGURATION (Localhost connection fix)
-// ==========================================
-const API_BASE_URL = "http://127.0.0.1:8000"; 
+
+const API_BASE_URL = "https://pmb.finance"; 
 
 function AgroProduct() {
   const navigate = useNavigate()

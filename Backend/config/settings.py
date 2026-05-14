@@ -1,19 +1,23 @@
 import os
 from pathlib import Path
+from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'fallback-secret'
+
 DEBUG = False
 
-ALLOWED_HOSTS = ['pmb.finance', 'www.pmb.finance']
+ALLOWED_HOSTS = [
+    'pmb.finance',
+    'www.pmb.finance',
+]
 
-
-# ==============================
-# INSTALLED APPS
-# ==============================
 INSTALLED_APPS = [
     'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'accounts',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -23,10 +27,6 @@ INSTALLED_APPS = [
     'inquiry',
 ]
 
-
-# ==============================
-# MIDDLEWARE
-# ==============================
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -38,14 +38,63 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
-
 ROOT_URLCONF = 'config.urls'
+
 WSGI_APPLICATION = 'config.wsgi.application'
 
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
-# ==============================
-# TEMPLATES
-# ==============================
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'pmb_db',
+        'USER': 'postgres',
+        'PASSWORD': 'rishabh123',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'Asia/Kolkata'
+
+USE_TZ = True
+
+STATIC_URL = '/static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+SECURE_SSL_REDIRECT = False
+
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SECURE = True
+
+CORS_ALLOWED_ORIGINS = [
+    'https://pmb.finance',
+    'https://www.pmb.finance',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://pmb.finance',
+    'https://www.pmb.finance',
+]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -62,66 +111,10 @@ TEMPLATES = [
     },
 ]
 
-
-# ==============================
-# DATABASE
-# ==============================
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'pmb_db',
-        'USER': 'postgres',
-        'PASSWORD': 'rishabh123',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'AUTH_HEADER_TYPES': ('Bearer',),
 }
-
-
-# ==============================
-# 🔥 TIME ZONE FIX (IMPORTANT)
-# ==============================
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Kolkata'   # ✅ INDIA TIME
-USE_I18N = True
-USE_TZ = True
-
-
-# ==============================
-# STATIC FILES
-# ==============================
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-
-
-# ==============================
-# SECURITY
-# ==============================
-SECURE_BROWSER_XSS_FILTER = True
-SECURE_CONTENT_TYPE_NOSNIFF = True
-
-SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
-
-
-# ==============================
-# CORS
-# ==============================
-CORS_ALLOW_ALL_ORIGINS = False
-
-CORS_ALLOWED_ORIGINS = [
-    "https://pmb.finance",
-    "https://www.pmb.finance"
-]
-
-
-# ==============================
-# CSRF
-# ==============================
-CSRF_TRUSTED_ORIGINS = [
-    'https://pmb.finance',
-    'https://www.pmb.finance'
-]

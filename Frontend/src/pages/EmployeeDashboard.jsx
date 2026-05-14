@@ -111,7 +111,7 @@ function EmployeeDashboard() {
   // FETCH LEADS
   const fetchLeads = () => {
 
-    fetch("http://127.0.0.1:8000/api/leads/")
+    fetch("https://pmb.finance/api/leads/")
       .then((res) => res.json())
       .then((data) => setLeads(data))
       .catch((err) => console.error(err));
@@ -162,7 +162,7 @@ function EmployeeDashboard() {
     try {
 
       const res = await fetch(
-        `http://127.0.0.1:8000/api/leads/${lead.id}/update/`,
+        `https://pmb.finance/api/leads/${lead.id}/update/`,
         {
           method: "PUT",
 

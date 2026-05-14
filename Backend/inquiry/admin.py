@@ -1,41 +1,38 @@
 from django.contrib import admin
-from .models import LoanInquiry, AgriInquiry, Attendance
+from .models import LoanInquiry, AgriInquiry, Attendance, Lead
 
 
+@admin.register(LoanInquiry)
 class LoanInquiryAdmin(admin.ModelAdmin):
-    list_display = (
-        "full_name",
-        "email",
-        "mobile",
-        "loan_type",
-        "created_at"
-    )
+    list_display = ("full_name", "email", "mobile", "loan_type", "created_at")
+    list_filter = ("loan_type", "created_at") # Filter by Loan Type
+    search_fields = ("full_name", "mobile")   # Quick search
 
 
+@admin.register(AgriInquiry)
 class AgriInquiryAdmin(admin.ModelAdmin):
-    list_display = (
-        "full_name",
-        "email",
-        "mobile",
-        "product_name",
-        "created_at"
-    )
+    list_display = ("full_name", "email", "mobile", "product_name", "created_at")
+    list_filter = ("product_name", "created_at")
+    search_fields = ("full_name", "product_name")
 
 
-# 🔥 NEW ADD THIS
+@admin.register(Attendance)
 class AttendanceAdmin(admin.ModelAdmin):
+    list_display = ("employee", "date", "punch_in", "punch_out", "lunch_start", "lunch_end")
+    list_filter = ("date", "employee")        
+    search_fields = ("employee__username",)  
+    date_hierarchy = 'date'                   
+
+
+@admin.register(Lead)
+class LeadAdmin(admin.ModelAdmin):
     list_display = (
-        "emp_id",
-        "date",
-        "punch_in",
-        "punch_out",
-        "lunch_start",
-        "lunch_end",
+        "fullName", "mobile", "loanType", 
+        "requiredLoanAmount", "location", 
+        "owner", "progress", "created_at"
     )
-
-
-admin.site.register(LoanInquiry, LoanInquiryAdmin)
-admin.site.register(AgriInquiry, AgriInquiryAdmin)
-
-# 🔥 REGISTER ATTENDANCE
-admin.site.register(Attendance, AttendanceAdmin)
+   
+    list_filter = ("progress", "loanType", "owner") 
+    search_fields = ("fullName", "mobile", "location") 
+    list_editable = ("progress", "owner")           
+    date_hierarchy = 'created_at'                  
