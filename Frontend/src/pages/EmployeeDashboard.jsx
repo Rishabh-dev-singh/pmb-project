@@ -741,6 +741,7 @@ useEffect(() => {
                       <TableCell>Address</TableCell>
                       <TableCell>Created By</TableCell>
                       <TableCell>Amount</TableCell>
+                      <TableCell>Firm Name</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell>Edit</TableCell>
 
@@ -781,7 +782,11 @@ useEffect(() => {
                         </TableCell>
 
                         <TableCell>
-
+                         <TableCell>
+                          {formatAmount(
+                            l.Source
+                          )}
+                        </TableCell>
                           <select
                             value={l.progress || ""}
 
