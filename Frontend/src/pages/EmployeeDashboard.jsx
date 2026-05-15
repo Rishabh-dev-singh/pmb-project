@@ -741,7 +741,7 @@ useEffect(() => {
                       <TableCell>Address</TableCell>
                       <TableCell>Created By</TableCell>
                       <TableCell>Amount</TableCell>
-                      <TableCell>Progress</TableCell>
+                      <TableCell>Status</TableCell>
                       <TableCell>Edit</TableCell>
 
                     </TableRow>
