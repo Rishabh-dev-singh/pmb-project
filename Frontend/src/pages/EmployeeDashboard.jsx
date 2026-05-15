@@ -774,14 +774,14 @@ useEffect(() => {
                           {l.owner}
                         </TableCell>
 
-                       
-
                         <TableCell>
-                         <TableCell>
                           {formatAmount(
                             l.requiredLoanAmount
                           )}
                         </TableCell>
+
+                        <TableCell>
+
                           <select
                             value={l.progress || ""}
 
