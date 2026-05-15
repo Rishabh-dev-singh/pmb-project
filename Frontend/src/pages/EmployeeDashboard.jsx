@@ -741,7 +741,6 @@ useEffect(() => {
                       <TableCell>Address</TableCell>
                       <TableCell>Created By</TableCell>
                       <TableCell>Amount</TableCell>
-                      <TableCell>Firm Name</TableCell>
                       <TableCell>Status</TableCell>
                       <TableCell>Edit</TableCell>
 
@@ -784,7 +783,7 @@ useEffect(() => {
                         <TableCell>
                          <TableCell>
                           {formatAmount(
-                            l.Source
+                            l.requiredLoanAmount
                           )}
                         </TableCell>
                           <select
