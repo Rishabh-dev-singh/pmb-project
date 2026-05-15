@@ -52,7 +52,6 @@ function AddLead() {
   const validate = () => {
     let newErrors = {};
     requiredFields.forEach((field) => {
-      // Check current Ref value
       if (!formRef.current[field] || formRef.current[field] === "") {
         newErrors[field] = "Required";
       }
@@ -205,25 +204,35 @@ function AddLead() {
 
           {/* MIDDLE */}
           <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={labelStyle}>Lead Source</label>
+            <label style={labelStyle}>Firm Name</label>
             <input name="source" onChange={handleChange} style={inputStyle} />
             <label style={labelStyle}>Sub Source</label>
             <input name="subSource" onChange={handleChange} style={inputStyle} />
-            <label style={labelStyle}>Owner *</label>
+            <label style={labelStyle}>Lead Created *</label>
             <input {...fieldProps("owner")} />
             {errors.owner && <span style={{ color: "red", fontSize: 12 }}>{errors.owner}</span>}
-            <label style={labelStyle}>Progress *</label>
+            <label style={labelStyle}>Status *</label>
             <select {...fieldProps("progress")}>
               <option value="">Select</option>
               <option>PIPELINE</option>
               <option>DOCUMENT LIST SEND</option>
               <option>DOCUMENT RECIEVED</option>
-              <option>DOCUMENTS COMPLETE</option>
               <option>QUERY</option>
+              <option>DEDUPE CHECK</option>
+              <option>DEDUPE DONE</option>
               <option>LOGIN</option>
-              <option>SUBMITTED TO BANK</option>
-              <option>REJECTED</option>
-              <option>DOCUMENT PENDING</option>
+              <option>IN PROGRESS</option>
+              <option>UNDER WRITING</option>
+              <option> PD INITIATE</option>
+              <option>PD DONE</option>
+              <option>TECHNICAL INITIATE</option>
+              <option>TECHNICAL DONE</option>
+              <option>VALUATION INITIATE</option>
+              <option>VALUATION DONE</option>
+              <option>UNDER SANCTION</option>
+              <option>SANCTION</option>
+              <option>DOC KIT ASIGN</option>
+              <option>DISBURSEMENT</option> 
             </select>
             {errors.progress && <span style={{ color: "red", fontSize: 12 }}>{errors.progress}</span>}
             <label style={labelStyle}>Remarks</label>

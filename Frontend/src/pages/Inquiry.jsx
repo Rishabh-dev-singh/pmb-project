@@ -18,11 +18,9 @@ import AgricultureIcon from "@mui/icons-material/Agriculture";
 
 import { useNavigate } from "react-router-dom";
 
-// ==========================================
-//  CONFIGURATION 
-// ==========================================
-const API_BASE_URL = "https://pmb.finance"; // Localhost ke liye
-// const API_BASE_URL = "https://pmb.finance"; // Production (VPS) ke liye
+
+const API_BASE_URL = "https://pmb.finance"; 
+
 
 function LoanInquiry() {
   const navigate = useNavigate();
@@ -42,9 +40,7 @@ function LoanInquiry() {
   const primaryIndigo = "#1f2a7c";
   const successGreen = "#2e7d32";
 
-  // =========================
-  // LOAN SUBMIT
-  // =========================
+  
   const handleLoanSubmit = async () => {
     if (loanData.name.trim() === "" || loanData.phone.trim() === "") {
       alert("Please fill Name and Mobile Number");
@@ -75,9 +71,7 @@ function LoanInquiry() {
     }
   };
 
-  // =========================
-  // AGRO SUBMIT
-  // =========================
+  
   const handleAgroSubmit = async () => {
     if (agroData.name.trim() === "" || agroData.phone.trim() === "") {
       alert("Please fill Name and Mobile Number");
@@ -108,9 +102,6 @@ function LoanInquiry() {
     }
   };
 
-  // =========================
-  // UI STYLES
-  // =========================
   const cardStyle = {
     width: "100%",
     maxWidth: "400px",
