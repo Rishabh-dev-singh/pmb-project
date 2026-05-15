@@ -47,7 +47,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 import Attendance from "./Attendance";
 
-// FAST EMI LOAD
+
 const EMI = React.lazy(() => import("./EMI"));
 
 function EmployeeDashboard() {
@@ -140,7 +140,6 @@ useEffect(() => {
       .catch((err) => console.error(err));
   };
 
-  // REFRESH LEADS
   useEffect(() => {
 
     if (location.state?.refresh) {
@@ -149,7 +148,6 @@ useEffect(() => {
 
   }, [location]);
 
-  // FORMAT AMOUNT
   const formatAmount = (value) => {
 
     const num = parseFloat(value);
@@ -244,7 +242,7 @@ useEffect(() => {
       l.mobile?.includes(search)
   );
 
-  // DOWNLOAD EXCEL
+  // DOWNLOAD 
   const downloadExcel = () => {
 
     const headers = [
@@ -805,41 +803,25 @@ useEffect(() => {
                               Select
                             </option>
 
-                            <option>
-                              PIPELINE
-                            </option>
-
-                            <option>
-                              DOCUMENT LIST SEND
-                            </option>
-
-                            <option>
-                              DOCUMENT RECIEVED
-                            </option>
-
-                            <option>
-                              DOCUMENTS COMPLETE
-                            </option>
-
-                            <option>
-                              QUERY
-                            </option>
-
-                            <option>
-                              LOGIN
-                            </option>
-
-                            <option>
-                              SUBMITTED TO BANK
-                            </option>
-
-                            <option>
-                              REJECTED
-                            </option>
-
-                            <option>
-                              DOCUMENT PENDING
-                            </option>
+                            <option>PIPELINE</option>
+              <option>DOCUMENT LIST SEND</option>
+              <option>DOCUMENT RECIEVED</option>
+              <option>QUERY</option>
+              <option>DEDUPE CHECK</option>
+              <option>DEDUPE DONE</option>
+              <option>LOGIN</option>
+              <option>IN PROGRESS</option>
+              <option>UNDER WRITING</option>
+              <option> PD INITIATE</option>
+              <option>PD DONE</option>
+              <option>TECHNICAL INITIATE</option>
+              <option>TECHNICAL DONE</option>
+              <option>VALUATION INITIATE</option>
+              <option>VALUATION DONE</option>
+              <option>UNDER SANCTION</option>
+              <option>SANCTION</option>
+              <option>DOC KIT ASIGN</option>
+              <option>DISBURSEMENT</option> 
 
                           </select>
 

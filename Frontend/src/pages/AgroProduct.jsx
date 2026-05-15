@@ -28,7 +28,7 @@ function AgroProduct() {
     try {
       const agriId = localStorage.getItem("agri_id")
       
-      // ✅ URL updated to use API_BASE_URL
+      
       const response = await fetch(`${API_BASE_URL}/api/update-product/`, {
         method: "POST",
         headers: {
