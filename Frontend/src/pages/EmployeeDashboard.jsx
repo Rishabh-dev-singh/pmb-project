@@ -774,11 +774,7 @@ useEffect(() => {
                           {l.owner}
                         </TableCell>
 
-                        <TableCell>
-                          {formatAmount(
-                            l.requiredLoanAmount
-                          )}
-                        </TableCell>
+                       
 
                         <TableCell>
                          <TableCell>
