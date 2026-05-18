@@ -102,8 +102,8 @@ function About() {
               <Typography sx={{ fontSize: 18, color: "#444", lineHeight: 1.8, mb: 4 }}>
                 With strong industry knowledge and partnerships with leading banks, we assist in securing:
                 
-                Business Loans, Term Loans, OD Limits, Cash Credit Limits,Solar Loan, Loan Against Property,
-                Home Loans, NBFC Landing and Machinery Loans.
+                <b>Business Loans, Term Loans, OD Limits, Cash Credit Limits,Solar Loan, Loan Against Property,
+                Home Loans, NBFC Landing and Machinery Loans.</b>
               </Typography>
 
               <Divider sx={{ my: 4 }} />
