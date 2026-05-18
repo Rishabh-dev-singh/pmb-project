@@ -40,7 +40,6 @@ function AdminLogin() {
           position: "absolute", bottom: -50, right: -50, width: 200, height: 200, 
           borderRadius: "50%", background: "rgba(255,255,255,0.05)" 
         }} />
-
         <Container maxWidth="xs">
           <Paper 
             elevation={24} 
@@ -54,6 +53,7 @@ function AdminLogin() {
               boxShadow: "0 25px 50px rgba(0,0,0,0.3)"
             }}
           >
+          
             {/* Logo or Icon Placeholder */}
             <Box sx={{ 
               width: 70, height: 70, bgcolor: "#1a237e", borderRadius: "50%", 
@@ -134,7 +134,7 @@ function AdminLogin() {
     </Box>
   );
 }
-// Helper component to replace Stack if not imported
+
 function Stack({ children, spacing }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: spacing }}>

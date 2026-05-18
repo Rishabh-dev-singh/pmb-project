@@ -268,79 +268,247 @@ function About() {
         </Box>
 
 
-        {/* LEADERSHIP */}
 
-        <Box sx={{ mt: 12 }}>
+{/* LEADERSHIP SECTION */}
 
-          <Typography
-            variant="h4"
-            align="center"
-            sx={{ fontWeight: 800, color: "#1a237e", mb: 6 }}
-          >
-            Our Leadership
-          </Typography>
+<Box sx={{ mt: 12 }}>
 
-          <Grid container spacing={4} justifyContent="center">
+  <Typography
+    variant="h4"
+    align="center"
+    sx={{
+      fontWeight: 900,
+      color: "#1a237e",
+      mb: 6,
+      fontSize: { xs: "2rem", md: "2.5rem" }
+    }}
+  >
+    Our Leadership
+  </Typography>
 
-            {/* MD */}
+  <Grid
+    container
+    spacing={4}
+    justifyContent="center"
+    alignItems="stretch"
+  >
 
-            <Grid item xs={12} sm={6} md={4}>
+    {/* MD CARD */}
 
-              <Card sx={{ p:3, textAlign:"center", borderRadius:4 }}>
+    <Grid item xs={12} sm={10} md={5} lg={4}>
 
-                <img src={MdImg} style={{width:"120px",borderRadius:"50%"}} />
+      <Card
+        sx={{
+          p: 3,
+          borderRadius: "24px",
 
-                <Typography sx={{fontWeight:800,mt:2}}>
-                  Mr. Manvendra Singh
-                </Typography>
+          background:
+            "linear-gradient(135deg,#1a237e,#3949ab)",
 
-                <Typography sx={{color:"#2e7d32"}}>
-                  Founder & Managing Director
-                </Typography>
+          color: "#fff",
 
-                <Typography variant="body2" sx={{mt:1}}>
-                  Leading the company with a strong vision to simplify financial solutions and promote sustainable agriculture.
-                </Typography>
+          textAlign: "center",
 
-              </Card>
+          boxShadow: "0 15px 40px rgba(0,0,0,0.18)",
 
-            </Grid>
+          transition: "0.3s ease",
+
+          "&:hover": {
+            transform: "translateY(-6px)"
+          }
+        }}
+      >
+
+        {/* IMAGE */}
+
+        <Box
+  component="img"
+  src={MdImg}
+  alt="Managing Director"
+  sx={{
+    width: { xs: 140, md: 160 },
+    height: { xs: 140, md: 160 },
+
+    borderRadius: "50%",
+
+    objectFit: "cover",
+    objectPosition: "top center",
+
+    border: "4px solid rgba(255,255,255,0.25)",
+
+    boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+
+    mb: 2.5
+  }}
+/>
+
+        {/* NAME */}
+
+        <Typography
+          sx={{
+            fontWeight: 800,
+            fontSize: "1.5rem"
+          }}
+        >
+          Mr. Manvendra Singh
+        </Typography>
+
+        {/* ROLE */}
+
+        <Typography
+          sx={{
+            fontSize: "0.78rem",
+            letterSpacing: 1.5,
+            textTransform: "uppercase",
+            color: "#c5cae9",
+            mb: 2
+          }}
+        >
+          Founder & Managing Director
+        </Typography>
+
+        <Divider
+          sx={{
+            borderColor: "rgba(255,255,255,0.15)",
+            mb: 2
+          }}
+        />
+
+        {/* TEXT */}
+
+       <Typography
+  sx={{
+    fontSize: "0.92rem",
+    lineHeight: 1.9,
+    color: "rgba(255,255,255,0.92)",
+    textAlign: "justify"
+  }}
+>
+  Our Managing Director is a young and visionary entrepreneur who
+  strongly believes that the true strength of any organization lies in
+  its people. He values every team member as an important contributor to
+  the company’s growth, success, and long-term vision. His leadership is
+  built on trust, transparency, innovation, and collective progress.
+  <br /><br />
+  With a vision to make modern financial services more accessible across
+  India, he is focused on building strong partnerships with leading
+  lenders and financial institutions to expand the company’s reach and
+  create better financial opportunities for individuals and businesses.
+  <br /><br />
+  His objective is not only to achieve business growth, but also to
+  establish a reliable and customer-centric platform that empowers
+  people to achieve their goals with confidence. Through innovation,
+  strong values, and long-term relationships, he continues to lead the
+  company towards sustainable growth and excellence.
+</Typography>
+
+      </Card>
+
+    </Grid>
 
 
-            {/* BH */}
+    {/* BUSINESS HEAD */}
 
-           <Grid item xs={12} sm={6} md={4}>
-  <Card sx={{ p:3, textAlign:"center", borderRadius:4 }}>
-    
-    <img 
-      src={BusinessHead} 
-      style={{ width:"120px", borderRadius:"50%" }} 
-    />
+    <Grid item xs={12} sm={10} md={5} lg={4}>
 
-    <Typography sx={{ fontWeight:800, mt:2 }}>
-      Mr. Atar Singh
-    </Typography>
+      <Card
+        sx={{
+          p: 3,
+          borderRadius: "24px",
 
-    <Typography sx={{ color:"#1565c0", fontWeight:600 }}>
-      Business Head
-    </Typography>
+          background:
+            "linear-gradient(135deg,#00695c,#26a69a)",
 
-    <Typography variant="body2" sx={{ mt:1 }}>
-      Driving business growth through strategic leadership, operational excellence, and strong market partnerships.
-    </Typography>
+          color: "#fff",
 
-    <Typography 
-      variant="body2" 
-      sx={{ mt:1, fontWeight:600, color:"#555" }}
-    >
-      Having 20+ years of experience in Banking and NBFCs.
-    </Typography>
+          textAlign: "center",
 
-  </Card>
-</Grid>
-          </Grid>
+          boxShadow: "0 15px 40px rgba(0,0,0,0.18)",
 
-        </Box>
+          transition: "0.3s ease",
+
+          "&:hover": {
+            transform: "translateY(-6px)"
+          }
+        }}
+      >
+
+        {/* IMAGE */}
+
+       <Box
+  component="img"
+  src={BusinessHead}
+  alt="Business Head"
+  sx={{
+    width: { xs: 140, md: 160 },
+    height: { xs: 140, md: 160 },
+
+    borderRadius: "50%",
+
+    objectFit: "cover",
+    objectPosition: "top center",
+
+    border: "4px solid rgba(255,255,255,0.25)",
+
+    boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+
+    mb: 2.5
+  }}
+/>
+
+        {/* NAME */}
+
+        <Typography
+          sx={{
+            fontWeight: 800,
+            fontSize: "1.5rem"
+          }}
+        >
+          Mr. Atar Singh
+        </Typography>
+
+        {/* ROLE */}
+
+        <Typography
+          sx={{
+            fontSize: "0.78rem",
+            letterSpacing: 1.5,
+            textTransform: "uppercase",
+            color: "#b2dfdb",
+            mb: 2
+          }}
+        >
+          Business Head
+        </Typography>
+
+        <Divider
+          sx={{
+            borderColor: "rgba(255,255,255,0.15)",
+            mb: 2
+          }}
+        />
+
+        {/* TEXT */}
+
+        <Typography
+          sx={{
+            fontSize: "0.92rem",
+            lineHeight: 1.8,
+            color: "rgba(255,255,255,0.92)"
+          }}
+        >
+          A seasoned banking professional with 20+ years of experience
+          across Banking and NBFC sectors, driving business growth,
+          strategic partnerships, and operational excellence.
+        </Typography>
+
+      </Card>
+
+    </Grid>
+
+  </Grid>
+
+</Box>
 
       </Container>
 
