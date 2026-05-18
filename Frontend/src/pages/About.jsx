@@ -101,68 +101,7 @@ function About() {
 
               <Typography sx={{ fontSize: 18, color: "#444", lineHeight: 1.8, mb: 4 }}>
                 With strong industry knowledge and partnerships with leading banks, we assist in securing:
-                <Typography
-  sx={{
-    fontSize: 18,
-    color: "#444",
-    lineHeight: 2,
-    mb: 4
-  }}
->
-  With strong industry knowledge and partnerships with leading banks,
-  we assist in securing:
-  <br />
-
-  <Box
-    component="span"
-    sx={{
-      fontWeight: 800,
-      color: "#1b5e20",
-      background:
-        "linear-gradient(90deg,#e8f5e9,#c8e6c9)",
-      px: 1.5,
-      py: 0.5,
-      borderRadius: "8px",
-      mr: 1,
-      display: "inline-block",
-      mt: 1
-    }}
-  >
-    Business Loans
-  </Box>
-
-  <Box component="span" sx={loanStyle}>
-    Term Loans
-  </Box>
-
-  <Box component="span" sx={loanStyle}>
-    OD Limits
-  </Box>
-
-  <Box component="span" sx={loanStyle}>
-    Cash Credit Limits
-  </Box>
-
-  <Box component="span" sx={loanStyle}>
-    Solar Loan
-  </Box>
-
-  <Box component="span" sx={loanStyle}>
-    Loan Against Property
-  </Box>
-
-  <Box component="span" sx={loanStyle}>
-    Home Loans
-  </Box>
-
-  <Box component="span" sx={loanStyle}>
-    NBFC Lending
-  </Box>
-
-  <Box component="span" sx={loanStyle}>
-    Machinery Loans
-  </Box>
-</Typography>
+                
                 Business Loans, Term Loans, OD Limits, Cash Credit Limits,Solar Loan, Loan Against Property,
                 Home Loans, NBFC Landing and Machinery Loans.
               </Typography>
@@ -559,9 +498,10 @@ function About() {
             color: "rgba(255,255,255,0.92)"
           }}
         >
-          A seasoned banking professional with 20+ years of experience
-          across Banking and NBFC sectors, driving business growth,
-          strategic partnerships, and operational excellence.
+         A seasoned banking and financial services professional with over 20 years of 
+         experience across the Banking and NBFC sectors, specializing in business growth,
+          strategic partnerships, and operational excellence. Known for building strong client relationships, 
+          driving sustainable expansion, and delivering innovative financial solutions with a results-oriented approach.
         </Typography>
 
       </Card>
