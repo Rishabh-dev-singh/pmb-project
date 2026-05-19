@@ -2,9 +2,7 @@ import Navbar from "../components/Navbar"
 import { Box, Typography, TextField, MenuItem, Button, Paper } from "@mui/material"
 import { useState } from "react"
 
-// ==========================================
-// 💡 CONFIGURATION (Localhost connection fix)
-// ==========================================
+
 const API_BASE_URL = "https://pmb.finance"; 
 
 function LoanType() {
