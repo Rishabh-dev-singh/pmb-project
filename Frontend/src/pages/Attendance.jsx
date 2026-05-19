@@ -7,6 +7,7 @@ import {
   Stack,
   Chip,
   Fade,
+  Grid,
 } from "@mui/material";
 
 import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
@@ -128,7 +129,7 @@ function Attendance() {
   }, []);
 
   // =========================================
-  // LIVE TIMER
+  // TIMER
   // =========================================
 
   useEffect(() => {
@@ -172,8 +173,6 @@ function Attendance() {
 
   const handlePunch = async (type) => {
 
-    // TEMPORARY FRONTEND SECURITY
-
     if (
       type === "IN" &&
       localStorage.getItem("attendanceStatus") === "Punched In"
@@ -204,15 +203,9 @@ function Attendance() {
     const empId = localStorage.getItem("employeeId");
 
     if (!empId) {
-
       alert("Login session expired!");
-
       return;
     }
-
-    // =========================================
-    // PUNCH IN
-    // =========================================
 
     if (type === "IN") {
 
@@ -242,10 +235,6 @@ function Attendance() {
 
     } else {
 
-      // =========================================
-      // PUNCH OUT
-      // =========================================
-
       setPunchOutTime(timeStr);
 
       setStatus("Punched Out");
@@ -267,13 +256,9 @@ function Attendance() {
       alert("Good Job 🎉\nSuccessfully Punched Out");
     }
 
-    // =========================================
-    // API CALL
-    // =========================================
-
     try {
 
-      const response = await axios.post(
+      await axios.post(
         "https://pmb.finance/api/attendance/",
         {
           employee_id: empId,
@@ -284,13 +269,9 @@ function Attendance() {
         }
       );
 
-      console.log(response.data);
-
     } catch (error) {
 
-      console.error(
-        error.response?.data || error.message
-      );
+      console.error(error.response?.data || error.message);
 
       alert(
         error.response?.data?.message ||
@@ -310,7 +291,7 @@ function Attendance() {
         minHeight: "100vh",
 
         background:
-          "radial-gradient(circle at top left, #1d4ed8 0%, #020617 55%)",
+          "radial-gradient(circle at top left, #2563eb 0%, #020617 60%)",
 
         display: "flex",
 
@@ -321,402 +302,401 @@ function Attendance() {
         p: 2,
 
         overflow: "hidden",
-
-        position: "relative",
       }}
     >
 
-      {/* BACKGROUND GLOW */}
-
-      <Box
-        sx={{
-          position: "absolute",
-          width: "220px",
-          height: "220px",
-          background: "#2563eb",
-          borderRadius: "50%",
-          filter: "blur(110px)",
-          top: "-60px",
-          left: "-60px",
-          opacity: 0.35,
-        }}
-      />
-
-      <Box
-        sx={{
-          position: "absolute",
-          width: "220px",
-          height: "220px",
-          background: "#7c3aed",
-          borderRadius: "50%",
-          filter: "blur(110px)",
-          bottom: "-60px",
-          right: "-60px",
-          opacity: 0.30,
-        }}
-      />
-
       <Fade in timeout={700}>
 
-        <Paper
-          elevation={0}
+        <Grid
+          container
+          spacing={3}
           sx={{
             width: "100%",
-
-            maxWidth: "340px",
-
-            borderRadius: "24px",
-
-            p: 3,
-
-            background:
-              "rgba(15,23,42,0.82)",
-
-            backdropFilter: "blur(18px)",
-
-            border:
-              "1px solid rgba(255,255,255,0.08)",
-
-            boxShadow:
-              "0 12px 40px rgba(0,0,0,0.45)",
-
-            textAlign: "center",
-
-            color: "#fff",
-
-            overflow: "hidden",
-
-            position: "relative",
+            maxWidth: "1050px",
+            alignItems: "stretch",
+            justifyContent: "center",
           }}
         >
 
-          {/* GREETING */}
+          {/* ATTENDANCE CARD */}
 
-          <Typography
-            sx={{
-              fontSize: "14px",
-              opacity: 0.8,
-              mb: 1,
-            }}
-          >
-            {greeting}
-          </Typography>
+          <Grid item xs={12} md={5}>
 
-          {/* BADGE */}
+            <Paper
+              elevation={0}
+              sx={{
+                height: "100%",
 
-          <Chip
-            label="Smart Attendance"
-            sx={{
-              mb: 2,
+                borderRadius: "28px",
 
-              height: "32px",
+                p: 3,
 
-              fontWeight: "bold",
+                background:
+                  "rgba(15,23,42,0.82)",
 
-              background:
-                "linear-gradient(135deg,#0ea5e9,#2563eb)",
+                backdropFilter: "blur(18px)",
 
-              color: "#fff",
+                border:
+                  "1px solid rgba(255,255,255,0.08)",
 
-              fontSize: "12px",
-            }}
-          />
+                boxShadow:
+                  "0 12px 40px rgba(0,0,0,0.45)",
 
-          {/* TITLE */}
+                textAlign: "center",
 
-          <Typography
-            sx={{
-              fontSize: "34px",
+                color: "#fff",
+              }}
+            >
 
-              fontWeight: 900,
-
-              lineHeight: 1,
-
-              background:
-                "linear-gradient(90deg,#ffffff,#cbd5e1)",
-
-              WebkitBackgroundClip: "text",
-
-              WebkitTextFillColor: "transparent",
-
-              mb: 1,
-            }}
-          >
-            Attendance
-          </Typography>
-
-          {/* DATE */}
-
-          <Typography
-            sx={{
-              opacity: 0.7,
-
-              fontSize: "13px",
-
-              mb: 3,
-            }}
-          >
-            {today}
-          </Typography>
-
-          {/* TIMER */}
-
-          <Box
-            sx={{
-              width: "165px",
-
-              height: "165px",
-
-              borderRadius: "50%",
-
-              margin: "auto",
-
-              display: "flex",
-
-              alignItems: "center",
-
-              justifyContent: "center",
-
-              background:
-                "linear-gradient(135deg,#0ea5e9,#2563eb,#7c3aed)",
-
-              boxShadow:
-                `
-                0 0 35px rgba(37,99,235,0.45),
-                inset 0 0 18px rgba(255,255,255,0.15)
-                `,
-
-              border:
-                "5px solid rgba(255,255,255,0.10)",
-
-              mb: 3,
-            }}
-          >
-
-            <Box>
-
-              <AccessTimeFilledIcon
+              <Typography
                 sx={{
-                  fontSize: 28,
+                  fontSize: "15px",
+                  opacity: 0.8,
                   mb: 1,
+                }}
+              >
+                {greeting}
+              </Typography>
+
+              <Chip
+                label="Smart Attendance"
+                sx={{
+                  mb: 2,
+
+                  height: "32px",
+
+                  fontWeight: "bold",
+
+                  background:
+                    "linear-gradient(135deg,#0ea5e9,#2563eb)",
+
+                  color: "#fff",
+
+                  fontSize: "12px",
                 }}
               />
 
               <Typography
                 sx={{
-                  fontSize: "32px",
+                  fontSize: "42px",
+
+                  fontWeight: 900,
+
+                  background:
+                    "linear-gradient(90deg,#ffffff,#cbd5e1)",
+
+                  WebkitBackgroundClip: "text",
+
+                  WebkitTextFillColor: "transparent",
+
+                  mb: 1,
+                }}
+              >
+                Attendance
+              </Typography>
+
+              <Typography
+                sx={{
+                  opacity: 0.7,
+                  fontSize: "13px",
+                  mb: 3,
+                }}
+              >
+                {today}
+              </Typography>
+
+              {/* TIMER */}
+
+              <Box
+                sx={{
+                  width: "185px",
+
+                  height: "185px",
+
+                  borderRadius: "50%",
+
+                  margin: "auto",
+
+                  display: "flex",
+
+                  alignItems: "center",
+
+                  justifyContent: "center",
+
+                  background:
+                    "linear-gradient(135deg,#0ea5e9,#2563eb,#7c3aed)",
+
+                  boxShadow:
+                    `
+                    0 0 35px rgba(37,99,235,0.45),
+                    inset 0 0 18px rgba(255,255,255,0.15)
+                    `,
+
+                  border:
+                    "5px solid rgba(255,255,255,0.10)",
+
+                  mb: 3,
+                }}
+              >
+
+                <Box>
+
+                  <AccessTimeFilledIcon
+                    sx={{
+                      fontSize: 28,
+                      mb: 1,
+                    }}
+                  />
+
+                  <Typography
+                    sx={{
+                      fontSize: "36px",
+                      fontWeight: "bold",
+                      letterSpacing: 2,
+                    }}
+                  >
+                    {elapsedTime}
+                  </Typography>
+
+                </Box>
+
+              </Box>
+
+              {/* STATUS */}
+
+              <Chip
+                label={status}
+                sx={{
+                  mb: 3,
+
+                  px: 1,
+
+                  height: "38px",
 
                   fontWeight: "bold",
+
+                  background:
+                    status === "Punched In"
+                      ? "linear-gradient(135deg,#22c55e,#16a34a)"
+                      : status === "Punched Out"
+                      ? "linear-gradient(135deg,#ef4444,#dc2626)"
+                      : "#334155",
+
+                  color: "#fff",
+
+                  fontSize: "14px",
+                }}
+              />
+
+              {/* LOCATION */}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 1,
+                  mb: 3,
+                  opacity: 0.8,
+                }}
+              >
+
+                <LocationOnIcon
+                  sx={{
+                    fontSize: 17,
+                  }}
+                />
+
+                <Typography
+                  sx={{
+                    fontSize: "12px",
+                  }}
+                >
+                  {location}
+                </Typography>
+
+              </Box>
+
+              {/* BUTTONS */}
+
+              <Stack spacing={1.5}>
+
+                <Button
+                  fullWidth
+                  variant="contained"
+                  startIcon={<LoginIcon />}
+                  disabled={status === "Punched In"}
+                  onClick={() => handlePunch("IN")}
+                  sx={{
+                    py: 1.3,
+
+                    borderRadius: "14px",
+
+                    fontSize: "15px",
+
+                    fontWeight: "bold",
+
+                    textTransform: "none",
+
+                    background:
+                      "linear-gradient(135deg,#06b6d4,#2563eb)",
+
+                    boxShadow:
+                      "0 8px 18px rgba(37,99,235,0.35)",
+
+                    "&:hover": {
+                      transform: "translateY(-2px)",
+                    },
+
+                    "&.Mui-disabled": {
+                      background: "#334155",
+                      color: "#94a3b8",
+                    },
+                  }}
+                >
+                  Punch In
+                </Button>
+
+                <Button
+                  fullWidth
+                  variant="contained"
+                  startIcon={<LogoutIcon />}
+                  disabled={status !== "Punched In"}
+                  onClick={() => handlePunch("OUT")}
+                  sx={{
+                    py: 1.3,
+
+                    borderRadius: "14px",
+
+                    fontSize: "15px",
+
+                    fontWeight: "bold",
+
+                    textTransform: "none",
+
+                    background:
+                      "linear-gradient(135deg,#ef4444,#f43f5e)",
+
+                    boxShadow:
+                      "0 8px 18px rgba(244,63,94,0.35)",
+
+                    "&:hover": {
+                      transform: "translateY(-2px)",
+                    },
+
+                    "&.Mui-disabled": {
+                      background: "#334155",
+                      color: "#94a3b8",
+                    },
+                  }}
+                >
+                  Punch Out
+                </Button>
+
+              </Stack>
+
+            </Paper>
+
+          </Grid>
+
+          {/* QUOTE CARD */}
+
+          <Grid item xs={12} md={5}>
+
+            <Paper
+              elevation={0}
+              sx={{
+                height: "100%",
+
+                borderRadius: "28px",
+
+                p: 4,
+
+                display: "flex",
+
+                flexDirection: "column",
+
+                justifyContent: "center",
+
+                background:
+                  "linear-gradient(145deg, rgba(37,99,235,0.18), rgba(124,58,237,0.18))",
+
+                backdropFilter: "blur(18px)",
+
+                border:
+                  "1px solid rgba(255,255,255,0.08)",
+
+                boxShadow:
+                  "0 12px 40px rgba(0,0,0,0.45)",
+
+                color: "#fff",
+
+                position: "relative",
+
+                overflow: "hidden",
+              }}
+            >
+
+              <Typography
+                sx={{
+                  fontSize: "18px",
+
+                  fontWeight: "bold",
+
+                  mb: 3,
+
+                  color: "#93c5fd",
+
+                  textTransform: "uppercase",
 
                   letterSpacing: 2,
                 }}
               >
-                {elapsedTime}
+                Motivation
               </Typography>
 
-            </Box>
+              <Typography
+                sx={{
+                  fontSize: {
+                    xs: "28px",
+                    md: "34px",
+                  },
 
-          </Box>
+                  fontWeight: 800,
 
-          {/* STATUS */}
+                  lineHeight: 1.5,
 
-          <Chip
-            label={status}
-            sx={{
-              mb: 3,
+                  color: "#fff",
 
-              px: 1,
+                  mb: 4,
+                }}
+              >
+                “{quote}”
+              </Typography>
 
-              height: "36px",
+              <Typography
+                sx={{
+                  fontSize: "13px",
 
-              fontWeight: "bold",
+                  color: "#cbd5e1",
 
-              background:
-                status === "Punched In"
-                  ? "linear-gradient(135deg,#22c55e,#16a34a)"
-                  : status === "Punched Out"
-                  ? "linear-gradient(135deg,#ef4444,#dc2626)"
-                  : "#334155",
+                  opacity: 0.8,
 
-              color: "#fff",
+                  mt: "auto",
 
-              fontSize: "13px",
-            }}
-          />
+                  letterSpacing: 1.5,
 
-          {/* LOCATION */}
+                  textTransform: "uppercase",
+                }}
+              >
+                PMB AGRI AND LEASING CORPORATION
+              </Typography>
 
-          <Box
-            sx={{
-              display: "flex",
+            </Paper>
 
-              alignItems: "center",
+          </Grid>
 
-              justifyContent: "center",
-
-              gap: 1,
-
-              mb: 3,
-
-              opacity: 0.8,
-            }}
-          >
-
-            <LocationOnIcon
-              sx={{
-                fontSize: 16,
-              }}
-            />
-
-            <Typography
-              sx={{
-                fontSize: "11px",
-              }}
-            >
-              {location}
-            </Typography>
-
-          </Box>
-
-          {/* BUTTONS */}
-
-          <Stack spacing={1.5}>
-
-            <Button
-              fullWidth
-              variant="contained"
-              startIcon={<LoginIcon />}
-              disabled={status === "Punched In"}
-              onClick={() => handlePunch("IN")}
-              sx={{
-                py: 1.2,
-
-                borderRadius: "12px",
-
-                fontSize: "14px",
-
-                fontWeight: "bold",
-
-                textTransform: "none",
-
-                background:
-                  "linear-gradient(135deg,#06b6d4,#2563eb)",
-
-                boxShadow:
-                  "0 8px 18px rgba(37,99,235,0.35)",
-
-                transition: "0.3s",
-
-                "&:hover": {
-                  transform: "translateY(-2px)",
-                },
-
-                "&.Mui-disabled": {
-                  background: "#334155",
-                  color: "#94a3b8",
-                },
-              }}
-            >
-              Punch In
-            </Button>
-
-            <Button
-              fullWidth
-              variant="contained"
-              startIcon={<LogoutIcon />}
-              disabled={status !== "Punched In"}
-              onClick={() => handlePunch("OUT")}
-              sx={{
-                py: 1.2,
-
-                borderRadius: "12px",
-
-                fontSize: "14px",
-
-                fontWeight: "bold",
-
-                textTransform: "none",
-
-                background:
-                  "linear-gradient(135deg,#ef4444,#f43f5e)",
-
-                boxShadow:
-                  "0 8px 18px rgba(244,63,94,0.35)",
-
-                transition: "0.3s",
-
-                "&:hover": {
-                  transform: "translateY(-2px)",
-                },
-
-                "&.Mui-disabled": {
-                  background: "#334155",
-                  color: "#94a3b8",
-                },
-              }}
-            >
-              Punch Out
-            </Button>
-
-          </Stack>
-
-          {/* QUOTE */}
-
-          <Box
-            sx={{
-              mt: 3,
-
-              p: 2,
-
-              borderRadius: "14px",
-
-              background:
-                "rgba(255,255,255,0.05)",
-
-              border:
-                "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-
-            <Typography
-              sx={{
-                fontSize: "12px",
-
-                lineHeight: 1.7,
-
-                color: "#cbd5e1",
-
-                fontStyle: "italic",
-              }}
-            >
-              {quote}
-            </Typography>
-
-          </Box>
-
-          {/* COMPANY */}
-
-          <Typography
-            sx={{
-              mt: 2.5,
-
-              fontSize: "10px",
-
-              letterSpacing: 1.5,
-
-              fontWeight: "bold",
-
-              opacity: 0.7,
-
-              color: "#93c5fd",
-
-              textTransform: "uppercase",
-            }}
-          >
-            PMB AGRI AND LEASING CORPORATION
-          </Typography>
-
-        </Paper>
+        </Grid>
 
       </Fade>
 
