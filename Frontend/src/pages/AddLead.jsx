@@ -98,8 +98,8 @@ function AddLead() {
 
     // URL and Method selection (Edit vs Add)
     const url = isEditing 
-      ? `https://pmb.finance/api/leads/${existingLead.id}/update/` 
-      : "https://pmb.finance/api/leads/";
+      ? `http://127.0.0.1:8000/api/leads/${existingLead.id}/update/` 
+      : "http://127.0.0.1:8000/api/leads/";
       
     const method = isEditing ? "PUT" : "POST";
 
@@ -232,6 +232,7 @@ function AddLead() {
               <option>UNDER SANCTION</option>
               <option>SANCTION</option>
               <option>DOC KIT ASIGN</option>
+              <Option>REJECT</Option>
               <option>DISBURSEMENT</option> 
             </select>
             {errors.progress && <span style={{ color: "red", fontSize: 12 }}>{errors.progress}</span>}

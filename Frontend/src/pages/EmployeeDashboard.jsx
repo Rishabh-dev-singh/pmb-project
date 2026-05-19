@@ -821,6 +821,7 @@ useEffect(() => {
               <option>UNDER SANCTION</option>
               <option>SANCTION</option>
               <option>DOC KIT ASIGN</option>
+              <Option>REJECT</Option> 
               <option>DISBURSEMENT</option> 
 
                           </select>
