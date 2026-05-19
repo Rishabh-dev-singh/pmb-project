@@ -232,7 +232,7 @@ function AddLead() {
               <option>UNDER SANCTION</option>
               <option>SANCTION</option>
               <option>DOC KIT ASIGN</option>
-              <Option>REJECT</Option>
+              <option>REJECT</option>
               <option>DISBURSEMENT</option> 
             </select>
             {errors.progress && <span style={{ color: "red", fontSize: 12 }}>{errors.progress}</span>}
