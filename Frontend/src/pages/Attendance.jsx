@@ -201,7 +201,7 @@ function Attendance() {
     try {
 
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/attendance/",
+        "https://pmb.finance/api/attendance/",
         {
           employee_id: empId,
           type: type,
