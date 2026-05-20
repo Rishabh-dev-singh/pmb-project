@@ -81,7 +81,7 @@ function Career() {
                 margin: "0 auto",
               }}
             >
-              Join PMB Finance and become part of a growing financial company
+              Join PMB AGRI & LEASING CORPORATION and become part of a growing financial company
               where your talent, dedication, and ideas truly matter. We are
               always looking for passionate, hardworking, and creative people
               who want to build a successful future with us.
