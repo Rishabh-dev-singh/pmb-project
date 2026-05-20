@@ -1,4 +1,3 @@
-```jsx
 import Navbar from "../components/Navbar";
 import {
   Box,
@@ -13,7 +12,7 @@ import EmailIcon from "@mui/icons-material/Email";
 function Career() {
   return (
     <Box>
-      <Navbar />
+     
 
       <Box
         sx={{
@@ -228,4 +227,4 @@ function Career() {
 }
 
 export default Career;
-```
+
