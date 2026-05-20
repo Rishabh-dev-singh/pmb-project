@@ -12,7 +12,7 @@ import EmailIcon from "@mui/icons-material/Email";
 function Career() {
   return (
     <Box>
-      <Navbar />
+    
 
       <Box
         sx={{
