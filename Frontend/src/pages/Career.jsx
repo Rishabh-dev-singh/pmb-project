@@ -1,158 +1,179 @@
-import Navbar from "../components/Navbar"
+import Navbar from "../components/Navbar";
 import {
-Box,
-Typography,
-TextField,
-MenuItem,
-Card,
-CardContent,
-Button,
-Grid
-} from "@mui/material"
-import { useState } from "react"
+  Box,
+  Typography,
+  Button,
+  Container,
+  Paper,
+} from "@mui/material";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import EmailIcon from "@mui/icons-material/Email";
 
-function Career(){
+function Career() {
+  return (
+    <Box>
+      <Navbar />
 
+      <Box
+        sx={{
+          minHeight: "100vh",
+          background:
+            "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f766e 100%)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          px: 2,
+          py: 6,
+        }}
+      >
+        <Container maxWidth="md">
+          <Paper
+            elevation={10}
+            sx={{
+              borderRadius: "30px",
+              p: { xs: 4, md: 8 },
+              textAlign: "center",
+              background: "rgba(255,255,255,0.95)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <Box
+              sx={{
+                width: 90,
+                height: 90,
+                borderRadius: "50%",
+                background: "#0f766e",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                margin: "0 auto",
+                mb: 4,
+                boxShadow: "0 10px 30px rgba(15,118,110,0.3)",
+              }}
+            >
+              <WorkOutlineIcon
+                sx={{
+                  fontSize: 45,
+                  color: "#fff",
+                }}
+              />
+            </Box>
 
-const jobs = [
-{
-id:1,
-title:"Loan Sales Executive",
-location:"Jaipur",
-type:"Full Time"
-},
-{
-id:2,
-title:"Customer Support Executive",
-location:"Delhi",
-type:"Part Time"
-},
-{
-id:3,
-title:"Finance Intern",
-location:"Remote",
-type:"Internship"
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 800,
+                color: "#0f172a",
+                mb: 3,
+                fontSize: { xs: "2.2rem", md: "3rem" },
+              }}
+            >
+              We Are Looking For Talented People
+            </Typography>
+
+            <Typography
+              sx={{
+                fontSize: "1.1rem",
+                color: "#475569",
+                lineHeight: 1.9,
+                mb: 5,
+                maxWidth: "700px",
+                margin: "0 auto",
+              }}
+            >
+              Join PMB Finance and become part of a growing financial company
+              where your talent, dedication, and ideas truly matter. We are
+              always looking for passionate, hardworking, and creative people
+              who want to build a successful future with us.
+            </Typography>
+
+            <Box
+              sx={{
+                background: "#f8fafc",
+                borderRadius: "20px",
+                p: 4,
+                mb: 5,
+                border: "1px solid #e2e8f0",
+              }}
+            >
+              <Typography
+                variant="h5"
+                sx={{
+                  fontWeight: 700,
+                  color: "#0f766e",
+                  mb: 2,
+                }}
+              >
+                Why Join Us?
+              </Typography>
+
+              <Typography
+                sx={{
+                  color: "#475569",
+                  lineHeight: 2,
+                  fontSize: "1rem",
+                }}
+              >
+                • Professional Growth Opportunities
+                <br />
+                • Friendly & Supportive Work Environment
+                <br />
+                • Career Development & Learning
+                <br />
+                • Competitive Salary & Benefits
+                <br />• Opportunity To Work With Industry Experts
+              </Typography>
+            </Box>
+
+            <Typography
+              variant="h5"
+              sx={{
+                fontWeight: 700,
+                color: "#0f172a",
+                mb: 2,
+              }}
+            >
+              Send Your Resume
+            </Typography>
+
+            <Typography
+              sx={{
+                color: "#64748b",
+                mb: 4,
+                fontSize: "1.05rem",
+              }}
+            >
+              Interested candidates can send their resume and details to our
+              official email address.
+            </Typography>
+
+            <Button
+              variant="contained"
+              startIcon={<EmailIcon />}
+              href="mailto:info@pmb.finance"
+              sx={{
+                background: "#0f766e",
+                px: 5,
+                py: 1.8,
+                borderRadius: "14px",
+                fontSize: "1rem",
+                fontWeight: 700,
+                textTransform: "none",
+                boxShadow: "0 10px 25px rgba(15,118,110,0.3)",
+                "&:hover": {
+                  background: "#115e59",
+                  transform: "translateY(-3px)",
+                },
+                transition: "0.3s",
+              }}
+            >
+              info@pmb.finance
+            </Button>
+          </Paper>
+        </Container>
+      </Box>
+    </Box>
+  );
 }
-]
 
-const [search,setSearch] = useState("")
-const [jobType,setJobType] = useState("")
-
-const filteredJobs = jobs.filter((job)=>{
-
-return(
-job.title.toLowerCase().includes(search.toLowerCase()) &&
-(jobType === "" || job.type === jobType)
-)
-
-})
-
-return(
-
-<Box>
-
-
-<Box
-sx={{
-minHeight:"90vh",
-background:"#f4f7fb",
-p:4
-}}
->
-
-<Typography
-variant="h4"
-sx={{textAlign:"center",mb:4,fontWeight:600}}
->
-Job Openings
-</Typography>
-
-{/* Search + Filter */}
-
-<Box
-sx={{
-display:"flex",
-justifyContent:"center",
-gap:2,
-mb:4,
-flexWrap:"wrap"
-}}
->
-
-<TextField
-label="Search Job"
-onChange={(e)=>setSearch(e.target.value)}
-/>
-
-<TextField
-select
-label="Job Type"
-onChange={(e)=>setJobType(e.target.value)}
-sx={{width:200}}
->
-
-<MenuItem value="">All</MenuItem>
-<MenuItem value="Full Time">Full Time</MenuItem>
-<MenuItem value="Part Time">Part Time</MenuItem>
-<MenuItem value="Internship">Internship</MenuItem>
-
-</TextField>
-
-</Box>
-
-{/* Job Cards */}
-
-<Grid container spacing={3} justifyContent="center">
-
-{filteredJobs.map((job)=>(
-
-<Grid item xs={12} md={6} lg={4} key={job.id}>
-
-<Card
-sx={{
-borderRadius:"12px",
-boxShadow:"0 8px 20px rgba(0,0,0,0.1)",
-transition:"0.3s",
-"&:hover":{
-transform:"translateY(-5px)"
-}
-}}
->
-
-<CardContent>
-
-<Typography variant="h6" sx={{mb:1,fontWeight:600}}>
-{job.title}
-</Typography>
-
-<Typography sx={{mb:1}}>
-Location: {job.location}
-</Typography>
-
-<Typography sx={{mb:2}}>
-Type: {job.type}
-</Typography>
-
-<Button variant="contained" fullWidth>
-Apply Now
-</Button>
-
-</CardContent>
-
-</Card>
-
-</Grid>
-
-))}
-
-</Grid>
-
-</Box>
-
-</Box>
-
-)
-
-}
-
-export default Career
+export default Career;

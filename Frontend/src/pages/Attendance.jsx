@@ -66,10 +66,6 @@ function Attendance() {
 
   const [greeting, setGreeting] = useState("Welcome");
 
-  // =========================================
-  // DATE + GREETING + LOCATION
-  // =========================================
-
   useEffect(() => {
 
     const d = new Date();
@@ -128,10 +124,7 @@ function Attendance() {
 
   }, []);
 
-  // =========================================
-  // TIMER
-  // =========================================
-
+ 
   useEffect(() => {
 
     let interval;
@@ -167,9 +160,7 @@ function Attendance() {
 
   }, [status, punchInTime]);
 
-  // =========================================
-  // PUNCH FUNCTION
-  // =========================================
+  
 
   const handlePunch = async (type) => {
 
@@ -280,9 +271,7 @@ function Attendance() {
     }
   };
 
-  // =========================================
-  // UI
-  // =========================================
+ 
 
   return (
 
