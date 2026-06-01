@@ -174,3 +174,5 @@ def save_software_inquiry(request):
             return JsonResponse({"status": "success", "id": inquiry.id})
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)})
+        
+        

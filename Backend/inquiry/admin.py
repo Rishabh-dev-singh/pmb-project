@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import LoanInquiry, AgriInquiry, Attendance, Lead
+# SoftwareInquiry ko yahan import list mein add kiya hai
+from .models import LoanInquiry, AgriInquiry, Attendance, Lead, SoftwareInquiry
 
 
 @admin.register(LoanInquiry)
@@ -36,3 +37,12 @@ class LeadAdmin(admin.ModelAdmin):
     search_fields = ("fullName", "mobile", "location") 
     list_editable = ("progress", "owner")           
     date_hierarchy = 'created_at'                  
+
+
+# NAYA SECTION: SOFTWARE INQUIRY KO REGISTER KIYA
+@admin.register(SoftwareInquiry)
+class SoftwareInquiryAdmin(admin.ModelAdmin):
+    list_display = ("full_name", "email", "mobile", "service_type", "created_at")
+    list_filter = ("service_type", "created_at")  # Filter by Website, AI, Game etc.
+    search_fields = ("full_name", "mobile", "service_type")
+    date_hierarchy = 'created_at'
