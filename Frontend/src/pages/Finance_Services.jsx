@@ -7,8 +7,6 @@ import {
   Container,
   Button,
   Paper,
-  TextField,
-  MenuItem,
   Dialog,
   DialogContent,
   IconButton,
@@ -16,11 +14,13 @@ import {
 } from "@mui/material";
 
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 import SecurityIcon from "@mui/icons-material/Security";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import CloseIcon from "@mui/icons-material/Close";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 
 // Smooth slide transition for the Modal
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -29,6 +29,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 function Finance_Services() {
   const [selectedService, setSelectedService] = useState(null);
+  const navigate = useNavigate();
 
   const handleOpenModal = (service) => {
     setSelectedService(service);
@@ -36,6 +37,10 @@ function Finance_Services() {
 
   const handleCloseModal = () => {
     setSelectedService(null);
+  };
+
+  const handleInquiryRedirect = () => {
+    navigate("/inquiry");
   };
 
   const services = [
@@ -184,7 +189,7 @@ function Finance_Services() {
           TransitionComponent={Transition}
           PaperProps={{
             sx: {
-              background: "rgba(15, 23, 42, 0.95)", // Dark background
+              background: "rgba(15, 23, 42, 0.95)",
               backdropFilter: "blur(25px)",
               borderRadius: "24px",
               border: `1px solid ${selectedService ? selectedService.color : 'rgba(255,255,255,0.1)'}`,
@@ -242,129 +247,60 @@ function Finance_Services() {
           )}
         </Dialog>
 
-        {/* APPLICATION FORM & CONTACT */}
-        <Box mt={15}>
+        {/* INQUIRY SECTION (FORM REMOVED) */}
+        <Box mt={12}>
           <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} transition={{ duration: 1 }} viewport={{ once: true }}>
-            <Typography variant="h2" textAlign="center" fontWeight={900} mb={8} sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, color: "#fff" }}>
-              Start Your <span style={{ color: '#2563eb' }}>Application</span>
-            </Typography>
-
             <Grid container spacing={5} justifyContent="center">
-              {/* Form Section */}
-              <Grid item xs={12} md={7}>
+              <Grid item xs={12} md={8}>
                 <Paper
                   elevation={0}
                   sx={{
-                    p: { xs: 4, md: 6 },
-                    background: "rgba(15, 23, 42, 0.4)",
-                    borderRadius: "24px",
+                    p: { xs: 5, md: 6 },
+                    background: "linear-gradient(135deg, rgba(15, 23, 42, 0.6) 0%, rgba(30, 41, 59, 0.4) 100%)",
+                    borderRadius: "32px",
                     border: '1px solid rgba(255,255,255,0.05)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  <Typography variant="h5" color="#fff" fontWeight="bold" mb={4}>Request Loan Consultation</Typography>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}><TextField fullWidth label="Full Name" variant="outlined" sx={inputStyle} /></Grid>
-                    <Grid item xs={12} sm={6}><TextField fullWidth label="Phone Number" variant="outlined" sx={inputStyle} /></Grid>
-                    <Grid item xs={12} sm={6}><TextField fullWidth label="Required Amount (₹)" variant="outlined" sx={inputStyle} /></Grid>
-                    <Grid item xs={12} sm={6}>
-                      <TextField 
-                        select 
-                        fullWidth 
-                        label="Loan Facility" 
-                        variant="outlined" 
-                        defaultValue="" 
-                        sx={inputStyle}
-                        SelectProps={{
-                          MenuProps: {
-                            PaperProps: {
-                              sx: {
-                                bgcolor: '#0f172a', 
-                                color: '#fff',
-                                '& .MuiMenuItem-root:hover': {
-                                  bgcolor: 'rgba(255,255,255,0.1)'
-                                }
-                              }
-                            }
-                          }
-                        }}
-                      >
-                        <MenuItem value="Secured">Secured Loan</MenuItem>
-                        <MenuItem value="Unsecured">Unsecured Business Loan</MenuItem>
-                        <MenuItem value="Machinery">Machinery Finance</MenuItem>
-                      </TextField>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Button
-                        variant="contained"
-                        fullWidth
-                        sx={{
-                          mt: 2, py: 2, borderRadius: "12px", fontWeight: 'bold', fontSize: '1.1rem',
-                          background: 'linear-gradient(90deg, #2563eb, #7c3aed)',
-                          boxShadow: '0px 8px 20px rgba(37, 99, 235, 0.3)',
-                          '&:hover': { background: 'linear-gradient(90deg, #1d4ed8, #6d28d9)' }
-                        }}
-                      >
-                        Submit Application
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </Paper>
-              </Grid>
-
-              {/* Contact Info Section */}
-              <Grid item xs={12} md={5}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: { xs: 4, md: 6 },
-                    background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)",
-                    borderRadius: "24px",
-                    height: "100%",
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    border: '1px solid rgba(255,255,255,0.05)',
+                    backdropFilter: 'blur(15px)',
+                    textAlign: 'center',
                     position: 'relative',
                     overflow: 'hidden'
                   }}
                 >
-                  <Box sx={{ position: 'absolute', width: 200, height: 200, background: '#06b6d4', filter: 'blur(100px)', opacity: 0.1, top: -50, right: -50 }} />
-                  
-                  <Typography variant="h4" fontWeight={900} color="#fff" mb={2}>Talk to an Expert</Typography>
-                  <Typography color="#94a3b8" mb={4} lineHeight={1.8}>
-                    Our financial advisors are ready to help you structure the perfect credit line for your business requirements.
+                  {/* Background decorative glow inside the card */}
+                  <Box sx={{ position: 'absolute', width: 250, height: 250, background: '#2563eb', filter: 'blur(120px)', opacity: 0.15, top: -60, right: -60 }} />
+                  <Box sx={{ position: 'absolute', width: 250, height: 250, background: '#06b6d4', filter: 'blur(120px)', opacity: 0.1, bottom: -60, left: -60 }} />
+
+                  <Typography variant="h3" fontWeight={900} color="#fff" mb={2} sx={{ fontSize: { xs: '2rem', md: '2.8rem' } }}>
+                    Ready to Accelerate Your Growth?
                   </Typography>
                   
-                  <Grid container spacing={3}>
-                    {/* Contact Number Block */}
-                    <Grid item xs={12}>
-                      <Typography color="#94a3b8" fontSize="0.85rem" textTransform="uppercase" letterSpacing={1}>
-                        Contact Number
-                      </Typography>
-                      <Typography fontSize={{ xs: '1.2rem', md: "1.4rem" }} fontWeight={800} color="#fff" sx={{ mt: 0.5 }}>
-                        +91 9784863800
-                      </Typography>
-                    </Grid>
-
-                    {/* Emails Block */}
-                    <Grid item xs={12}>
-                      <Typography color="#94a3b8" fontSize="0.85rem" textTransform="uppercase" letterSpacing={1} mb={1}>
-                        Support Emails
-                      </Typography>
-                      
-                      <Typography fontSize={{ xs: '1.1rem', md: "1.3rem" }} fontWeight={700} color="#06b6d4" sx={{ wordBreak: 'break-word', mb: 0.5 }}>
-                        info@pmb.finance
-                      </Typography>
-                      <Typography fontSize={{ xs: '1.1rem', md: "1.3rem" }} fontWeight={700} color="#06b6d4" sx={{ wordBreak: 'break-word', mb: 0.5 }}>
-                        support@pmb.finance
-                      </Typography>
-                      <Typography fontSize={{ xs: '1.1rem', md: "1.3rem" }} fontWeight={700} color="#06b6d4" sx={{ wordBreak: 'break-word' }}>
-                        atarsingh@pmb.finance
-                      </Typography>
-                    </Grid>
-                  </Grid>
-
+                  <Typography color="#94a3b8" mb={5} sx={{ maxWidth: '600px', mx: 'auto', lineHeight: 1.8, fontSize: '1.05rem' }}>
+                    Our dedicated financial experts are here to build the ideal customized credit facility or loan solution tailored specifically for your business goals.
+                  </Typography>
+                  
+                  {/* REQUESTED INQUIRY BUTTON */}
+                  <Button
+                    variant="contained"
+                    endIcon={<ArrowForwardIcon />}
+                    onClick={handleInquiryRedirect}
+                    sx={{
+                      py: 2,
+                      px: 6,
+                      borderRadius: "14px",
+                      fontWeight: 'bold',
+                      fontSize: '1.1rem',
+                      textTransform: 'none',
+                      background: 'linear-gradient(90deg, #2563eb, #7c3aed)',
+                      boxShadow: '0px 8px 25px rgba(37, 99, 235, 0.4)',
+                      transition: '0.3s ease',
+                      '&:hover': {
+                        background: 'linear-gradient(90deg, #1d4ed8, #6d28d9)',
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0px 12px 30px rgba(37, 99, 235, 0.6)'
+                      }
+                    }}
+                  >
+                    Click Here for Inquiry
+                  </Button>
                 </Paper>
               </Grid>
             </Grid>
@@ -375,20 +311,5 @@ function Finance_Services() {
     </Box>
   );
 }
-
-// Global Text Field Styles
-const inputStyle = {
-  '& label': { color: '#94a3b8' },
-  '& label.Mui-focused': { color: '#06b6d4' },
-  '& .MuiOutlinedInput-root': {
-    color: '#fff',
-    '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' },
-    '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.3)' },
-    '&.Mui-focused fieldset': { borderColor: '#06b6d4' },
-    borderRadius: '12px',
-    backgroundColor: 'rgba(0,0,0,0.2)' 
-  },
-  '& .MuiSelect-icon': { color: '#94a3b8' }
-};
 
 export default Finance_Services;
