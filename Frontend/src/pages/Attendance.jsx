@@ -19,9 +19,7 @@ import axios from "axios";
 
 function Attendance() {
 
-  // =========================================
-  // QUOTES
-  // =========================================
+  
 
   const quotes = [
 
@@ -38,10 +36,7 @@ function Attendance() {
     "Great employees are the foundation of a great company.",
   ];
 
-  // =========================================
-  // STATES
-  // =========================================
-
+ 
   const [status, setStatus] = useState(
     localStorage.getItem("attendanceStatus") || "Not Punched In"
   );
@@ -583,7 +578,7 @@ function Attendance() {
                 </Button>
 
               </Stack>
-
+ 
             </Paper>
 
           </Grid>

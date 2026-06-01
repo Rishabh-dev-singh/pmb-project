@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from accounts.models import CustomUser  # Naya User Model
 from .models import LoanInquiry, AgriInquiry, Attendance, Lead
-
+# Import line ko aise update kar do:
+from .models import LoanInquiry, AgriInquiry, Attendance, Lead, SoftwareInquiry
 
 @csrf_exempt
 def save_inquiry(request):
@@ -157,3 +158,19 @@ def delete_lead(request, pk):
         return JsonResponse({"status": "deleted"})
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
+       
+
+@csrf_exempt
+def save_software_inquiry(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            inquiry = SoftwareInquiry.objects.create(
+                full_name=data.get("full_name"),
+                email=data.get("email"),
+                mobile=data.get("mobile"),
+                service_type=data.get("service_type")
+            )
+            return JsonResponse({"status": "success", "id": inquiry.id})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})

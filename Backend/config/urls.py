@@ -16,6 +16,8 @@ urlpatterns = [
     path('api/agro-inquiry/', views.agro_inquiry),
     path('api/update-product/', views.update_product),
 
+    path('api/software-inquiry/', views.save_software_inquiry),
+
     path('api/employees/', views.get_employees),
 
     path('api/attendance/', views.attendance_api),

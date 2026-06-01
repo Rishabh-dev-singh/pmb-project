@@ -39,7 +39,10 @@ function Navbar() {
     py: 0.8,
     mx: 0.6,
     backgroundColor: location.pathname === path ? "white" : "transparent",
-    boxShadow: location.pathname === path ? "0 4px 10px rgba(0,0,0,0.2)" : "none",
+    boxShadow:
+      location.pathname === path
+        ? "0 4px 10px rgba(0,0,0,0.2)"
+        : "none",
     transition: "all 0.25s ease",
 
     "&:hover": {
@@ -50,7 +53,7 @@ function Navbar() {
 
   return (
     <>
-      {/*  Animation CSS */}
+      {/* Animation CSS */}
       <style>
         {`
           @keyframes logoFloat {
@@ -85,7 +88,7 @@ function Navbar() {
           }}
         >
 
-          {/*  LOGO */}
+          {/* LOGO */}
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Link to="/">
               <img
@@ -127,6 +130,51 @@ function Navbar() {
           {/* RIGHT SIDE */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
+            {/* OUR SERVICE BUTTON */}
+            <Button
+              component={Link}
+              to="/services"
+              sx={{
+                display: { xs: "none", md: "flex" },
+                background: "linear-gradient(45deg,#ff9800,#ff6b00)",
+                color: "white",
+                borderRadius: "30px",
+                px: 3,
+                py: 1,
+                fontWeight: 700,
+                textTransform: "none",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                transition: "all 0.3s ease",
+                position: "relative",
+                overflow: "hidden",
+
+                "&:hover": {
+                  transform: "translateY(-3px) scale(1.04)",
+                  boxShadow: "0 8px 24px rgba(255,140,0,0.45)",
+                  background:
+                    "linear-gradient(45deg,#ffb300,#ff6b00)"
+                },
+
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background:
+                    "linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent)",
+                  transition: "0.7s"
+                },
+
+                "&:hover::before": {
+                  left: "100%"
+                }
+              }}
+            >
+              Our Services
+            </Button>
+
             {/* EMPLOYEE BUTTON */}
             <Button
               component={Link}
@@ -137,7 +185,8 @@ function Navbar() {
                 color: "white",
                 borderRadius: "30px",
                 px: 3,
-                fontWeight: 600,
+                py: 1,
+                fontWeight: 700,
                 textTransform: "none",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
                 transition: "0.3s",
@@ -153,7 +202,10 @@ function Navbar() {
 
             {/* MOBILE MENU ICON */}
             <IconButton
-              sx={{ display: { xs: "flex", md: "none" }, color: "white" }}
+              sx={{
+                display: { xs: "flex", md: "none" },
+                color: "white"
+              }}
               onClick={() => setOpen(true)}
             >
               <MenuIcon />
@@ -192,23 +244,59 @@ function Navbar() {
 
             <Divider sx={{ my: 2 }} />
 
-            <Box sx={{ px: 2 }}>
+            {/* MOBILE BUTTONS */}
+            <Box
+              sx={{
+                px: 2,
+                display: "flex",
+                flexDirection: "column",
+                gap: 2
+              }}
+            >
+
+              {/* OUR SERVICE */}
+              <Button
+                component={Link}
+                to="/services"
+                fullWidth
+                onClick={() => setOpen(false)}
+                sx={{
+                  background:
+                    "linear-gradient(45deg,#ff9800,#ff6b00)",
+                  color: "white",
+                  borderRadius: "30px",
+                  py: 1.2,
+                  fontWeight: 700,
+                  textTransform: "none",
+
+                  "&:hover": {
+                    background:
+                      "linear-gradient(45deg,#ffb300,#ff6b00)"
+                  }
+                }}
+              >
+               Our Services
+              </Button>
+
+              {/* EMPLOYEE PORTAL */}
               <Button
                 component={Link}
                 to="/employee-login"
                 fullWidth
                 onClick={() => setOpen(false)}
                 sx={{
-                  background: "linear-gradient(45deg,#22c55e,#16a34a)",
+                  background:
+                    "linear-gradient(45deg,#22c55e,#16a34a)",
                   color: "white",
                   borderRadius: "30px",
                   py: 1.2,
-                  fontWeight: 600,
+                  fontWeight: 700,
                   textTransform: "none"
                 }}
               >
                 Employee Portal
               </Button>
+
             </Box>
 
           </Box>

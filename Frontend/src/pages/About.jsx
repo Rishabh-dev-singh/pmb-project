@@ -12,6 +12,7 @@ import {
 
 import MdImg from "../assets/MD_img.jpeg";
 import BusinessHead from "../assets/Bussiness_Head.png";
+import ItHead from "../assets/IT_Head.png";
 
 function About() {
 
@@ -78,8 +79,6 @@ function About() {
 
         <Grid container spacing={4}>
 
-          {/* ABOUT */}
-
           <Grid item xs={12} md={7}>
 
             <Paper
@@ -95,7 +94,8 @@ function About() {
               </Typography>
 
               <Typography sx={{ fontSize: 18, color: "#444", lineHeight: 1.8, mb: 3 }}>
-                We are a dynamic and customer-focused organization committed to providing comprehensive financial solutions 
+                We are a dynamic and customer-focused organization committed to providing comprehensive financial solutions And 
+                Software Services to individuals and businesses across India
                 .
               </Typography>
 
@@ -104,6 +104,7 @@ function About() {
                 
                 <b>Business Loans, Term Loans, OD Limits, Cash Credit Limits,Solar Loan, Loan Against Property,
                 Home Loans, NBFC Landing and Machinery Loans.</b>
+                <b></b>
               </Typography>
 
               <Divider sx={{ my: 4 }} />
@@ -118,9 +119,7 @@ function About() {
                   <Typography variant="body2" color="text.secondary">
                     To empower businesses with transparent financial solutions while encouraging healthier lifestyles.
                   </Typography>
-                </Grid>
-
-                <Grid item xs={12} sm={6}>
+                </Grid>                <Grid item xs={12} sm={6}>
                   <Typography sx={{ fontWeight: "bold", color: "#1a237e" }}>
                     Our Vision
                   </Typography>
@@ -270,247 +269,366 @@ function About() {
 
 
 
-{/* LEADERSHIP SECTION */}
+        {/* LEADERSHIP SECTION */}
 
-<Box sx={{ mt: 12 }}>
+        <Box sx={{ mt: 12 }}>
 
-  <Typography
-    variant="h4"
-    align="center"
-    sx={{
-      fontWeight: 900,
-      color: "#1a237e",
-      mb: 6,
-      fontSize: { xs: "2rem", md: "2.5rem" }
-    }}
-  >
-    Our Leadership
-  </Typography>
+          <Typography
+            variant="h4"
+            align="center"
+            sx={{
+              fontWeight: 900,
+              color: "#1a237e",
+              mb: 6,
+              fontSize: { xs: "2rem", md: "2.5rem" }
+            }}
+          >
+            Our Leadership
+          </Typography>
 
-  <Grid
-    container
-    spacing={4}
-    justifyContent="center"
-    alignItems="stretch"
-  >
+          <Grid
+            container
+            spacing={4}
+            justifyContent="center"
+            alignItems="stretch"
+          >
 
-    {/* MD CARD */}
+            {/* MD CARD */}
 
-    <Grid item xs={12} sm={10} md={5} lg={4}>
+            <Grid item xs={12} sm={10} md={5} lg={4}>
 
-      <Card
-        sx={{
-          p: 3,
-          borderRadius: "24px",
+              <Card
+                sx={{
+                  p: 3,
+                  borderRadius: "24px",
 
-          background:
-            "linear-gradient(135deg,#1a237e,#3949ab)",
+                  background:
+                    "linear-gradient(135deg,#1a237e,#3949ab)",
 
-          color: "#fff",
+                  color: "#fff",
 
-          textAlign: "center",
+                  textAlign: "center",
 
-          boxShadow: "0 15px 40px rgba(0,0,0,0.18)",
+                  boxShadow: "0 15px 40px rgba(0,0,0,0.18)",
 
-          transition: "0.3s ease",
+                  transition: "0.3s ease",
 
-          "&:hover": {
-            transform: "translateY(-6px)"
-          }
-        }}
-      >
+                  "&:hover": {
+                    transform: "translateY(-6px)"
+                  }
+                }}
+              >
 
-        {/* IMAGE */}
+                {/* IMAGE */}
 
-        <Box
-  component="img"
-  src={MdImg}
-  alt="Managing Director"
-  sx={{
-    width: { xs: 140, md: 160 },
-    height: { xs: 140, md: 160 },
+                <Box
+                  component="img"
+                  src={MdImg}
+                  alt="Managing Director"
+                  sx={{
+                    width: { xs: 140, md: 160 },
+                    height: { xs: 140, md: 160 },
 
-    borderRadius: "50%",
+                    borderRadius: "50%",
 
-    objectFit: "cover",
-    objectPosition: "top center",
+                    objectFit: "cover",
+                    objectPosition: "top center",
 
-    border: "4px solid rgba(255,255,255,0.25)",
+                    border: "4px solid rgba(255,255,255,0.25)",
 
-    boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+                    boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
 
-    mb: 2.5
-  }}
-/>
+                    mb: 2.5
+                  }}
+                />
 
-        {/* NAME */}
+                {/* NAME */}
 
-        <Typography
-          sx={{
-            fontWeight: 800,
-            fontSize: "1.5rem"
-          }}
-        >
-          Mr. Manvendra Singh
-        </Typography>
+                <Typography
+                  sx={{
+                    fontWeight: 800,
+                    fontSize: "1.5rem"
+                  }}
+                >
+                  Mr. Manvendra Singh
+                </Typography>
 
-        {/* ROLE */}
+                {/* ROLE */}
 
-        <Typography
-          sx={{
-            fontSize: "0.78rem",
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
-            color: "#c5cae9",
-            mb: 2
-          }}
-        >
-          Founder & Managing Director
-        </Typography>
+                <Typography
+                  sx={{
+                    fontSize: "0.78rem",
+                    letterSpacing: 1.5,
+                    textTransform: "uppercase",
+                    color: "#c5cae9",
+                    mb: 2
+                  }}
+                >
+                  Founder & Managing Director
+                </Typography>
 
-        <Divider
-          sx={{
-            borderColor: "rgba(255,255,255,0.15)",
-            mb: 2
-          }}
-        />
+                <Divider
+                  sx={{
+                    borderColor: "rgba(255,255,255,0.15)",
+                    mb: 2
+                  }}
+                />
 
-        {/* TEXT */}
+                {/* TEXT */}
 
-       <Typography
-  sx={{
-    fontSize: "0.92rem",
-    lineHeight: 1.9,
-    color: "rgba(255,255,255,0.92)",
-    textAlign: "justify"
-  }}
->
-  Our Managing Director is a young and visionary entrepreneur who
-  strongly believes that the true strength of any organization lies in
-  its people. He values every team member as an important contributor to
-  the company’s growth, success, and long-term vision. His leadership is
-  built on trust, transparency, innovation, and collective progress.
-  <br /><br />
-  With a vision to make modern financial services more accessible across
-  India, he is focused on building strong partnerships with leading
-  lenders and financial institutions to expand the company’s reach and
-  create better financial opportunities for individuals and businesses.
-  <br /><br />
-  His objective is not only to achieve business growth, but also to
-  establish a reliable and customer-centric platform that empowers
-  people to achieve their goals with confidence. Through innovation,
-  strong values, and long-term relationships, he continues to lead the
-  company towards sustainable growth and excellence.
-</Typography>
+               <Typography
+                  sx={{
+                    fontSize: "0.92rem",
+                    lineHeight: 1.9,
+                    color: "rgba(255,255,255,0.92)",
+                    textAlign: "justify"
+                  }}
+                >
+                  Our Managing Director is a young and visionary entrepreneur who
+                  strongly believes that the true strength of any organization lies in
+                  its people. He values every team member as an important contributor to
+                  the company’s growth, success, and long-term vision. His leadership is
+                  built on trust, transparency, innovation, and collective progress.
+                  <br /><br />
+                  With a vision to make modern financial services more accessible across
+                  India, he is focused on building strong partnerships with leading
+                  lenders and financial institutions to expand the company’s reach and
+                  create better financial opportunities for individuals and businesses.
+                  <br /><br />
+                  His objective is not only to achieve business growth, but also to
+                  establish a reliable and customer-centric platform that empowers
+                  people to achieve their goals with confidence. Through innovation,
+                  strong values, and long-term relationships, he continues to lead the
+                  company towards sustainable growth and excellence.
+                </Typography>
 
-      </Card>
+              </Card>
 
-    </Grid>
+            </Grid>
 
 
-    {/* BUSINESS HEAD */}
+            {/* COMBINED BUSINESS HEAD & IT HEAD PARENT CARD */}
 
-    <Grid item xs={12} sm={10} md={5} lg={4}>
+            <Grid item xs={12} sm={12} md={7} lg={8}>
 
-      <Card
-        sx={{
-          p: 3,
-          borderRadius: "24px",
+              <Card
+                sx={{
+                  p: 2,
+                  borderRadius: "24px",
+                  background: "linear-gradient(135deg,#00695c,#26a69a)",
+                  color: "#fff",
+                  boxShadow: "0 15px 40px rgba(0,0,0,0.18)"
+                }}
+              >
+                
+                <Box
+                  sx={{
+                    display: "flex",
+                    flexDirection: { xs: "column", md: "row" },
+                    alignItems: "stretch",
+                    gap: 1
+                  }}
+                >
 
-          background:
-            "linear-gradient(135deg,#00695c,#26a69a)",
+                  {/* LEFT SIDE: BUSINESS HEAD (INDIVIDUAL CARD) */}
+                  <Card
+                    sx={{
+                      flex: 1,
+                      p: 3,
+                      borderRadius: "18px",
+                      background: "rgba(255,255,255,0.03)",
+                      color: "#fff",
+                      textAlign: "center",
+                      boxShadow: "none",
+                      transition: "0.3s ease",
+                      "&:hover": {
+                        transform: "translateY(-6px)",
+                        background: "rgba(255,255,255,0.09)",
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.15)"
+                      }
+                    }}
+                  >
 
-          color: "#fff",
+                    {/* IMAGE */}
+                    <Box
+                      component="img"
+                      src={BusinessHead}
+                      alt="Business Head"
+                      sx={{
+                        width: { xs: 140, md: 160 },
+                        height: { xs: 140, md: 160 },
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        objectPosition: "top center",
+                        border: "4px solid rgba(255,255,255,0.25)",
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+                        mb: 2.5
+                      }}
+                    />
 
-          textAlign: "center",
+                    {/* NAME */}
+                    <Typography
+                      sx={{
+                        fontWeight: 800,
+                        fontSize: "1.5rem"
+                      }}
+                    >
+                      Mr. Atar Singh
+                    </Typography>
 
-          boxShadow: "0 15px 40px rgba(0,0,0,0.18)",
+                    {/* ROLE */}
+                    <Typography
+                      sx={{
+                        fontSize: "0.78rem",
+                        letterSpacing: 1.5,
+                        textTransform: "uppercase",
+                        color: "#b2dfdb",
+                        mb: 2
+                      }}
+                    >
+                      Business Head
+                    </Typography>
 
-          transition: "0.3s ease",
+                    <Divider
+                      sx={{
+                        borderColor: "rgba(255,255,255,0.15)",
+                        mb: 2
+                      }}
+                    />
 
-          "&:hover": {
-            transform: "translateY(-6px)"
-          }
-        }}
-      >
+                    {/* TEXT */}
+                    <Typography
+                      sx={{
+                        fontSize: "0.92rem",
+                        lineHeight: 1.8,
+                        color: "rgba(255,255,255,0.92)",
+                        textAlign: "justify"
+                      }}
+                    >
+                     A seasoned banking and financial services professional with over 20 years of 
+                     experience across the Banking and NBFC sectors, specializing in business growth,
+                     strategic partnerships, and operational excellence. Known for building strong client relationships, 
+                     driving sustainable expansion, and delivering innovative financial solutions with a results-oriented approach.
+                    </Typography>
 
-        {/* IMAGE */}
+                  </Card>
 
-       <Box
-  component="img"
-  src={BusinessHead}
-  alt="Business Head"
-  sx={{
-    width: { xs: 140, md: 160 },
-    height: { xs: 140, md: 160 },
+                  {/* MIDDLE DIVIDER LINE */}
+                  <Divider 
+                    orientation="vertical" 
+                    flexItem 
+                    sx={{ 
+                      borderColor: "rgba(255,255,255,0.2)", 
+                      display: { xs: "none", md: "block" },
+                      mx: 1 
+                    }} 
+                  />
+                  <Divider 
+                    orientation="horizontal" 
+                    flexItem 
+                    sx={{ 
+                      borderColor: "rgba(255,255,255,0.2)", 
+                      display: { xs: "block", md: "none" },
+                      my: 1 
+                    }} 
+                  />
 
-    borderRadius: "50%",
+                  {/* RIGHT SIDE: IT HEAD (INDIVIDUAL CARD) */}
+                  <Card
+                    sx={{
+                      flex: 1,
+                      p: 3,
+                      borderRadius: "18px",
+                      background: "rgba(255,255,255,0.03)",
+                      color: "#fff",
+                      textAlign: "center",
+                      boxShadow: "none",
+                      transition: "0.3s ease",
+                      "&:hover": {
+                        transform: "translateY(-6px)",
+                        background: "rgba(255,255,255,0.09)",
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.15)"
+                      }
+                    }}
+                  >
 
-    objectFit: "cover",
-    objectPosition: "top center",
+                    {/* IMAGE */}
+                    <Box
+                      component="img"
+                      src={ItHead}
+                      alt="IT Head"
+                      sx={{
+                        width: { xs: 140, md: 160 },
+                        height: { xs: 140, md: 160 },
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                        objectPosition: "top center",
+                        border: "4px solid rgba(255,255,255,0.25)",
+                        boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+                        mb: 2.5
+                      }}
+                    />
 
-    border: "4px solid rgba(255,255,255,0.25)",
+                    {/* NAME */}
+                    <Typography
+                      sx={{
+                        fontWeight: 800,
+                        fontSize: "1.5rem"
+                      }}
+                    >
+                      Mr. Rishabh Dev Singh
+                    </Typography>
 
-    boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+                    {/* ROLE */}
+                    <Typography
+                      sx={{
+                        fontSize: "0.78rem",
+                        letterSpacing: 1.5,
+                        textTransform: "uppercase",
+                        color: "#b2dfdb",
+                        mb: 2
+                      }}
+                    >
+                      IT Head
+                    </Typography>
 
-    mb: 2.5
-  }}
-/>
+                    <Divider
+                      sx={{
+                        borderColor: "rgba(255,255,255,0.15)",
+                        mb: 2
+                      }}
+                    />
 
-        {/* NAME */}
+                    {/* TEXT */}
+                    <Typography
+                      sx={{
+                        fontSize: "0.92rem",
+                        lineHeight: 1.8,
+                        color: "rgba(255,255,255,0.92)",
+                        textAlign: "justify"
+                      }}
+                    >
+                     Experienced Software and AI/ML Engineer with strong
+                     expertise in software development, artificial intelligence,
+                     machine learning, and modern technologies. Holds a
+                     Master's Degree in Computer Science with excellent
+                     academic performance and has successfully worked on
+                     multiple software and AI-driven projects. Passionate about
+                     building scalable systems, innovative products, and
+                     modern technology solutions while leading technical
+                     excellence and digital transformation.
+                    </Typography>
 
-        <Typography
-          sx={{
-            fontWeight: 800,
-            fontSize: "1.5rem"
-          }}
-        >
-          Mr. Atar Singh
-        </Typography>
+                  </Card>
 
-        {/* ROLE */}
+                </Box>
+              </Card>
 
-        <Typography
-          sx={{
-            fontSize: "0.78rem",
-            letterSpacing: 1.5,
-            textTransform: "uppercase",
-            color: "#b2dfdb",
-            mb: 2
-          }}
-        >
-          Business Head
-        </Typography>
+            </Grid>
 
-        <Divider
-          sx={{
-            borderColor: "rgba(255,255,255,0.15)",
-            mb: 2
-          }}
-        />
+          </Grid>
 
-        {/* TEXT */}
-
-        <Typography
-          sx={{
-            fontSize: "0.92rem",
-            lineHeight: 1.8,
-            color: "rgba(255,255,255,0.92)"
-          }}
-        >
-         A seasoned banking and financial services professional with over 20 years of 
-         experience across the Banking and NBFC sectors, specializing in business growth,
-          strategic partnerships, and operational excellence. Known for building strong client relationships, 
-          driving sustainable expansion, and delivering innovative financial solutions with a results-oriented approach.
-        </Typography>
-
-      </Card>
-
-    </Grid>
-
-  </Grid>
-
-</Box>
+        </Box>
 
       </Container>
 

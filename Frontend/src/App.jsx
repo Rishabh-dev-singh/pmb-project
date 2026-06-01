@@ -15,6 +15,13 @@ import LoanType from "./pages/Loan_Type";
 import AgroProduct from "./pages/AgroProduct";
 import AddLead from "./pages/AddLead";
 
+import Services from "./pages/Services";
+
+/* NEW IMPORTS */
+import Software_Services from "./pages/Software_Services";
+import Finance_Services from "./pages/Finance_Services";
+import Consultancy from "./pages/Consultancy";
+
 function App() {
   return (
     <BrowserRouter>
@@ -22,46 +29,101 @@ function App() {
         sx={{
           display: "flex",
           flexDirection: "column",
-          minHeight: "100vh"
+          minHeight: "100vh",
         }}
       >
-
         {/* NAVBAR */}
         <Navbar />
 
         {/* PAGE CONTENT */}
         <Box sx={{ flex: 1 }}>
-
           <Routes>
 
+            {/* HOME */}
             <Route path="/" element={<Home />} />
 
-            <Route path="/inquiry" element={<Inquiry />} />
+            {/* INQUIRY */}
+            <Route
+              path="/inquiry"
+              element={<Inquiry />}
+            />
 
-            <Route path="/admin-login" element={<AdminLogin />} />
+            {/* ADMIN */}
+            <Route
+              path="/admin-login"
+              element={<AdminLogin />}
+            />
 
-            <Route path="/employee-login" element={<EmployeeLogin />} />
+            {/* EMPLOYEE */}
+            <Route
+              path="/employee-login"
+              element={<EmployeeLogin />}
+            />
 
-            <Route path="/employee-dashboard" element={<EmployeeDashboard />} />
-            <Route path="/add-lead" element={<AddLead />} />
+            <Route
+              path="/employee-dashboard"
+              element={<EmployeeDashboard />}
+            />
 
-            {/* 🔥 NEW ROUTE ADDED */}
+            {/* ADD LEAD */}
+            <Route
+              path="/add-lead"
+              element={<AddLead />}
+            />
 
-            <Route path="/careers" element={<Career />} />
+            {/* MAIN SERVICES PAGE */}
+            <Route
+              path="/services"
+              element={<Services />}
+            />
 
-            <Route path="/about" element={<About />} />
+            {/* SOFTWARE SERVICES */}
+            <Route
+              path="/software-services"
+              element={<Software_Services />}
+            />
 
-            <Route path="/loan-type" element={<LoanType />} />
+            {/* FINANCE SERVICES */}
+            <Route
+              path="/finance-services"
+              element={<Finance_Services />}
+            />
 
-            <Route path="/agro-product" element={<AgroProduct />} />
+            {/* CONSULTANCY */}
+            <Route
+              path="/consultancy-services"
+              element={<Consultancy />}
+            />
+
+            {/* CAREER */}
+            <Route
+              path="/careers"
+              element={<Career />}
+            />
+
+            {/* ABOUT */}
+            <Route
+              path="/about"
+              element={<About />}
+            />
+
+            {/* LOAN */}
+            <Route
+              path="/loan-type"
+              element={<LoanType />}
+            />
+
+            {/* AGRO */}
+            <Route
+              path="/agro-product"
+              element={<AgroProduct />}
+            />
 
           </Routes>
-
         </Box>
 
         {/* FOOTER */}
         <Footer />
-
       </Box>
     </BrowserRouter>
   );

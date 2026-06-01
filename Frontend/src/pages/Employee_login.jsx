@@ -38,7 +38,6 @@ function EmployeeLogin() {
     setErrorMsg("");
 
     try {
-      // API Request to login
       const res = await axios.post(`${BASE_URL}/api/login/`, {
         username: formData.employeeId, 
         password: formData.password,

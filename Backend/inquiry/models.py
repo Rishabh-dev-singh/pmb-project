@@ -1,6 +1,6 @@
 from django.db import models
-from django.conf import settings  # CustomUser ko link karne ke liye
-
+from django.conf import settings  
+# Import line ko aise update kar do:
 
 class LoanInquiry(models.Model):
     full_name = models.CharField(max_length=200)
@@ -11,11 +11,10 @@ class LoanInquiry(models.Model):
 
     def __str__(self):
         return self.full_name
-
-
+ 
 
 class AgriInquiry(models.Model):
-    full_name = models.CharField(max_length=200)
+    full_name = models.CharField(max_length=200) 
     email = models.EmailField(blank=True, null=True)
     mobile = models.CharField(max_length=15)
     product_name = models.CharField(max_length=100, blank=True, null=True)
@@ -41,7 +40,7 @@ class Attendance(models.Model):
         return f"{self.employee.employee_id} - {self.date}"
 
 
-
+ 
 class Lead(models.Model):
     prospectType = models.CharField(max_length=50)
     loanType = models.CharField(max_length=50)
@@ -70,3 +69,14 @@ class Lead(models.Model):
 
     def __str__(self):
         return f"{self.fullName} ({self.mobile})"
+    
+
+class SoftwareInquiry(models.Model):
+    full_name = models.CharField(max_length=200)
+    email = models.EmailField(blank=True, null=True)
+    mobile = models.CharField(max_length=15)
+    service_type = models.CharField(max_length=100, blank=True, null=True) # Website, AI, Game etc.
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.full_name} - {self.service_type}"
