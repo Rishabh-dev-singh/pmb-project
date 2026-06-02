@@ -68,19 +68,16 @@ TIME_ZONE = 'Asia/Kolkata'
 USE_TZ = True
 
 STATIC_URL = '/static/'
-
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 SECURE_SSL_REDIRECT = False
 
 SESSION_COOKIE_SECURE = True
-
 CSRF_COOKIE_SECURE = True
 
 CORS_ALLOWED_ORIGINS = [
@@ -120,9 +117,7 @@ SIMPLE_JWT = {
 }
 
 
-# ==========================
-# EMAIL CONFIGURATION
-# ==========================
+# EMAIL CONFIG
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
@@ -132,8 +127,10 @@ EMAIL_PORT = 587
 
 EMAIL_USE_TLS = True
 
+EMAIL_USE_SSL = False
+
 EMAIL_HOST_USER = 'Atarsingh@pmb.finance'
 
-EMAIL_HOST_PASSWORD = 'Uaix9TjR30ge'
+EMAIL_HOST_PASSWORD = 'YOUR_APP_PASSWORD'
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

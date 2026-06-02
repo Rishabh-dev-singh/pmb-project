@@ -14,20 +14,40 @@ from .models import (
 
 def send_notification(subject, body):
 
-    send_mail(
-        subject=subject,
-        message=body,
-        from_email=settings.EMAIL_HOST_USER,
-        recipient_list=["Atarsingh@pmb.finance"],
-        fail_silently=False
-    )
+    try:
+
+        send_mail(
+
+            subject=subject,
+
+            message=body,
+
+            from_email=settings.EMAIL_HOST_USER,
+
+            recipient_list=["Atarsingh@pmb.finance"],
+
+            fail_silently=False
+
+        )
+
+        return True
+
+    except Exception as e:
+
+        print("MAIL ERROR:", e)
+
+        return False
 
 
 @csrf_exempt
 def save_inquiry(request):
 
     if request.method != "POST":
-        return JsonResponse({"status":"error"},status=405)
+
+        return JsonResponse(
+            {"status":"error"},
+            status=405
+        )
 
     try:
 
@@ -46,6 +66,7 @@ def save_inquiry(request):
         )
 
         body=f"""
+
 NEW LOAN INQUIRY
 
 Name: {inquiry.full_name}
@@ -56,24 +77,35 @@ Email: {inquiry.email}
 
 Loan Type: {inquiry.loan_type}
 
-        """
+"""
 
-        send_notification(
+        mail_sent=send_notification(
+
             "New Loan Inquiry - PMB Finance",
+
             body
+
         )
 
         return JsonResponse({
+
             "status":"success",
-            "id":inquiry.id
+
+            "id":inquiry.id,
+
+            "mail_sent":mail_sent
+
         })
 
 
     except Exception as e:
 
         return JsonResponse({
+
             "status":"error",
+
             "message":str(e)
+
         })
 
 
@@ -82,7 +114,11 @@ Loan Type: {inquiry.loan_type}
 def agro_inquiry(request):
 
     if request.method!="POST":
-        return JsonResponse({"status":"error"},status=405)
+
+        return JsonResponse(
+            {"status":"error"},
+            status=405
+        )
 
     try:
 
@@ -101,6 +137,7 @@ def agro_inquiry(request):
         )
 
         body=f"""
+
 NEW AGRICULTURE INQUIRY
 
 Name: {inquiry.full_name}
@@ -111,18 +148,23 @@ Email: {inquiry.email}
 
 Product: {inquiry.product_name}
 
-        """
+"""
 
-        send_notification(
+        mail_sent=send_notification(
+
             "New Agriculture Inquiry",
+
             body
+
         )
 
         return JsonResponse({
 
             "status":"success",
 
-            "id":inquiry.id
+            "id":inquiry.id,
+
+            "mail_sent":mail_sent
 
         })
 
@@ -143,7 +185,11 @@ Product: {inquiry.product_name}
 def save_software_inquiry(request):
 
     if request.method!="POST":
-        return JsonResponse({"status":"error"},status=405)
+
+        return JsonResponse(
+            {"status":"error"},
+            status=405
+        )
 
     try:
 
@@ -162,6 +208,7 @@ def save_software_inquiry(request):
         )
 
         body=f"""
+
 NEW SOFTWARE INQUIRY
 
 Name: {inquiry.full_name}
@@ -172,18 +219,23 @@ Email: {inquiry.email}
 
 Service: {inquiry.service_type}
 
-        """
+"""
 
-        send_notification(
+        mail_sent=send_notification(
+
             "New Software Inquiry",
+
             body
+
         )
 
         return JsonResponse({
 
             "status":"success",
 
-            "id":inquiry.id
+            "id":inquiry.id,
+
+            "mail_sent":mail_sent
 
         })
 
