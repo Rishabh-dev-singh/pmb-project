@@ -55,7 +55,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'pmb_db',
         'USER': 'postgres',
-        'PASSWORD': 'rishabh123',
+        'PASSWORD': 'CHANGE_THIS_PASSWORD',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -118,3 +118,22 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+
+# ==========================
+# EMAIL CONFIGURATION
+# ==========================
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.zoho.in'
+
+EMAIL_PORT = 587
+
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'Atarsingh@pmb.finance'
+
+EMAIL_HOST_PASSWORD = 'Uaix9TjR30ge'
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
