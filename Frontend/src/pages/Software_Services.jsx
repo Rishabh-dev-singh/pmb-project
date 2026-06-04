@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 
-// Assets imports 
+ 
 import Software from "../assets/Software.png";
 import WebApp from "../assets/Web App.png";
 import Website from "../assets/website.png";
@@ -22,10 +22,10 @@ import Automation from "../assets/Automation.png";
 
 function Software_Services() {
 
-  // 1. Dropdown State
+  
   const [expandedIndex, setExpandedIndex] = useState(null);
 
-  // 2. Form Data State (Django backend ke variables ke hisaab se)
+  
   const [formData, setFormData] = useState({
     full_name: "",
     mobile: "",
@@ -37,14 +37,14 @@ function Software_Services() {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  // 3. Handle Form Input Change
+  
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 4. API Submit Function (pmb.finance domain ke sath)
+  
   const handleSubmit = async () => {
-    // Basic validation
+ 
     if (!formData.full_name || !formData.mobile) {
       alert("Please fill out your name and phone number.");
       return;
@@ -63,7 +63,7 @@ function Software_Services() {
       
       if (result.status === "success") {
         alert("Application Submitted Successfully!");
-        // Form clear kar do success hone par
+        
         setFormData({ full_name: "", mobile: "", email: "", service_type: "" });
       } else {
         alert("Error: " + result.message);
@@ -75,7 +75,7 @@ function Software_Services() {
   };
 
   const services = [
-    {
+    {  
       title: "Software Development",
       desc: "Enterprise software solutions engineered for peak performance, robust scalability, and intuitive user experiences that drive business growth.",
       extendedDesc: "Our custom software development goes beyond just writing code. We analyze your core business logic to architect tailored ERPs, CRMs, and enterprise tools that integrate seamlessly into your existing ecosystem. We focus on agile methodologies, ensuring zero downtime, military-grade security, and an infrastructure built to handle massive scale and future expansions effortlessly.",
@@ -477,9 +477,12 @@ function Software_Services() {
                         color="#06b6d4"
                         sx={{ wordBreak: 'break-word', mt: 0.5 }}
                       >
-                        support@pmb.finance
+                        support@pmb.finance 
+                        <br/> 
+                        info@pmb.finance
                       </Typography>
                     </Grid>
+                    
                   </Grid>
 
                 </Paper>
