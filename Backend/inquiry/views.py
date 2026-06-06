@@ -1,21 +1,38 @@
 import json
+
 from datetime import datetime
 
 from django.http import JsonResponse
+
 from django.views.decorators.csrf import csrf_exempt
+
 from django.core.mail import send_mail
+
 from django.conf import settings
 
 from accounts.models import CustomUser
 
 from .models import (
+
     LoanInquiry,
+
     AgriInquiry,
+
     Attendance,
+
     Lead,
+
     SoftwareInquiry
+
 )
 
+
+
+# -----------------------------------
+
+# EMAIL FUNCTION
+
+# -----------------------------------
 
 def send_notification(subject, body):
 
@@ -29,7 +46,11 @@ def send_notification(subject, body):
 
             from_email=settings.EMAIL_HOST_USER,
 
-            recipient_list=["Atarsingh@pmb.finance"],
+            recipient_list=[
+
+                "Atarsingh@pmb.finance"
+
+            ],
 
             fail_silently=False
 
@@ -37,287 +58,358 @@ def send_notification(subject, body):
 
     except Exception as e:
 
-        print("MAIL ERROR:", e)
+        print(e)
 
 
+
+# -----------------------------------
+
+# LOAN INQUIRY
+
+# -----------------------------------
 
 @csrf_exempt
+
 def save_inquiry(request):
 
-    if request.method == "POST":
+    if request.method!="POST":
 
-        try:
+        return JsonResponse({
 
-            data = json.loads(request.body)
+            "status":"error"
 
-            inquiry = LoanInquiry.objects.create(
+        })
 
-                full_name=data.get("full_name"),
+    try:
 
-                email=data.get("email"),
+        data=json.loads(request.body)
 
-                mobile=data.get("mobile"),
+        inquiry=LoanInquiry.objects.create(
 
-                loan_type=""
+            full_name=data.get(
 
-            )
+                "full_name"
 
-            send_notification(
+            ),
 
-                "New Loan Inquiry - PMB Finance",
+            email=data.get(
 
-                f"""
+                "email"
 
-NEW LOAN INQUIRY
+            ),
 
-Name: {inquiry.full_name}
+            mobile=data.get(
 
-Mobile: {inquiry.mobile}
+                "mobile"
 
-Email: {inquiry.email}
+            ),
 
-                """
+            loan_type=""
 
-            )
+        )
 
-            return JsonResponse({
+        send_notification(
 
-                "status":"success",
+            "New Loan Inquiry",
 
-                "id": inquiry.id
+            f"""
 
-            })
+Name : {inquiry.full_name}
 
-        except Exception as e:
+Mobile : {inquiry.mobile}
 
-            return JsonResponse({
+Email : {inquiry.email}
 
-                "status":"error",
+"""
 
-                "message": str(e)
+        )
 
-            })
+        return JsonResponse({
+
+            "status":"success",
+
+            "id":inquiry.id
+
+        })
+
+    except Exception as e:
+
+        return JsonResponse({
+
+            "status":"error",
+
+            "message":str(e)
+
+        })
+
 
 
 @csrf_exempt
+
 def update_loan_type(request):
 
-    if request.method == "POST":
+    try:
 
-        try:
+        data=json.loads(request.body)
 
-            data = json.loads(request.body)
+        inquiry=LoanInquiry.objects.get(
 
-            inquiry = LoanInquiry.objects.get(
-                id=data.get("id")
-            )
+            id=data.get("id")
 
-            inquiry.loan_type = data.get(
-                "loan_type"
-            )
+        )
 
-            inquiry.save()
+        inquiry.loan_type=data.get(
 
-            return JsonResponse({
+            "loan_type"
 
-                "status":"updated"
+        )
 
-            })
+        inquiry.save()
 
-        except Exception as e:
+        return JsonResponse({
 
-            return JsonResponse({
+            "status":"updated"
 
-                "status":"error",
+        })
 
-                "message": str(e)
+    except Exception as e:
 
-            })
+        return JsonResponse({
 
+            "status":"error",
+
+            "message":str(e)
+
+        })
+
+
+
+# -----------------------------------
+
+# AGRI INQUIRY
+
+# -----------------------------------
 
 @csrf_exempt
+
 def agro_inquiry(request):
 
-    if request.method == "POST":
+    try:
 
-        try:
+        data=json.loads(request.body)
 
-            data = json.loads(request.body)
+        inquiry=AgriInquiry.objects.create(
 
-            inquiry = AgriInquiry.objects.create(
+            full_name=data.get(
 
-                full_name=data.get("full_name"),
+                "full_name"
 
-                email=data.get("email"),
+            ),
 
-                mobile=data.get("mobile"),
+            email=data.get(
 
-                product_name=""
+                "email"
 
-            )
+            ),
 
-            send_notification(
+            mobile=data.get(
 
-                "New Agriculture Inquiry",
+                "mobile"
 
-                f"""
+            ),
 
-NEW AGRI INQUIRY
+            product_name=""
 
-Name: {inquiry.full_name}
+        )
 
-Mobile: {inquiry.mobile}
+        send_notification(
 
-Email: {inquiry.email}
+            "New Agri Inquiry",
 
-                """
+            f"""
 
-            )
+Name : {inquiry.full_name}
 
-            return JsonResponse({
+Mobile : {inquiry.mobile}
 
-                "status":"success",
+Email : {inquiry.email}
 
-                "id": inquiry.id
+"""
 
-            })
+        )
 
-        except Exception as e:
+        return JsonResponse({
 
-            return JsonResponse({
+            "status":"success",
 
-                "status":"error",
+            "id":inquiry.id
 
-                "message": str(e)
+        })
 
-            })
+    except Exception as e:
+
+        return JsonResponse({
+
+            "status":"error",
+
+            "message":str(e)
+
+        })
+
 
 
 @csrf_exempt
+
 def update_product(request):
 
-    if request.method == "POST":
+    try:
 
-        try:
+        data=json.loads(request.body)
 
-            data = json.loads(request.body)
+        inquiry=AgriInquiry.objects.get(
 
-            inquiry = AgriInquiry.objects.get(
-                id=data.get("id")
-            )
+            id=data.get("id")
 
-            inquiry.product_name = data.get(
-                "product_name"
-            )
+        )
 
-            inquiry.save()
+        inquiry.product_name=data.get(
 
-            return JsonResponse({
+            "product_name"
 
-                "status":"updated"
+        )
 
-            })
+        inquiry.save()
 
-        except Exception as e:
+        return JsonResponse({
 
-            return JsonResponse({
+            "status":"updated"
 
-                "status":"error",
+        })
 
-                "message": str(e)
+    except Exception as e:
 
-            })
+        return JsonResponse({
 
+            "status":"error",
+
+            "message":str(e)
+
+        })
+
+
+
+
+# -----------------------------------
+
+# ATTENDANCE SAVE ONLY
+
+# -----------------------------------
 
 @csrf_exempt
+
 def attendance_api(request):
 
-    if request.method == "POST":
+    try:
 
-        try:
+        data=json.loads(request.body)
 
-            data = json.loads(request.body)
+        emp=CustomUser.objects.get(
 
-            emp_id = data.get("employee_id")
+            employee_id=data.get(
 
-            punch_type = data.get("type")
-
-            time_str = data.get("time")
-
-            date_str = data.get("date")
-
-            emp = CustomUser.objects.get(
-                employee_id=emp_id
-            )
-
-            today = datetime.strptime(
-                date_str,
-                "%Y-%m-%d"
-            ).date()
-
-            obj, created = Attendance.objects.get_or_create(
-
-                employee=emp,
-
-                date=today
+                "employee_id"
 
             )
 
-            time_obj = datetime.strptime(
+        )
 
-                time_str,
+        date_obj=datetime.strptime(
 
-                "%I:%M:%S %p"
+            data.get("date"),
 
-            ).time()
+            "%Y-%m-%d"
 
-            if punch_type=="IN":
+        ).date()
 
-                obj.punch_in=time_obj
+        attendance,created=Attendance.objects.get_or_create(
 
-            elif punch_type=="OUT":
+            employee=emp,
 
-                obj.punch_out=time_obj
+            date=date_obj
 
-            obj.save()
+        )
 
-            return JsonResponse({
+        time_obj=datetime.strptime(
 
-                "status":"success"
+            data.get("time"),
 
-            })
+            "%I:%M:%S %p"
 
-        except Exception as e:
-
-            return JsonResponse({
-
-                "status":"error",
-
-                "message":str(e)
-
-            },status=400)
-
-    return JsonResponse({
-
-        "status":"error"
-
-    },status=405)
+        ).time()
 
 
+        punch=data.get("type")
+
+
+        if punch=="IN":
+
+            attendance.punch_in=time_obj
+
+        elif punch=="OUT":
+
+            attendance.punch_out=time_obj
+
+        elif punch=="LUNCH_START":
+
+            attendance.lunch_start=time_obj
+
+        elif punch=="LUNCH_END":
+
+            attendance.lunch_end=time_obj
+
+
+        attendance.save()
+
+        return JsonResponse({
+
+            "status":"success"
+
+        })
+
+
+    except Exception as e:
+
+        return JsonResponse({
+
+            "status":"error",
+
+            "message":str(e)
+
+        })
+
+
+
+# -----------------------------------
+
+# EMPLOYEES
+
+# -----------------------------------
 
 def get_employees(request):
 
     employees=list(
 
-        CustomUser.objects.all().values(
+        CustomUser.objects.all()
 
-            'employee_id',
+        .values(
 
-            'first_name',
+            "employee_id",
 
-            'department',
+            "first_name",
 
-            'designation'
+            "department",
+
+            "designation"
 
         )
 
@@ -333,8 +425,16 @@ def get_employees(request):
 
 
 
+# -----------------------------------
+
+# LEADS SAVE ONLY
+
+# -----------------------------------
+
 @csrf_exempt
+
 def lead_list_create(request):
+
 
     if request.method=="GET":
 
@@ -356,6 +456,7 @@ def lead_list_create(request):
 
         )
 
+
     if request.method=="POST":
 
         try:
@@ -374,7 +475,11 @@ def lead_list_create(request):
 
                 mobile=data.get("mobile"),
 
-                requiredLoanAmount=data.get("requiredLoanAmount"),
+                requiredLoanAmount=data.get(
+
+                    "requiredLoanAmount"
+
+                ),
 
                 location=data.get("location"),
 
@@ -388,11 +493,11 @@ def lead_list_create(request):
 
                 remarks=data.get("remarks"),
 
-                nextDate=data.get("nextDate"),
+                nextDate=data.get("nextDate") or None,
 
-                nextTime=data.get("nextTime"),
+                nextTime=data.get("nextTime") or None,
 
-                dob=data.get("dob"),
+                dob=data.get("dob") or None,
 
                 additional=data.get("additional")
 
@@ -417,24 +522,33 @@ def lead_list_create(request):
             })
 
 
+
+
 @csrf_exempt
+
 def update_lead(request,pk):
 
     try:
 
         data=json.loads(request.body)
 
-        lead=Lead.objects.get(id=pk)
+        lead=Lead.objects.get(
 
-        lead.fullName=data.get(
-            "fullName",
-            lead.fullName
+            id=pk
+
         )
 
-        lead.mobile=data.get(
-            "mobile",
-            lead.mobile
-        )
+        for key,value in data.items():
+
+            setattr(
+
+                lead,
+
+                key,
+
+                value
+
+            )
 
         lead.save()
 
@@ -455,18 +569,91 @@ def update_lead(request,pk):
         })
 
 
+
 @csrf_exempt
+
 def delete_lead(request,pk):
+
+    Lead.objects.get(
+
+        id=pk
+
+    ).delete()
+
+    return JsonResponse({
+
+        "status":"deleted"
+
+    })
+
+
+
+# -----------------------------------
+
+# SOFTWARE INQUIRY
+
+# -----------------------------------
+
+@csrf_exempt
+
+def save_software_inquiry(request):
 
     try:
 
-        Lead.objects.get(
-            id=pk
-        ).delete()
+        data=json.loads(request.body)
+
+        inquiry=SoftwareInquiry.objects.create(
+
+            full_name=data.get(
+
+                "full_name"
+
+            ),
+
+            email=data.get(
+
+                "email"
+
+            ),
+
+            mobile=data.get(
+
+                "mobile"
+
+            ),
+
+            service_type=data.get(
+
+                "service_type"
+
+            )
+
+        )
+
+
+        send_notification(
+
+            "Software Inquiry",
+
+            f"""
+
+Name : {inquiry.full_name}
+
+Mobile : {inquiry.mobile}
+
+Email : {inquiry.email}
+
+Service : {inquiry.service_type}
+
+"""
+
+        )
 
         return JsonResponse({
 
-            "status":"deleted"
+            "status":"success",
+
+            "id":inquiry.id
 
         })
 
@@ -479,66 +666,3 @@ def delete_lead(request,pk):
             "message":str(e)
 
         })
-
-
-
-@csrf_exempt
-def save_software_inquiry(request):
-
-    if request.method=="POST":
-
-        try:
-
-            data=json.loads(request.body)
-
-            inquiry=SoftwareInquiry.objects.create(
-
-                full_name=data.get("full_name"),
-
-                email=data.get("email"),
-
-                mobile=data.get("mobile"),
-
-                service_type=data.get(
-                    "service_type"
-                )
-
-            )
-
-            send_notification(
-
-                "New Software Inquiry",
-
-                f"""
-
-NEW SOFTWARE INQUIRY
-
-Name: {inquiry.full_name}
-
-Mobile: {inquiry.mobile}
-
-Email: {inquiry.email}
-
-Service: {inquiry.service_type}
-
-                """
-
-            )
-
-            return JsonResponse({
-
-                "status":"success",
-
-                "id": inquiry.id
-
-            })
-
-        except Exception as e:
-
-            return JsonResponse({
-
-                "status":"error",
-
-                "message":str(e)
-
-            })

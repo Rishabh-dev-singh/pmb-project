@@ -126,4 +126,4 @@ function AgroProduct() {
   )
 }
 
-export default AgroProduct
+export default AgroProduct;

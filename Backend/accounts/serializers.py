@@ -8,6 +8,5 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
     def validate(self, attrs):
-        # Yahan hum map kar rahe hain ki 'username' hi 'employee_id' hai
         data = super().validate(attrs)
         return data

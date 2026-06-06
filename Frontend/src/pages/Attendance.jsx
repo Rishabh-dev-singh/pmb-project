@@ -499,7 +499,7 @@ function Attendance() {
                   {location}
                 </Typography>
 
-              </Box>
+              </Box> 
 
               {/* BUTTONS */}
 
@@ -564,7 +564,7 @@ function Attendance() {
                     boxShadow:
                       "0 8px 18px rgba(244,63,94,0.35)",
 
-                    "&:hover": {
+                    "&:hover" : {
                       transform: "translateY(-2px)",
                     },
 
@@ -572,8 +572,8 @@ function Attendance() {
                       background: "#334155",
                       color: "#94a3b8",
                     },
-                  }}
-                >
+                  }} 
+                > 
                   Punch Out
                 </Button>
 
