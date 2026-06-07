@@ -203,43 +203,197 @@ function AddLead() {
           </div>
 
           {/* MIDDLE */}
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            <label style={labelStyle}>Firm Name</label>
-            <input name="source" onChange={handleChange} style={inputStyle} />
-            <label style={labelStyle}>Sub Source</label>
-            <input name="subSource" onChange={handleChange} style={inputStyle} />
-            <label style={labelStyle}>Lead Created *</label>
-            <input {...fieldProps("owner")} />
-            {errors.owner && <span style={{ color: "red", fontSize: 12 }}>{errors.owner}</span>}
-            <label style={labelStyle}>Status *</label>
-            <select {...fieldProps("progress")}>
-              <option value="">Select</option>
-              <option>PIPELINE</option>
-              <option>DOCUMENT LIST SEND</option>
-              <option>DOCUMENT RECIEVED</option>
-              <option>QUERY</option>
-              <option>DEDUPE CHECK</option>
-              <option>DEDUPE DONE</option>
-              <option>LOGIN</option>
-              <option>IN PROGRESS</option>
-              <option>UNDER WRITING</option>
-              <option> PD INITIATE</option>
-              <option>PD DONE</option>
-              <option>TECHNICAL INITIATE</option>
-              <option>TECHNICAL DONE</option>
-              <option>VALUATION INITIATE</option>
-              <option>VALUATION DONE</option>
-              <option>UNDER SANCTION</option>
-              <option>SANCTION</option>
-              <option>DOC KIT ASIGN</option>
-              <option>REJECT</option>
-              <option>DISBURSEMENT</option> 
-            </select>
-            {errors.progress && <span style={{ color: "red", fontSize: 12 }}>{errors.progress}</span>}
-            <label style={labelStyle}>Remarks</label>
-            <textarea name="remarks" onChange={handleChange} style={{ ...inputStyle, height: 60 }} />
-          </div>
 
+<div style={{ display: "flex", flexDirection: "column" }}>
+
+<label style={labelStyle}>
+Firm Name
+</label>
+
+<input
+name="source"
+onChange={handleChange}
+style={inputStyle}
+/>
+
+<label style={labelStyle}>
+Sub Source
+</label>
+
+<input
+name="subSource"
+onChange={handleChange}
+style={inputStyle}
+/>
+
+<label style={labelStyle}>
+Lead Created *
+</label>
+
+<input
+
+name="owner"
+
+defaultValue={
+
+isEditing
+
+? existingLead?.owner
+
+: localStorage.getItem(
+"employeeId"
+)
+
+}
+
+readOnly
+
+style={inputStyle}
+
+/>
+
+{errors.owner && (
+
+<span style={{
+
+color:"red",
+
+fontSize:12
+
+}}>
+
+{errors.owner}
+
+</span>
+
+)}
+
+<label style={labelStyle}>
+Status *
+</label>
+
+<select {...fieldProps("progress")}>
+
+<option value="">
+Select
+</option>
+
+<option>
+PIPELINE
+</option>
+
+<option>
+DOCUMENT LIST SEND
+</option>
+
+<option>
+DOCUMENT RECIEVED
+</option>
+
+<option>
+QUERY
+</option>
+
+<option>
+DEDUPE CHECK
+</option>
+
+<option>
+DEDUPE DONE
+</option>
+
+<option>
+LOGIN
+</option>
+
+<option>
+IN PROGRESS
+</option>
+
+<option>
+UNDER WRITING
+</option>
+
+<option>
+PD INITIATE
+</option>
+
+<option>
+PD DONE
+</option>
+
+<option>
+TECHNICAL INITIATE
+</option>
+
+<option>
+TECHNICAL DONE
+</option>
+
+<option>
+VALUATION INITIATE
+</option>
+
+<option>
+VALUATION DONE
+</option>
+
+<option>
+UNDER SANCTION
+</option>
+
+<option>
+SANCTION
+</option>
+
+<option>
+DOC KIT ASIGN
+</option>
+
+<option>
+REJECT
+</option>
+
+<option>
+DISBURSEMENT
+</option>
+
+</select>
+
+{errors.progress && (
+
+<span style={{
+
+color:"red",
+
+fontSize:12
+
+}}>
+
+{errors.progress}
+
+</span>
+
+)}
+
+<label style={labelStyle}>
+Remarks
+</label>
+
+<textarea
+
+name="remarks"
+
+onChange={handleChange}
+
+style={{
+...inputStyle,
+height:60
+}}
+
+/>
+
+</div>
           {/* RIGHT */}
           <div style={{ display: "flex", flexDirection: "column" }}>
             <label style={labelStyle}>Next Date</label>

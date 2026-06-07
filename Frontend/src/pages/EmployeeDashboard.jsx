@@ -134,38 +134,130 @@ useEffect(() => {
   // FETCH LEADS
   const fetchLeads = () => {
 
-    fetch("https://pmb.finance/api/leads/")
-      .then((res) => res.json())
-      .then((data) => setLeads(data))
-      .catch((err) => console.error(err));
-  };
+  const employeeId =
+    localStorage.getItem(
+      "employeeId"
+    );
 
-  useEffect(() => {
+  const superUsers = [
 
-    if (location.state?.refresh) {
-      fetchLeads();
-    }
+    "3800",
 
-  }, [location]);
+    "3801",
 
-  const formatAmount = (value) => {
+    "3802",
 
-    const num = parseFloat(value);
+    "3803"
 
-    if (isNaN(num)) return value;
+  ];
 
-    if (num >= 10000000)
-      return (num / 10000000).toFixed(2) + " Cr";
+  let url="";
 
-    if (num >= 100000)
-      return (num / 100000).toFixed(2) + " Lakh";
+  if(
 
-    if (num >= 1000)
-      return (num / 1000).toFixed(2) + " Thousand";
+    superUsers.includes(
+      employeeId
+    )
 
-    return num;
-  };
+  ){
 
+    url=
+
+    "https://pmb.finance/api/leads/?role=manager";
+
+  }
+
+  else{
+
+    url=
+
+`https://pmb.finance/api/leads/?owner=${encodeURIComponent(employeeId)}&role=employee`;
+
+  }
+
+  fetch(url)
+
+    .then((res)=>{
+
+      if(!res.ok){
+
+        throw new Error(
+          "Failed To Fetch Leads"
+        )
+
+      }
+
+      return res.json()
+
+    })
+
+    .then((data)=>{
+
+      setLeads(data)
+
+    })
+
+    .catch((err)=>{
+
+      console.error(err)
+
+    })
+
+};
+
+
+
+useEffect(() => {
+
+  if(
+
+    location.state
+    ?.refresh
+
+  ){
+
+    fetchLeads()
+
+  }
+
+}, [location]);
+
+
+
+const formatAmount = (value) => {
+
+  const num=parseFloat(value)
+
+  if(isNaN(num))
+  return value
+
+  if(num>=10000000)
+
+  return (
+
+    num/10000000
+
+  ).toFixed(2)+" Cr"
+
+  if(num>=100000)
+
+  return (
+
+    num/100000
+
+  ).toFixed(2)+" Lakh"
+
+  if(num>=1000)
+
+  return (
+
+    num/1000
+
+  ).toFixed(2)+" Thousand"
+
+  return num
+
+};
   // UPDATE STATUS
   const updateStatus = async (
     lead,
