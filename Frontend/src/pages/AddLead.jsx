@@ -226,6 +226,18 @@ function AddLead() {
               readOnly
               style={inputStyle}
             />
+            
+            {/* YEH CODE ADD HUA HAI - Name dikhane ke liye */}
+            <span style={{ 
+              fontSize: "13px", 
+              color: "#16a34a", 
+              fontWeight: "bold", 
+              marginTop: "4px", 
+              display: "block" 
+            }}>
+              {isEditing ? "" : `Name: ${localStorage.getItem("employeeName") || ""}`}
+            </span>
+
             {errors.owner && (
               <span style={{ color: "red", fontSize: 12 }}>{errors.owner}</span>
             )}
