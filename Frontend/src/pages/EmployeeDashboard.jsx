@@ -434,21 +434,14 @@ function EmployeeDashboard() {
           )}
 
           {/* LEADS */}
+         {/* LEADS */}
           {activePanel === "leads" && (
             <Paper sx={card}>
-              <Typography
-                variant="h5"
-                sx={{ mb: 2, fontSize: { xs: "20px", md: "30px" } }}
-              >
+              <Typography variant="h5" sx={{ mb: 2, fontSize: { xs: "20px", md: "30px" } }}>
                 Lead Tracker
               </Typography>
 
-              <Button
-                variant="contained"
-                onClick={downloadExcel}
-                fullWidth={isMobile}
-                sx={{ mb: 2, background: "#16a34a" }}
-              >
+              <Button variant="contained" onClick={downloadExcel} fullWidth={isMobile} sx={{ mb: 2, background: "#16a34a" }}>
                 Download Your Lead
               </Button>
 
@@ -461,16 +454,18 @@ function EmployeeDashboard() {
               />
 
               <TableContainer sx={{ overflowX: "auto" }}>
-                <Table sx={{ minWidth: 1000 }}>
+                <Table sx={{ minWidth: 1200 }}>
                   <TableHead>
                     <TableRow>
                       <TableCell>SR</TableCell>
                       <TableCell>Customer Name</TableCell>
                       <TableCell>Contact</TableCell>
-                      <TableCell>Address</TableCell>
+                      <TableCell>Loan Amount</TableCell>
                       <TableCell>Created By</TableCell>
-                      <TableCell>Amount</TableCell>
+                      <TableCell>Bank Name</TableCell>
+                      <TableCell>RM Name</TableCell>
                       <TableCell>Status</TableCell>
+                      <TableCell>Lead Date</TableCell>
                       <TableCell>Edit</TableCell>
                     </TableRow>
                   </TableHead>
@@ -480,23 +475,20 @@ function EmployeeDashboard() {
                         <TableCell>{i + 1}</TableCell>
                         <TableCell>{l.fullName}</TableCell>
                         <TableCell>{l.mobile}</TableCell>
-                        <TableCell>{l.location}</TableCell>
-
-                        {/* UPDATED OWNER CELL TO SHOW ID + NAME */}
+                        <TableCell>{formatAmount(l.requiredLoanAmount)}</TableCell>
+                        
                         <TableCell>
                           {l.owner} {empMap[l.owner] ? <span style={{ color: "#16a34a", fontWeight: "600" }}>({empMap[l.owner]})</span> : ""}
                         </TableCell>
 
-                        <TableCell>{formatAmount(l.requiredLoanAmount)}</TableCell>
+                        <TableCell>{l.bankName || "-"}</TableCell>
+                        <TableCell>{l.rmName || "-"}</TableCell>
+
                         <TableCell>
                           <select
                             value={l.progress || ""}
                             onChange={(e) => updateStatus(l, e.target.value)}
-                            style={{
-                              padding: "8px",
-                              borderRadius: "8px",
-                              minWidth: "170px"
-                            }}
+                            style={{ padding: "8px", borderRadius: "8px", minWidth: "150px" }}
                           >
                             <option value="">Select</option>
                             <option>PIPELINE</option>
@@ -508,7 +500,7 @@ function EmployeeDashboard() {
                             <option>LOGIN</option>
                             <option>IN PROGRESS</option>
                             <option>UNDER WRITING</option>
-                            <option> PD INITIATE</option>
+                            <option>PD INITIATE</option>
                             <option>PD DONE</option>
                             <option>TECHNICAL INITIATE</option>
                             <option>TECHNICAL DONE</option>
@@ -521,6 +513,9 @@ function EmployeeDashboard() {
                             <option>DISBURSEMENT</option>
                           </select>
                         </TableCell>
+
+                        <TableCell>{l.created_at ? new Date(l.created_at).toLocaleDateString() : "-"}</TableCell>
+
                         <TableCell>
                           <IconButton onClick={() => handleEdit(l)}>
                             <EditIcon color="primary" />
