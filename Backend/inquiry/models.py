@@ -1,82 +1,228 @@
 from django.db import models
-from django.conf import settings  
-# Import line ko aise update kar do:
+from django.conf import settings
+
 
 class LoanInquiry(models.Model):
-    full_name = models.CharField(max_length=200)
-    email = models.EmailField(blank=True, null=True)
-    mobile = models.CharField(max_length=15)
-    loan_type = models.CharField(max_length=100, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    full_name=models.CharField(
+        max_length=200
+    )
+
+    email=models.EmailField(
+        blank=True,
+        null=True
+    )
+
+    mobile=models.CharField(
+        max_length=15
+    )
+
+    loan_type=models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    created_at=models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
+
         return self.full_name
- 
+
+
 
 class AgriInquiry(models.Model):
-    full_name = models.CharField(max_length=200) 
-    email = models.EmailField(blank=True, null=True)
-    mobile = models.CharField(max_length=15)
-    product_name = models.CharField(max_length=100, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    full_name=models.CharField(
+        max_length=200
+    )
+
+    email=models.EmailField(
+        blank=True,
+        null=True
+    )
+
+    mobile=models.CharField(
+        max_length=15
+    )
+
+    product_name=models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    created_at=models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
+
         return self.full_name
 
 
 
 
 class Attendance(models.Model):
-    employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add=True)
 
-    punch_in = models.TimeField(null=True, blank=True)
-    punch_out = models.TimeField(null=True, blank=True)
+    employee=models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
 
-    lunch_start = models.TimeField(null=True, blank=True)
-    lunch_end = models.TimeField(null=True, blank=True)
+    date=models.DateField(
+        auto_now_add=True
+    )
+
+    punch_in=models.TimeField(
+        null=True,
+        blank=True
+    )
+
+    punch_out=models.TimeField(
+        null=True,
+        blank=True
+    )
+
+    lunch_start=models.TimeField(
+        null=True,
+        blank=True
+    )
+
+    lunch_end=models.TimeField(
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
+
         return f"{self.employee.employee_id} - {self.date}"
 
 
- 
+
+
 class Lead(models.Model):
-    prospectType = models.CharField(max_length=50)
-    loanType = models.CharField(max_length=50)
-    salutation = models.CharField(max_length=10)
 
-    fullName = models.CharField(max_length=150)
-    mobile = models.CharField(max_length=15)
+    prospectType=models.CharField(
+        max_length=50
+    )
 
-    requiredLoanAmount = models.CharField(max_length=50)
-    location = models.CharField(max_length=200)
+    loanType=models.CharField(
+        max_length=50
+    )
 
-    owner = models.CharField(max_length=100)
-    progress = models.CharField(max_length=50)
+    salutation=models.CharField(
+        max_length=10
+    )
 
-    source = models.CharField(max_length=100, blank=True, null=True)
-    subSource = models.CharField(max_length=100, blank=True, null=True)
-    remarks = models.TextField(blank=True, null=True)
+    fullName=models.CharField(
+        max_length=150
+    )
 
-    nextDate = models.DateField(blank=True, null=True)
-    nextTime = models.TimeField(blank=True, null=True)
-    dob = models.DateField(blank=True, null=True)
+    mobile=models.CharField(
+        max_length=15
+    )
 
-    additional = models.CharField(max_length=200, blank=True, null=True)
+    requiredLoanAmount=models.CharField(
+        max_length=50
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    location=models.CharField(
+        max_length=200
+    )
+
+    owner=models.CharField(
+        max_length=100
+    )
+
+    # NEW FIELD ONLY
+    created_by=models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    progress=models.CharField(
+        max_length=50
+    )
+
+    source=models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    subSource=models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    remarks=models.TextField(
+        blank=True,
+        null=True
+    )
+
+    nextDate=models.DateField(
+        blank=True,
+        null=True
+    )
+
+    nextTime=models.TimeField(
+        blank=True,
+        null=True
+    )
+
+    dob=models.DateField(
+        blank=True,
+        null=True
+    )
+
+    additional=models.CharField(
+        max_length=200,
+        blank=True,
+        null=True
+    )
+
+    created_at=models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
+
         return f"{self.fullName} ({self.mobile})"
-    
+
+
+
 
 class SoftwareInquiry(models.Model):
-    full_name = models.CharField(max_length=200)
-    email = models.EmailField(blank=True, null=True)
-    mobile = models.CharField(max_length=15)
-    service_type = models.CharField(max_length=100, blank=True, null=True) # Website, AI, Game etc.
-    created_at = models.DateTimeField(auto_now_add=True)
+
+    full_name=models.CharField(
+        max_length=200
+    )
+
+    email=models.EmailField(
+        blank=True,
+        null=True
+    )
+
+    mobile=models.CharField(
+        max_length=15
+    )
+
+    service_type=models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
+
+    created_at=models.DateTimeField(
+        auto_now_add=True
+    )
 
     def __str__(self):
+
         return f"{self.full_name} - {self.service_type}"

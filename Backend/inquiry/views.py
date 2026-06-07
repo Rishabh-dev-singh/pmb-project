@@ -29,9 +29,7 @@ from .models import (
 
 
 # -----------------------------------
-
 # EMAIL FUNCTION
-
 # -----------------------------------
 
 def send_notification(subject, body):
@@ -63,13 +61,10 @@ def send_notification(subject, body):
 
 
 # -----------------------------------
-
 # LOAN INQUIRY
-
 # -----------------------------------
 
 @csrf_exempt
-
 def save_inquiry(request):
 
     if request.method!="POST":
@@ -86,23 +81,11 @@ def save_inquiry(request):
 
         inquiry=LoanInquiry.objects.create(
 
-            full_name=data.get(
+            full_name=data.get("full_name"),
 
-                "full_name"
+            email=data.get("email"),
 
-            ),
-
-            email=data.get(
-
-                "email"
-
-            ),
-
-            mobile=data.get(
-
-                "mobile"
-
-            ),
+            mobile=data.get("mobile"),
 
             loan_type=""
 
@@ -145,7 +128,6 @@ Email : {inquiry.email}
 
 
 @csrf_exempt
-
 def update_loan_type(request):
 
     try:
@@ -185,13 +167,10 @@ def update_loan_type(request):
 
 
 # -----------------------------------
-
-# AGRI INQUIRY
-
+# AGRI
 # -----------------------------------
 
 @csrf_exempt
-
 def agro_inquiry(request):
 
     try:
@@ -200,41 +179,13 @@ def agro_inquiry(request):
 
         inquiry=AgriInquiry.objects.create(
 
-            full_name=data.get(
+            full_name=data.get("full_name"),
 
-                "full_name"
+            email=data.get("email"),
 
-            ),
-
-            email=data.get(
-
-                "email"
-
-            ),
-
-            mobile=data.get(
-
-                "mobile"
-
-            ),
+            mobile=data.get("mobile"),
 
             product_name=""
-
-        )
-
-        send_notification(
-
-            "New Agri Inquiry",
-
-            f"""
-
-Name : {inquiry.full_name}
-
-Mobile : {inquiry.mobile}
-
-Email : {inquiry.email}
-
-"""
 
         )
 
@@ -259,7 +210,6 @@ Email : {inquiry.email}
 
 
 @csrf_exempt
-
 def update_product(request):
 
     try:
@@ -298,15 +248,11 @@ def update_product(request):
 
 
 
-
 # -----------------------------------
-
-# ATTENDANCE SAVE ONLY
-
+# ATTENDANCE
 # -----------------------------------
 
 @csrf_exempt
-
 def attendance_api(request):
 
     try:
@@ -347,9 +293,7 @@ def attendance_api(request):
 
         ).time()
 
-
         punch=data.get("type")
-
 
         if punch=="IN":
 
@@ -367,7 +311,6 @@ def attendance_api(request):
 
             attendance.lunch_end=time_obj
 
-
         attendance.save()
 
         return JsonResponse({
@@ -375,7 +318,6 @@ def attendance_api(request):
             "status":"success"
 
         })
-
 
     except Exception as e:
 
@@ -390,9 +332,7 @@ def attendance_api(request):
 
 
 # -----------------------------------
-
 # EMPLOYEES
-
 # -----------------------------------
 
 def get_employees(request):
@@ -426,15 +366,32 @@ def get_employees(request):
 
 
 # -----------------------------------
-
-# LEADS SAVE ONLY
-
+# LEADS DEBUG VERSION
 # -----------------------------------
 
 @csrf_exempt
-
 def lead_list_create(request):
 
+    print("\n========= DEBUG =========")
+
+    print("USER :", request.user)
+
+    print(
+        "AUTH :",
+        request.user.is_authenticated
+    )
+
+    print(
+        "METHOD :",
+        request.method
+    )
+
+    print(
+        "HEADERS :",
+        dict(request.headers)
+    )
+
+    print("=========================\n")
 
     if request.method=="GET":
 
@@ -456,12 +413,15 @@ def lead_list_create(request):
 
         )
 
-
     if request.method=="POST":
 
         try:
 
-            data=json.loads(request.body)
+            data=json.loads(
+
+                request.body
+
+            )
 
             lead=Lead.objects.create(
 
@@ -476,14 +436,14 @@ def lead_list_create(request):
                 mobile=data.get("mobile"),
 
                 requiredLoanAmount=data.get(
-
                     "requiredLoanAmount"
-
                 ),
 
                 location=data.get("location"),
 
                 owner=data.get("owner"),
+
+                created_by=request.user,
 
                 progress=data.get("progress"),
 
@@ -493,13 +453,29 @@ def lead_list_create(request):
 
                 remarks=data.get("remarks"),
 
-                nextDate=data.get("nextDate") or None,
+                nextDate=data.get(
+                    "nextDate"
+                ) or None,
 
-                nextTime=data.get("nextTime") or None,
+                nextTime=data.get(
+                    "nextTime"
+                ) or None,
 
-                dob=data.get("dob") or None,
+                dob=data.get(
+                    "dob"
+                ) or None,
 
-                additional=data.get("additional")
+                additional=data.get(
+                    "additional"
+                )
+
+            )
+
+            print(
+
+                "LEAD SAVED BY :",
+
+                request.user
 
             )
 
@@ -513,6 +489,8 @@ def lead_list_create(request):
 
         except Exception as e:
 
+            print(e)
+
             return JsonResponse({
 
                 "status":"error",
@@ -523,55 +501,36 @@ def lead_list_create(request):
 
 
 
-
 @csrf_exempt
-
 def update_lead(request,pk):
 
-    try:
+    data=json.loads(
+        request.body
+    )
 
-        data=json.loads(request.body)
+    lead=Lead.objects.get(
+        id=pk
+    )
 
-        lead=Lead.objects.get(
+    for key,value in data.items():
 
-            id=pk
-
+        setattr(
+            lead,
+            key,
+            value
         )
 
-        for key,value in data.items():
+    lead.save()
 
-            setattr(
+    return JsonResponse({
 
-                lead,
+        "status":"success"
 
-                key,
-
-                value
-
-            )
-
-        lead.save()
-
-        return JsonResponse({
-
-            "status":"success"
-
-        })
-
-    except Exception as e:
-
-        return JsonResponse({
-
-            "status":"error",
-
-            "message":str(e)
-
-        })
+    })
 
 
 
 @csrf_exempt
-
 def delete_lead(request,pk):
 
     Lead.objects.get(
@@ -589,13 +548,10 @@ def delete_lead(request,pk):
 
 
 # -----------------------------------
-
-# SOFTWARE INQUIRY
-
+# SOFTWARE
 # -----------------------------------
 
 @csrf_exempt
-
 def save_software_inquiry(request):
 
     try:
@@ -604,48 +560,15 @@ def save_software_inquiry(request):
 
         inquiry=SoftwareInquiry.objects.create(
 
-            full_name=data.get(
+            full_name=data.get("full_name"),
 
-                "full_name"
+            email=data.get("email"),
 
-            ),
-
-            email=data.get(
-
-                "email"
-
-            ),
-
-            mobile=data.get(
-
-                "mobile"
-
-            ),
+            mobile=data.get("mobile"),
 
             service_type=data.get(
-
                 "service_type"
-
             )
-
-        )
-
-
-        send_notification(
-
-            "Software Inquiry",
-
-            f"""
-
-Name : {inquiry.full_name}
-
-Mobile : {inquiry.mobile}
-
-Email : {inquiry.email}
-
-Service : {inquiry.service_type}
-
-"""
 
         )
 

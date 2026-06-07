@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   Box,
-  Typography,
+  Typography, 
   TextField,
   Button,
   InputAdornment,
@@ -11,7 +11,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// Backend URL
 const BASE_URL = "https://pmb.finance";
 
 function EmployeeLogin() {
@@ -21,7 +20,7 @@ function EmployeeLogin() {
 
   const [formData, setFormData] = useState({
     employeeId: "",
-    password: "",
+    password: "", 
   });
 
   const handleChange = (e) => {
@@ -45,12 +44,10 @@ function EmployeeLogin() {
 
       console.log("LOGIN SUCCESS:", res.data);
 
-      // Save Tokens and Profile Data to localStorage
       if (res.data.access) {
         localStorage.setItem("accessToken", res.data.access);
         localStorage.setItem("refreshToken", res.data.refresh);
         
-        // Save user profile details sent from backend
         localStorage.setItem("employeeName", res.data.name);
         localStorage.setItem("designation", res.data.designation);
         localStorage.setItem("department", res.data.department);
@@ -79,7 +76,7 @@ function EmployeeLogin() {
             <Typography color="error" sx={{ mb: 2, textAlign: "center" }}>
               {errorMsg}
             </Typography>
-          )}
+          )} 
 
           <form onSubmit={handleSubmit}>
             <TextField
