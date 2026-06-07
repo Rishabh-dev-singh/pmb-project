@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 function AddLead() {
   const formRef = useRef({});
   const [errors, setErrors] = useState({});
+  const [ownerValue, setOwnerValue] = useState(""); // 1. Added state to make owner controlled
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -11,10 +12,12 @@ function AddLead() {
   const existingLead = location.state?.lead;
   const isEditing = !!existingLead;
 
-  // Pre-fill form if we are in Edit Mode
+  // Pre-fill form if we are in Edit Mode AND Handle Owner Logic
   useEffect(() => {
     if (isEditing) {
       formRef.current = { ...existingLead };
+      setOwnerValue(existingLead.owner || ""); // Set controlled owner value
+
       // DOM inputs ko update karo taaki user ko purana data dikhe
       const inputs = document.querySelectorAll("input, select, textarea");
       inputs.forEach((input) => {
@@ -22,6 +25,11 @@ function AddLead() {
           input.value = existingLead[input.name];
         }
       });
+    } else {
+      // 2. If NOT editing, automatically set owner to employeeId from localStorage
+      const empId = localStorage.getItem("employeeId") || "";
+      setOwnerValue(empId);
+      formRef.current.owner = empId; // Store inside formRef so validation passes!
     }
   }, [isEditing, existingLead]);
 
@@ -131,7 +139,7 @@ function AddLead() {
       setErrors((prev) => ({ ...prev, location: "Required" }));
       return;
     }
-    window.location.href = `https://www.google.com/maps/search/${encodeURIComponent(location)}`;
+    window.location.href = `https://www.google.com/maps/search/$${encodeURIComponent(location)}`;
   };
 
   const inputStyle = { padding: "10px", border: "none", borderBottom: "1px solid #ccc", outline: "none", fontSize: "14px", background: "transparent", width: "100%" };
@@ -203,206 +211,73 @@ function AddLead() {
           </div>
 
           {/* MIDDLE */}
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <label style={labelStyle}>Firm Name</label>
+            <input name="source" onChange={handleChange} style={inputStyle} />
 
-<div style={{ display: "flex", flexDirection: "column" }}>
+            <label style={labelStyle}>Sub Source</label>
+            <input name="subSource" onChange={handleChange} style={inputStyle} />
 
-<label style={labelStyle}>
-Firm Name
-</label>
+            <label style={labelStyle}>Lead Created *</label>
+            {/* 3. Changed owner to use controlled `value` instead of `defaultValue` */}
+            <input
+              name="owner"
+              value={ownerValue}
+              readOnly
+              style={inputStyle}
+            />
+            {errors.owner && (
+              <span style={{ color: "red", fontSize: 12 }}>{errors.owner}</span>
+            )}
 
-<input
-name="source"
-onChange={handleChange}
-style={inputStyle}
-/>
+            <label style={labelStyle}>Status *</label>
+            <select {...fieldProps("progress")}>
+              <option value="">Select</option>
+              <option>PIPELINE</option>
+              <option>DOCUMENT LIST SEND</option>
+              <option>DOCUMENT RECIEVED</option>
+              <option>QUERY</option>
+              <option>DEDUPE CHECK</option>
+              <option>DEDUPE DONE</option>
+              <option>LOGIN</option>
+              <option>IN PROGRESS</option>
+              <option>UNDER WRITING</option>
+              <option>PD INITIATE</option>
+              <option>PD DONE</option>
+              <option>TECHNICAL INITIATE</option>
+              <option>TECHNICAL DONE</option>
+              <option>VALUATION INITIATE</option>
+              <option>VALUATION DONE</option>
+              <option>UNDER SANCTION</option>
+              <option>SANCTION</option>
+              <option>DOC KIT ASIGN</option>
+              <option>REJECT</option>
+              <option>DISBURSEMENT</option>
+            </select>
+            {errors.progress && (
+              <span style={{ color: "red", fontSize: 12 }}>{errors.progress}</span>
+            )}
 
-<label style={labelStyle}>
-Sub Source
-</label>
+            <label style={labelStyle}>Remarks</label>
+            <textarea
+              name="remarks"
+              onChange={handleChange}
+              style={{ ...inputStyle, height: 60 }}
+            />
+          </div>
 
-<input
-name="subSource"
-onChange={handleChange}
-style={inputStyle}
-/>
-
-<label style={labelStyle}>
-Lead Created *
-</label>
-
-<input
-
-name="owner"
-
-defaultValue={
-
-isEditing
-
-? existingLead?.owner
-
-: localStorage.getItem(
-"employeeId"
-)
-
-}
-
-readOnly
-
-style={inputStyle}
-
-/>
-
-{errors.owner && (
-
-<span style={{
-
-color:"red",
-
-fontSize:12
-
-}}>
-
-{errors.owner}
-
-</span>
-
-)}
-
-<label style={labelStyle}>
-Status *
-</label>
-
-<select {...fieldProps("progress")}>
-
-<option value="">
-Select
-</option>
-
-<option>
-PIPELINE
-</option>
-
-<option>
-DOCUMENT LIST SEND
-</option>
-
-<option>
-DOCUMENT RECIEVED
-</option>
-
-<option>
-QUERY
-</option>
-
-<option>
-DEDUPE CHECK
-</option>
-
-<option>
-DEDUPE DONE
-</option>
-
-<option>
-LOGIN
-</option>
-
-<option>
-IN PROGRESS
-</option>
-
-<option>
-UNDER WRITING
-</option>
-
-<option>
-PD INITIATE
-</option>
-
-<option>
-PD DONE
-</option>
-
-<option>
-TECHNICAL INITIATE
-</option>
-
-<option>
-TECHNICAL DONE
-</option>
-
-<option>
-VALUATION INITIATE
-</option>
-
-<option>
-VALUATION DONE
-</option>
-
-<option>
-UNDER SANCTION
-</option>
-
-<option>
-SANCTION
-</option>
-
-<option>
-DOC KIT ASIGN
-</option>
-
-<option>
-REJECT
-</option>
-
-<option>
-DISBURSEMENT
-</option>
-
-</select>
-
-{errors.progress && (
-
-<span style={{
-
-color:"red",
-
-fontSize:12
-
-}}>
-
-{errors.progress}
-
-</span>
-
-)}
-
-<label style={labelStyle}>
-Remarks
-</label>
-
-<textarea
-
-name="remarks"
-
-onChange={handleChange}
-
-style={{
-...inputStyle,
-height:60
-}}
-
-/>
-
-</div>
           {/* RIGHT */}
           <div style={{ display: "flex", flexDirection: "column" }}>
             <label style={labelStyle}>Next Date</label>
             <input type="date" name="nextDate" onChange={handleChange} style={inputStyle} />
+            
             <label style={labelStyle}>Next Time</label>
             <input type="time" name="nextTime" onChange={handleChange} style={inputStyle} />
+            
             <label style={labelStyle}>DOB *</label>
             <input type="text" name="dob" onChange={handleChange} style={inputStyle} placeholder="DD/MM/YYYY" />
             {errors.dob && <span style={{ color: "red", fontSize: 12 }}>{errors.dob}</span>}
+            
             <label style={labelStyle}>Additional</label>
             <input name="additional" onChange={handleChange} style={inputStyle} />
           </div>
