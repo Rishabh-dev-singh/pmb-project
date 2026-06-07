@@ -137,14 +137,6 @@ class Lead(models.Model):
         max_length=100
     )
 
-    # NEW FIELD ONLY
-    created_by=models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True
-    )
-
     progress=models.CharField(
         max_length=50
     )
