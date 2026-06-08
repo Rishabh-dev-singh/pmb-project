@@ -27,13 +27,13 @@ function AddLead() {
       const inputs = document.querySelectorAll("input, select, textarea");
       inputs.forEach((input) => {
         if (input.name && existingLead[input.name]) {
-          input.value = existingLead[input.name];
+          input.value = existingLead[input.name].toString().toUpperCase();
         }
       });
     } else {
       const empId = localStorage.getItem("employeeId") || "";
-      setOwnerValue(empId);
-      formRef.current.owner = empId;
+      setOwnerValue(empId.toUpperCase());
+      formRef.current.owner = empId.toUpperCase();
     }
   }, [isEditing, existingLead]);
 
@@ -42,8 +42,10 @@ function AddLead() {
     "requiredLoanAmount", "progress", "owner", "location", "dob"
   ];
 
+  // यहाँ बदलाव किया गया है: वैल्यू को .toUpperCase() में बदला जा रहा है
   const handleChange = (e) => {
-    formRef.current[e.target.name] = e.target.value?.trim();
+    const val = e.target.value?.trim();
+    formRef.current[e.target.name] = val ? val.toUpperCase() : "";
     setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
 
@@ -89,7 +91,9 @@ function AddLead() {
     let formData = { ...formRef.current };
     const inputs = document.querySelectorAll("input, select, textarea");
     inputs.forEach((input) => {
-      if (input.name && input.name !== "dobPicker") formData[input.name] = input.value;
+      if (input.name && input.name !== "dobPicker") {
+        formData[input.name] = input.value ? input.value.toUpperCase() : "";
+      }
     });
 
     if (formData.dob && formData.dob.includes("/")) {
@@ -123,7 +127,7 @@ function AddLead() {
     window.location.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(loc)}`;
   };
 
-  const inputStyle = { padding: "10px", border: "none", borderBottom: "1px solid #ccc", outline: "none", fontSize: "14px", background: "transparent", width: "100%" };
+  const inputStyle = { padding: "10px", border: "none", borderBottom: "1px solid #ccc", outline: "none", fontSize: "14px", background: "transparent", width: "100%", textTransform: "uppercase" };
   const labelStyle = { fontSize: "15px", fontWeight: "600", marginTop: "14px", color: "#16a34a" };
   const fieldProps = (name) => ({ name, onChange: handleChange, onBlur: handleBlur, onFocus: handleFocus, style: inputStyle });
 
@@ -183,7 +187,6 @@ function AddLead() {
             <label style={labelStyle}>Sub Source</label>
             <input name="subSource" onChange={handleChange} style={inputStyle} />
 
-            {/* NEW FIELDS ADDED */}
             <label style={labelStyle}>Bank Name</label>
             <input list="bank-list" name="bankName" onChange={handleChange} style={inputStyle} placeholder="Type or Select Bank" />
             <datalist id="bank-list">
