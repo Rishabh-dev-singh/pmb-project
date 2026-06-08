@@ -223,39 +223,54 @@ function EmployeeDashboard() {
   );
 
   // DOWNLOAD 
+ 
   const downloadExcel = () => {
+   
     const headers = [
       "SR",
-      "Name",
-      "Mobile",
-      "Address",
-      "Owner",
-      "Amount",
-      "Progress"
+      "Customer Name",
+      "Contact",
+      "Loan Amount",
+      "Created By",
+      "Bank Name",
+      "RM Name",
+      "Status",
+      "Lead Date"
     ];
 
-    const rows = filteredLeads.map((l, i) => [
-      i + 1,
-      l.fullName,
-      l.mobile,
-      l.location,
-      l.owner,
-      formatAmount(l.requiredLoanAmount),
-      l.progress
-    ]);
+    const rows = filteredLeads.map((l, i) => {
+      // Created By column me employee code + name dono string wrap kiye hain takia CSV break na ho
+      const creatorName = empMap[l.owner] ? ` (${empMap[l.owner]})` : "";
+      const createdByField = `"${l.owner || ""}${creatorName}"`;
+      
+      return [
+        i + 1,
+        `"${l.fullName || ""}"`, 
+        `"${l.mobile || ""}"`,
+        `"${formatAmount(l.requiredLoanAmount) || ""}"`,
+        createdByField,
+        `"${l.bankName || "-"}"`,
+        `"${l.rmName || "-"}"`,
+        `"${l.progress || ""}"`,
+        `"${l.created_at ? new Date(l.created_at).toLocaleDateString() : "-"}"`
+      ];
+    });
 
-    let csv =
-      "data:text/csv;charset=utf-8," +
-      [headers, ...rows]
-        .map((e) => e.join(","))
-        .join("\n");
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
 
+    // 4. Download Trigger Mechanism
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    link.href = encodeURI(csv);
-    link.download = "leads.csv";
-    link.click();
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", "leads_report.csv");
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
-
   // CARD STYLE
   const card = {
     p: { xs: 2, md: 3 },

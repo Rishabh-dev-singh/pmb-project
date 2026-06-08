@@ -42,7 +42,6 @@ function AddLead() {
     "requiredLoanAmount", "progress", "owner", "location", "dob"
   ];
 
-  // यहाँ बदलाव किया गया है: वैल्यू को .toUpperCase() में बदला जा रहा है
   const handleChange = (e) => {
     const val = e.target.value?.trim();
     formRef.current[e.target.name] = val ? val.toUpperCase() : "";
