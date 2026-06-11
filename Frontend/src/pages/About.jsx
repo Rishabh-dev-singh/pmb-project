@@ -669,7 +669,7 @@ function About() {
       fontSize: "1.5rem"
     }}
   >
-    Adv.Ms. Santosh Soni
+    Ms.Santosh Soni Advocate 
   </Typography>
 
   <Typography
