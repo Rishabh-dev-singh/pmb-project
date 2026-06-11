@@ -5,6 +5,8 @@ function AddLead() {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [bankList, setBankList] = useState([]); 
+  const [empMap, setEmpMap] = useState({}); // NAYA STATE: Employee ID se Name map karne ke liye
+  
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -16,16 +18,28 @@ function AddLead() {
   const isSuperUser = ["3800", "3801", "3802", "3803"].includes(currentEmpId);
 
   useEffect(() => {
+    // Bank List Fetch
     fetch("https://pmb.finance/api/banks/")
       .then((res) => res.json())
       .then((data) => setBankList(data))
       .catch((err) => console.error("Bank list fetch error:", err));
+
+    // Employee List Fetch (ID se Name dikhane ke liye)
+    fetch("https://pmb.finance/api/employees/")
+      .then((res) => res.json())
+      .then((data) => {
+        const map = {};
+        data.forEach((emp) => {
+          map[emp.employee_id] = emp.first_name;
+        });
+        setEmpMap(map);
+      })
+      .catch((err) => console.error("Error fetching employees map:", err));
   }, []);
 
   // Set initial form data for Edit or New Lead
   useEffect(() => {
     if (isEditing) {
-      // API se aaya hua data state me set kar rahe hain
       setFormData({ ...existingLead });
     } else {
       setFormData({ owner: currentEmpId.toUpperCase() });
@@ -202,7 +216,7 @@ function AddLead() {
             <label style={labelStyle}>RM Name</label>
             <input name="rmName" value={formData.rmName || ""} onChange={handleChange} style={inputStyle} placeholder="Enter RM Name" />
 
-            {/* ASSIGN TO OTHERS (SUPER USER LOGIC) */}
+            {/* ASSIGN TO OTHERS (SUPER USER LOGIC WITH AUTO NAME) */}
             <label style={labelStyle}>Lead Created (Owner ID) *</label>
             <input 
               name="owner" 
@@ -211,14 +225,22 @@ function AddLead() {
               readOnly={!isSuperUser} 
               style={{
                 ...inputStyle, 
-                background: isSuperUser ? "#e0f2fe" : "#eee", // Super user ko alag dikhne ke liye light blue bg diya hai
+                background: isSuperUser ? "#e0f2fe" : "#eee",
                 borderBottom: isSuperUser ? "2px solid #0284c7" : "1px solid #ccc",
                 cursor: isSuperUser ? "text" : "not-allowed"
               }} 
             />
-            {isSuperUser && (
-              <span style={{ fontSize: "11px", color: "#0284c7", marginTop: "4px" }}>
-                * Super User Access: You can edit ID to assign this lead to someone else.
+            {/* Yaha par dynamically naam show hoga */}
+            {formData.owner && (
+              <span style={{ 
+                fontSize: "13px", 
+                marginTop: "6px", 
+                fontWeight: "600",
+                color: empMap[formData.owner] ? "#16a34a" : "#ef4444" // Sahi ID pe Green, galat pe Red
+              }}>
+                {empMap[formData.owner] 
+                  ? `👤 Assigned To: ${empMap[formData.owner]}` 
+                  : "⚠️ ID Not Found"}
               </span>
             )}
             
