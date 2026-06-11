@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
 function AddLead() {
-  const [formData, setFormData] = useState({});
+  const initialFormState = {
+    prospectType: "", loanType: "", salutation: "", fullName: "", mobile: "",
+    requiredLoanAmount: "", location: "", source: "", subSource: "",
+    bankName: "", rmName: "", owner: "", progress: "", nextDate: "",
+    nextTime: "", dob: "", additional: ""
+  };
+
+  const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState({});
   const [bankList, setBankList] = useState([]); 
   const [empMap, setEmpMap] = useState({}); 
@@ -36,7 +43,7 @@ function AddLead() {
           return !empId.includes("admin") && !fName.includes("admin");
         });
 
-        setEmpList(onlyEmployees); // Dropdown me ab sirf real employees dikhenge
+        setEmpList(onlyEmployees); 
         
         const map = {};
         data.forEach((emp) => {
@@ -47,12 +54,11 @@ function AddLead() {
       .catch((err) => console.error("Error fetching employees map:", err));
   }, []);
 
-  // Set initial form data for Edit or New Lead
   useEffect(() => {
     if (isEditing) {
-      setFormData({ ...existingLead });
+      setFormData({ ...initialFormState, ...existingLead });
     } else {
-      setFormData({ owner: currentEmpId.toUpperCase() });
+      setFormData({ ...initialFormState, owner: currentEmpId.toUpperCase() });
     }
   }, [isEditing, existingLead, currentEmpId]);
 
@@ -111,7 +117,6 @@ function AddLead() {
       return;
     }
     
-    // Copy the form data for submission
     let payload = { ...formData };
 
     if (payload.dob && payload.dob.includes("/")) {
@@ -173,21 +178,31 @@ function AddLead() {
             <label style={labelStyle}>Prospect Type *</label>
             <select {...fieldProps("prospectType")}>
               <option value="">Select</option>
-              <option>Company</option><option>Individual</option>
+              {/* FIX: yaha value UPPERCASE kardi hai matching ke liye */}
+              <option value="COMPANY">Company</option>
+              <option value="INDIVIDUAL">Individual</option>
             </select>
             {errors.prospectType && <span style={{ color: "red", fontSize: 12 }}>{errors.prospectType}</span>}
 
             <label style={labelStyle}>Loan Type *</label>
             <select {...fieldProps("loanType")}>
               <option value="">Select</option>
-              <option>Business Loan</option><option>Term Loan</option><option>Personal Loan</option>
-              <option>Home Loan</option><option>LAP Loan</option><option>OD Limit</option>
-              <option>CC Limit</option><option>Solar Loan</option><option>CV && CE</option>
+              <option value="BUSINESS LOAN">Business Loan</option>
+              <option value="TERM LOAN">Term Loan</option>
+              <option value="PERSONAL LOAN">Personal Loan</option>
+              <option value="HOME LOAN">Home Loan</option>
+              <option value="LAP LOAN">LAP Loan</option>
+              <option value="OD LIMIT">OD Limit</option>
+              <option value="CC LIMIT">CC Limit</option>
+              <option value="SOLAR LOAN">Solar Loan</option>
+              <option value="CV && CE">CV & CE</option>
             </select>
 
             <label style={labelStyle}>Salutation *</label>
             <select {...fieldProps("salutation")}>
-              <option value="">Select</option><option>Mr.</option><option>Ms.</option>
+              <option value="">Select</option>
+              <option value="MR.">Mr.</option>
+              <option value="MS.">Ms.</option>
             </select>
 
             <label style={labelStyle}>Full Name *</label>
@@ -205,7 +220,7 @@ function AddLead() {
             <label style={labelStyle}>Location *</label>
             <div style={{ display: "flex", gap: "10px" }}>
               <input {...fieldProps("location")} />
-              <button onClick={openMap} style={{ background: "#16a34a", color: "#fff", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer" }}>📍 Map</button>
+              <button onClick={openMap} style={{ background: "#16a34a", color: "#fff", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", whiteSpace: "nowrap" }}>📍 Map</button>
             </div>
           </div>
 
@@ -241,9 +256,8 @@ function AddLead() {
                 }}
               >
                 <option value="">Select Employee to Assign</option>
-                {/* Ab yaha empList se filtered data hi dikhega, jisme admin nahi hai */}
                 {empList.map((emp) => (
-                  <option key={emp.employee_id} value={emp.employee_id}>
+                  <option key={emp.employee_id} value={emp.employee_id.toUpperCase()}>
                     {emp.employee_id} - {emp.first_name}
                   </option>
                 ))}
@@ -262,7 +276,6 @@ function AddLead() {
               />
             )}
             
-            {/* Confirmation text niche */}
             {isSuperUser && formData.owner && (
               <span style={{ 
                 fontSize: "13px", 
@@ -279,12 +292,26 @@ function AddLead() {
             <label style={labelStyle}>Status *</label>
             <select {...fieldProps("progress")}>
                <option value="">Select</option>
-               <option>PIPELINE</option><option>DOCUMENT LIST SEND</option><option>DOCUMENT RECIEVED</option>
-               <option>QUERY</option><option>DEDUPE CHECK</option><option>DEDUPE DONE</option><option>LOGIN</option>
-               <option>IN PROGRESS</option><option>UNDER WRITING</option><option>PD INITIATE</option>
-               <option>PD DONE</option><option>TECHNICAL INITIATE</option><option>TECHNICAL DONE</option>
-               <option>VALUATION INITIATE</option><option>VALUATION DONE</option><option>UNDER SANCTION</option>
-               <option>SANCTION</option><option>DOC KIT ASIGN</option><option>REJECT</option><option>DISBURSEMENT</option>
+               <option value="PIPELINE">PIPELINE</option>
+               <option value="DOCUMENT LIST SEND">DOCUMENT LIST SEND</option>
+               <option value="DOCUMENT RECIEVED">DOCUMENT RECIEVED</option>
+               <option value="QUERY">QUERY</option>
+               <option value="DEDUPE CHECK">DEDUPE CHECK</option>
+               <option value="DEDUPE DONE">DEDUPE DONE</option>
+               <option value="LOGIN">LOGIN</option>
+               <option value="IN PROGRESS">IN PROGRESS</option>
+               <option value="UNDER WRITING">UNDER WRITING</option>
+               <option value="PD INITIATE">PD INITIATE</option>
+               <option value="PD DONE">PD DONE</option>
+               <option value="TECHNICAL INITIATE">TECHNICAL INITIATE</option>
+               <option value="TECHNICAL DONE">TECHNICAL DONE</option>
+               <option value="VALUATION INITIATE">VALUATION INITIATE</option>
+               <option value="VALUATION DONE">VALUATION DONE</option>
+               <option value="UNDER SANCTION">UNDER SANCTION</option>
+               <option value="SANCTION">SANCTION</option>
+               <option value="DOC KIT ASIGN">DOC KIT ASIGN</option>
+               <option value="REJECT">REJECT</option>
+               <option value="DISBURSEMENT">DISBURSEMENT</option>
             </select>
           </div>
 
