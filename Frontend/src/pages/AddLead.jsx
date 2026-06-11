@@ -5,7 +5,8 @@ function AddLead() {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [bankList, setBankList] = useState([]); 
-  const [empMap, setEmpMap] = useState({}); // NAYA STATE: Employee ID se Name map karne ke liye
+  const [empMap, setEmpMap] = useState({}); 
+  const [empList, setEmpList] = useState([]); // NAYA STATE: Dropdown me list dikhane ke liye
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,10 +25,11 @@ function AddLead() {
       .then((data) => setBankList(data))
       .catch((err) => console.error("Bank list fetch error:", err));
 
-    // Employee List Fetch (ID se Name dikhane ke liye)
+    // Employee List Fetch (ID se Name map aur Dropdown ke liye)
     fetch("https://pmb.finance/api/employees/")
       .then((res) => res.json())
       .then((data) => {
+        setEmpList(data); // Dropdown ke liye pura data save kiya
         const map = {};
         data.forEach((emp) => {
           map[emp.employee_id] = emp.first_name;
@@ -216,31 +218,52 @@ function AddLead() {
             <label style={labelStyle}>RM Name</label>
             <input name="rmName" value={formData.rmName || ""} onChange={handleChange} style={inputStyle} placeholder="Enter RM Name" />
 
-            {/* ASSIGN TO OTHERS (SUPER USER LOGIC WITH AUTO NAME) */}
+            {/* ASSIGN TO OTHERS (SUPER USER DROPDOWN LOGIC) */}
             <label style={labelStyle}>Lead Created (Owner ID) *</label>
-            <input 
-              name="owner" 
-              value={formData.owner || ""} 
-              onChange={handleChange} 
-              readOnly={!isSuperUser} 
-              style={{
-                ...inputStyle, 
-                background: isSuperUser ? "#e0f2fe" : "#eee",
-                borderBottom: isSuperUser ? "2px solid #0284c7" : "1px solid #ccc",
-                cursor: isSuperUser ? "text" : "not-allowed"
-              }} 
-            />
-            {/* Yaha par dynamically naam show hoga */}
-            {formData.owner && (
+            {isSuperUser ? (
+              <select 
+                name="owner" 
+                value={formData.owner || ""} 
+                onChange={handleChange} 
+                style={{
+                  ...inputStyle, 
+                  background: "#e0f2fe",
+                  borderBottom: "2px solid #0284c7",
+                  cursor: "pointer"
+                }}
+              >
+                <option value="">Select Employee to Assign</option>
+                {empList.map((emp) => (
+                  <option key={emp.employee_id} value={emp.employee_id}>
+                    {emp.employee_id} - {emp.first_name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input 
+                name="owner" 
+                value={formData.owner || ""} 
+                readOnly 
+                style={{
+                  ...inputStyle, 
+                  background: "#eee",
+                  borderBottom: "1px solid #ccc",
+                  cursor: "not-allowed"
+                }} 
+              />
+            )}
+            
+            {/* Confirmation text niche */}
+            {isSuperUser && formData.owner && (
               <span style={{ 
                 fontSize: "13px", 
                 marginTop: "6px", 
                 fontWeight: "600",
-                color: empMap[formData.owner] ? "#16a34a" : "#ef4444" // Sahi ID pe Green, galat pe Red
+                color: empMap[formData.owner] ? "#16a34a" : "#ef4444" 
               }}>
                 {empMap[formData.owner] 
                   ? `👤 Assigned To: ${empMap[formData.owner]}` 
-                  : "⚠️ ID Not Found"}
+                  : "⚠️ Please Select Valid ID"}
               </span>
             )}
             
