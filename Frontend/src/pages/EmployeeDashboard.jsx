@@ -76,11 +76,9 @@ function EmployeeDashboard() {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [mobileOpen, setMobileOpen] = useState(false);
   
-  // NAYE STATES: Sidebar toggle aur Dark mode ke liye
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
 
-  // Material UI Theme configuration for Dark/Light mode
   const appTheme = createTheme({
     palette: {
       mode: darkMode ? "dark" : "light",
@@ -357,10 +355,17 @@ function EmployeeDashboard() {
           </List>
         </Drawer>
 
-        {/* MAIN */}
-        <Box sx={{ flexGrow: 1, width: `calc(100% - ${sidebarWidth}px)`, overflow: "hidden", transition: "width 0.3s ease" }}>
+        {/* MAIN CONTAINER: Scrollable banaya gaya hai */}
+        <Box sx={{ 
+          flexGrow: 1, 
+          width: `calc(100% - ${sidebarWidth}px)`, 
+          transition: "width 0.3s ease",
+          height: "100vh",       // FIX: Set height to 100 viewport height
+          overflowY: "auto",     // FIX: Enable vertical scroll for content
+          overflowX: "hidden"
+        }}>
           
-          {/* TOP HEADER */}
+          {/* TOP HEADER: Sticky banaya gaya hai */}
           <Box
             sx={{
               display: "flex",
@@ -368,7 +373,10 @@ function EmployeeDashboard() {
               alignItems: "center",
               p: { xs: 1.5, md: 2 },
               bgcolor: "background.paper",
-              boxShadow: 1
+              boxShadow: 1,
+              position: "sticky", // FIX: Header fix ho jayega
+              top: 0,             // FIX: Top edge par
+              zIndex: 1100        // FIX: Scroll hone wale content ke upar dikhega
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>

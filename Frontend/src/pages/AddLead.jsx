@@ -11,6 +11,10 @@ function AddLead() {
   const existingLead = location.state?.lead;
   const isEditing = !!existingLead;
 
+  // CURRENT LOGGED IN USER ID AUR SUPER USER CHECK
+  const currentEmpId = localStorage.getItem("employeeId") || "";
+  const isSuperUser = ["3800", "3801", "3802", "3803"].includes(currentEmpId);
+
   useEffect(() => {
     fetch("https://pmb.finance/api/banks/")
       .then((res) => res.json())
@@ -24,10 +28,9 @@ function AddLead() {
       // API se aaya hua data state me set kar rahe hain
       setFormData({ ...existingLead });
     } else {
-      const empId = localStorage.getItem("employeeId") || "";
-      setFormData({ owner: empId.toUpperCase() });
+      setFormData({ owner: currentEmpId.toUpperCase() });
     }
-  }, [isEditing, existingLead]);
+  }, [isEditing, existingLead, currentEmpId]);
 
   const requiredFields = [
     "prospectType", "loanType", "salutation", "fullName", "mobile",
@@ -35,7 +38,7 @@ function AddLead() {
   ];
 
   const handleChange = (e) => {
-    const val = e.target.value?.trimStart(); // trim() ki jagah trimStart() taki space type kar sakein
+    const val = e.target.value?.trimStart(); 
     setFormData((prev) => ({
       ...prev,
       [e.target.name]: val ? val.toUpperCase() : ""
@@ -117,14 +120,12 @@ function AddLead() {
   const openMap = () => {
     const loc = formData.location;
     if (!loc) { setErrors((prev) => ({ ...prev, location: "Required" })); return; }
-    // Fixed string interpolation syntax error from 0{...} to ${...}
     window.location.href = `http://googleusercontent.com/maps.google.com/${encodeURIComponent(loc)}`;
   };
 
   const inputStyle = { padding: "10px", border: "none", borderBottom: "1px solid #ccc", outline: "none", fontSize: "14px", background: "transparent", width: "100%", textTransform: "uppercase" };
   const labelStyle = { fontSize: "15px", fontWeight: "600", marginTop: "14px", color: "#16a34a" };
   
-  // Notice we added `value: formData[name] || ""` to make the inputs controlled
   const fieldProps = (name) => ({ 
     name, 
     value: formData[name] || "", 
@@ -201,8 +202,25 @@ function AddLead() {
             <label style={labelStyle}>RM Name</label>
             <input name="rmName" value={formData.rmName || ""} onChange={handleChange} style={inputStyle} placeholder="Enter RM Name" />
 
-            <label style={labelStyle}>Lead Created *</label>
-            <input name="owner" value={formData.owner || ""} readOnly style={inputStyle} />
+            {/* ASSIGN TO OTHERS (SUPER USER LOGIC) */}
+            <label style={labelStyle}>Lead Created (Owner ID) *</label>
+            <input 
+              name="owner" 
+              value={formData.owner || ""} 
+              onChange={handleChange} 
+              readOnly={!isSuperUser} 
+              style={{
+                ...inputStyle, 
+                background: isSuperUser ? "#e0f2fe" : "#eee", // Super user ko alag dikhne ke liye light blue bg diya hai
+                borderBottom: isSuperUser ? "2px solid #0284c7" : "1px solid #ccc",
+                cursor: isSuperUser ? "text" : "not-allowed"
+              }} 
+            />
+            {isSuperUser && (
+              <span style={{ fontSize: "11px", color: "#0284c7", marginTop: "4px" }}>
+                * Super User Access: You can edit ID to assign this lead to someone else.
+              </span>
+            )}
             
             <label style={labelStyle}>Status *</label>
             <select {...fieldProps("progress")}>
