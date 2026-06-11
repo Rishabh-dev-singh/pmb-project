@@ -170,6 +170,17 @@ function EmployeeDashboard() {
     return num;
   };
 
+  // NAYA FUNCTION: Date ko strictly DD/MM/YYYY format me convert karne ke liye
+  const formatDate = (dateString) => {
+    if (!dateString) return "-";
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return "-";
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   const updateStatus = async (lead, newStatus) => {
     if (!newStatus) return;
 
@@ -236,7 +247,8 @@ function EmployeeDashboard() {
         `"${l.bankName || "-"}"`,
         `"${l.rmName || "-"}"`,
         `"${l.progress || ""}"`,
-        `"${l.created_at ? new Date(l.created_at).toLocaleDateString() : "-"}"`
+        // Yaha par formatDate function lagaya hai
+        `"${formatDate(l.created_at)}"`
       ];
     });
 
@@ -521,7 +533,8 @@ function EmployeeDashboard() {
                             </select>
                           </TableCell>
 
-                          <TableCell sx={{ color: "text.primary" }}>{l.created_at ? new Date(l.created_at).toLocaleDateString() : "-"}</TableCell>
+                          {/* Yaha bhi UI par sahi format dikhane ke liye update kar diya */}
+                          <TableCell sx={{ color: "text.primary" }}>{formatDate(l.created_at)}</TableCell>
 
                           <TableCell>
                             <IconButton onClick={() => handleEdit(l)}>
