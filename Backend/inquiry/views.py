@@ -53,9 +53,7 @@ def update_loan_type(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
 
-# -----------------------------------
-# AGRI INQUIRY
-# -----------------------------------
+
 @csrf_exempt
 def agro_inquiry(request):
     try:
@@ -82,9 +80,7 @@ def update_product(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
 
-# -----------------------------------
-# ATTENDANCE
-# -----------------------------------
+
 @csrf_exempt
 def attendance_api(request):
     try:
@@ -93,7 +89,7 @@ def attendance_api(request):
         date_obj = datetime.strptime(data.get("date"), "%Y-%m-%d").date()
         attendance, created = Attendance.objects.get_or_create(employee=emp, date=date_obj)
         time_obj = datetime.strptime(data.get("time"), "%I:%M:%S %p").time()
-        punch = data.get("type")
+        punch = data.get("type") 
         if punch == "IN":
             attendance.punch_in = time_obj
         elif punch == "OUT":
@@ -107,16 +103,12 @@ def attendance_api(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
 
-# -----------------------------------
-# EMPLOYEES
-# -----------------------------------
+ 
 def get_employees(request):
     employees = list(CustomUser.objects.all().values("employee_id", "first_name", "department", "designation"))
     return JsonResponse(employees, safe=False)
 
-# -----------------------------------
-# LEADS
-# -----------------------------------
+
 @csrf_exempt
 def lead_list_create(request):
     if request.method == "GET":
@@ -143,7 +135,7 @@ def lead_list_create(request):
                 location=data.get("location"),
                 owner=data.get("owner"),
                 
-                # NAYE COLUMNS KO SAVE KARNE KA LOGIC
+    
                 bankName=data.get("bankName"),
                 rmName=data.get("rmName"),
                 
@@ -180,9 +172,7 @@ def delete_lead(request, pk):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
 
-# -----------------------------------
-# SOFTWARE INQUIRY
-# -----------------------------------
+
 @csrf_exempt
 def save_software_inquiry(request):
     try:
@@ -197,13 +187,10 @@ def save_software_inquiry(request):
         return JsonResponse({"status": "success", "id": inquiry.id})
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
-# -----------------------------------
-# GET DYNAMIC BANK LIST
-# -----------------------------------
+
 @csrf_exempt
 def get_bank_list(request):
     try:
-        # Lead table se saare non-empty aur unique bank names nikalna
         banks = list(Lead.objects.exclude(bankName__isnull=True).exclude(bankName__exact='').values_list('bankName', flat=True).distinct())
         return JsonResponse(banks, safe=False)
     except Exception as e:

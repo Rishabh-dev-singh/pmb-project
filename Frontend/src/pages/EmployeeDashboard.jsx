@@ -40,7 +40,8 @@ import {
   ListAlt,
   Edit as EditIcon,
   Logout as LogoutIcon,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  MouseOutlined
 } from "@mui/icons-material";
 
 import { useNavigate, useLocation } from "react-router-dom";

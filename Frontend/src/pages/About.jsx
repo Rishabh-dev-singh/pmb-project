@@ -13,7 +13,7 @@ import {
 import MdImg from "../assets/MD_img.jpeg";
 import BusinessHead from "../assets/Bussiness_Head.png";
 import ItHead from "../assets/IT_Head.png";
-
+import LegalHead from "../assets/Legel_Head.jpeg";
 function About() {
 
   const sectionTitleStyle = {
@@ -620,6 +620,96 @@ function About() {
                     </Typography>
 
                   </Card>
+ <Divider
+  orientation="vertical"
+  flexItem
+  sx={{
+    borderColor: "rgba(255,255,255,0.2)",
+    display: { xs: "none", md: "block" },
+    mx: 1
+  }}
+/>
+
+<Card
+  sx={{
+    flex: 1,
+    p: 3,
+    borderRadius: "18px",
+    background: "rgba(255,255,255,0.03)",
+    color: "#fff",
+    textAlign: "center",
+    boxShadow: "none",
+    transition: "0.3s ease",
+    "&:hover": {
+      transform: "translateY(-6px)",
+      background: "rgba(255,255,255,0.09)",
+      boxShadow: "0 10px 25px rgba(0,0,0,0.15)"
+    }
+  }}
+>
+  <Box
+    component="img"
+    src={LegalHead}
+    alt="Legal Head"
+    sx={{
+      width: { xs: 140, md: 160 },
+      height: { xs: 140, md: 160 },
+      borderRadius: "50%",
+      objectFit: "cover",
+      objectPosition: "top center",
+      border: "4px solid rgba(255,255,255,0.25)",
+      boxShadow: "0 10px 25px rgba(0,0,0,0.25)",
+      mb: 2.5
+    }}
+  />
+
+  <Typography
+    sx={{
+      fontWeight: 800,
+      fontSize: "1.5rem"
+    }}
+  >
+    Adv.Ms. Santosh Soni
+  </Typography>
+
+  <Typography
+    sx={{
+      fontSize: "0.78rem",
+      letterSpacing: 1.5,
+      textTransform: "uppercase",
+      color: "#b2dfdb",
+      mb: 2
+    }}
+  >
+    Head of Legal & Compliance
+  </Typography>
+
+  <Divider
+    sx={{
+      borderColor: "rgba(255,255,255,0.15)",
+      mb: 2
+    }}
+  />
+
+  <Typography
+  sx={{
+    fontSize: "0.92rem",
+    lineHeight: 1.8,
+    color: "rgba(255,255,255,0.92)",
+    textAlign: "justify"
+  }}
+>
+  Experienced legal and compliance professional with strong expertise in
+  corporate law, regulatory compliance, contract management, and legal
+  advisory services. Responsible for overseeing legal affairs,
+  contracts, and compliance frameworks across the organization. Known
+  for ensuring transparent and legally compliant operations while
+  safeguarding the company's interests. Committed to upholding high
+  standards of corporate governance, ethical practices, and operational
+  integrity, contributing to the organization's credibility and
+  sustainable growth.
+</Typography>
+</Card>
 
                 </Box>
               </Card>
@@ -637,3 +727,4 @@ function About() {
 }
 
 export default About;
+
