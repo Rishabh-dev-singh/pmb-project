@@ -6,7 +6,7 @@ function AddLead() {
   const [errors, setErrors] = useState({});
   const [bankList, setBankList] = useState([]); 
   const [empMap, setEmpMap] = useState({}); 
-  const [empList, setEmpList] = useState([]); // NAYA STATE: Dropdown me list dikhane ke liye
+  const [empList, setEmpList] = useState([]); 
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,11 +25,19 @@ function AddLead() {
       .then((data) => setBankList(data))
       .catch((err) => console.error("Bank list fetch error:", err));
 
-    // Employee List Fetch (ID se Name map aur Dropdown ke liye)
+    // Employee List Fetch
     fetch("https://pmb.finance/api/employees/")
       .then((res) => res.json())
       .then((data) => {
-        setEmpList(data); // Dropdown ke liye pura data save kiya
+        // FILTER: Admin wali IDs ko dropdown se hatane ke liye logic
+        const onlyEmployees = data.filter(emp => {
+          const empId = emp.employee_id ? emp.employee_id.toLowerCase() : "";
+          const fName = emp.first_name ? emp.first_name.toLowerCase() : "";
+          return !empId.includes("admin") && !fName.includes("admin");
+        });
+
+        setEmpList(onlyEmployees); // Dropdown me ab sirf real employees dikhenge
+        
         const map = {};
         data.forEach((emp) => {
           map[emp.employee_id] = emp.first_name;
@@ -233,6 +241,7 @@ function AddLead() {
                 }}
               >
                 <option value="">Select Employee to Assign</option>
+                {/* Ab yaha empList se filtered data hi dikhega, jisme admin nahi hai */}
                 {empList.map((emp) => (
                   <option key={emp.employee_id} value={emp.employee_id}>
                     {emp.employee_id} - {emp.first_name}
