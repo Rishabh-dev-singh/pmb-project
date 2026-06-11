@@ -8,6 +8,7 @@ import {
   Divider,
   Card,
   CardContent,
+  Avatar,
   Stack
 } from "@mui/material";
 
@@ -71,7 +72,8 @@ function About() {
               maxWidth: "800px",
               mx: "auto",
               opacity: 0.9,
-              lineHeight: 1.6
+              lineHeight: 1.6,
+              px: 2
             }}
           >
             Empowering Financial Growth & Promoting Sustainable Organic Living
@@ -175,13 +177,13 @@ function About() {
 
         {/* ================= LEADERSHIP SECTION ================= */}
         <Box sx={{ mt: 10 }}>
-          <Typography variant="h3" align="center" sx={{ fontWeight: 900, color: primaryColor, mb: 6 }}>
+          <Typography variant="h3" align="center" sx={{ fontWeight: 900, color: primaryColor, mb: 6, fontSize: { xs: "2rem", md: "3rem" } }}>
             Our Leadership
           </Typography>
 
           <Grid container spacing={4}>
             
-            {/* --- MD CARD (Horizontal Layout for better space) --- */}
+            {/* --- MD CARD (Responsive Layout for Mobile) --- */}
             <Grid item xs={12}>
               <Card 
                 sx={{ 
@@ -193,45 +195,44 @@ function About() {
                   bgcolor: "#fff"
                 }}
               >
-                {/* Image Side */}
+                {/* Image Side - Fixed for Mobile */}
                 <Box 
                   sx={{ 
-                    width: { xs: "100%", md: "35%" }, 
+                    flex: { xs: "none", md: "0 0 35%" }, // Fixed Width issue
                     bgcolor: primaryColor, 
                     display: "flex", 
                     flexDirection: "column", 
                     alignItems: "center", 
                     justifyContent: "center",
-                    p: 4,
+                    p: { xs: 4, md: 4 },
                     color: "#fff"
                   }}
                 >
-                  {/* FIX: objectPosition "top center" ensures hair doesn't get cut */}
                   <Box 
                     component="img"
                     src={MdImg} 
                     alt="Managing Director"
                     sx={{ 
-                      width: 180, 
-                      height: 180, 
+                      width: { xs: 150, md: 180 }, 
+                      height: { xs: 150, md: 180 }, 
                       borderRadius: "50%",
                       objectFit: "cover",
-                      objectPosition: "top center", 
+                      objectPosition: "top center", // Protects hair/head cut
                       border: "5px solid rgba(255,255,255,0.2)", 
                       mb: 2 
                     }} 
                   />
-                  <Typography variant="h5" sx={{ fontWeight: 800, textAlign: "center" }}>
+                  <Typography variant="h5" sx={{ fontWeight: 800, textAlign: "center", fontSize: { xs: "1.3rem", md: "1.5rem" } }}>
                     Mr. Manvendra Singh
                   </Typography>
-                  <Typography variant="body2" sx={{ color: "#a5d6a7", letterSpacing: 1, textTransform: "uppercase", mt: 1, fontWeight: 600 }}>
+                  <Typography variant="body2" sx={{ color: "#a5d6a7", letterSpacing: 1, textTransform: "uppercase", mt: 1, fontWeight: 600, textAlign: "center" }}>
                     Founder & Managing Director
                   </Typography>
                 </Box>
 
-                {/* Content Side */}
-                <CardContent sx={{ p: { xs: 3, md: 5 }, width: { xs: "100%", md: "65%" } }}>
-                  <Typography sx={{ fontSize: "1rem", lineHeight: 1.8, color: "#444", textAlign: "justify", mb: 4 }}>
+                {/* Content Side - Responsive Text & Padding */}
+                <Box sx={{ flex: 1, p: { xs: 2.5, sm: 4, md: 5 } }}>
+                  <Typography sx={{ fontSize: { xs: "0.95rem", md: "1rem" }, lineHeight: 1.8, color: "#444", textAlign: { xs: "left", md: "justify" }, mb: 4 }}>
                     Our Managing Director is a young and visionary entrepreneur who strongly believes that the true strength of any organization lies in its people. He values every team member as an important contributor to the company’s growth, success, and long-term vision. His leadership is built on trust, transparency, innovation, and collective progress.
                     <br /><br />
                     With a vision to make modern financial services more accessible across India, he is focused on building strong partnerships with leading lenders and financial institutions to expand the company’s reach and create better financial opportunities for individuals and businesses.
@@ -239,7 +240,7 @@ function About() {
                     His objective is not only to achieve business growth, but also to establish a reliable and customer-centric platform that empowers people to achieve their goals with confidence. Through innovation, strong values, and long-term relationships, he continues to lead the company towards sustainable growth and excellence.
                   </Typography>
 
-                  <Grid container spacing={2}>
+                  <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <Typography sx={{ fontWeight: 700, color: primaryColor, display: "flex", alignItems: "center", gap: 1 }}>
                         📍 Office Address
@@ -269,7 +270,7 @@ function About() {
                       </Box>
                     </Grid>
                   </Grid>
-                </CardContent>
+                </Box>
               </Card>
             </Grid>
 
@@ -288,7 +289,7 @@ function About() {
                 desc: "Experienced Software and AI/ML Engineer with strong expertise in software development, artificial intelligence, machine learning, and modern technologies. Holds a Master's Degree in Computer Science with excellent academic performance and has successfully worked on multiple software and AI-driven projects. Passionate about building scalable systems, innovative products, and modern technology solutions while leading technical excellence and digital transformation."
               },
               {
-                name: "Ms. Santosh Soni Advocate",
+                name: "Ms. Santosh Soni",
                 role: "Head of Legal & Compliance",
                 img: LegalHead,
                 desc: "Experienced legal and compliance professional with strong expertise in corporate law, regulatory compliance, contract management, and legal advisory services. Responsible for overseeing legal affairs, contracts, and compliance frameworks across the organization. Known for ensuring transparent and legally compliant operations while safeguarding the company's interests. Committed to upholding high standards of corporate governance."
@@ -313,7 +314,6 @@ function About() {
                   }}
                 >
                   <Box sx={{ bgcolor: "#fff", display: "flex", justifyContent: "center", pt: 4, pb: 2 }}>
-                    {/* FIX: objectPosition "top center" applied here too */}
                     <Box 
                       component="img"
                       src={leader.img} 
@@ -329,7 +329,7 @@ function About() {
                       }} 
                     />
                   </Box>
-                  <CardContent sx={{ flexGrow: 1, textAlign: "center", bgcolor: "#fff", pt: 0 }}>
+                  <CardContent sx={{ flexGrow: 1, textAlign: "center", bgcolor: "#fff", pt: 0, px: { xs: 2, md: 3 } }}>
                     <Typography sx={{ fontWeight: 800, color: primaryColor, fontSize: "1.2rem", mb: 0.5 }}>
                       {leader.name}
                     </Typography>
@@ -337,7 +337,7 @@ function About() {
                       {leader.role}
                     </Typography>
                     <Divider sx={{ mb: 2, mx: "auto", width: "40px", borderColor: "#ddd" }} />
-                    <Typography sx={{ fontSize: "0.9rem", color: "#666", lineHeight: 1.7, textAlign: "justify" }}>
+                    <Typography sx={{ fontSize: "0.9rem", color: "#666", lineHeight: 1.7, textAlign: { xs: "left", md: "justify" } }}>
                       {leader.desc}
                     </Typography>
                   </CardContent>
