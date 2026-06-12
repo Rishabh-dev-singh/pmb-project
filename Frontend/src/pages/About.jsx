@@ -289,13 +289,13 @@ function About() {
                 desc: "Experienced Software and AI/ML Engineer with strong expertise in software development, artificial intelligence, machine learning, and modern technologies. Holds a Master's Degree in Computer Science with excellent academic performance and has successfully worked on multiple software and AI-driven projects. Passionate about building scalable systems, innovative products, and modern technology solutions while leading technical excellence and digital transformation."
               },
               {
-                name: "Ms. Santosh Soni",
+                name: "Ms. Santosh Soni Advocate",               
                 role: "Head of Legal & Compliance",
                 img: LegalHead,
                 desc: "Experienced legal and compliance professional with strong expertise in corporate law, regulatory compliance, contract management, and legal advisory services. Responsible for overseeing legal affairs, contracts, and compliance frameworks across the organization. Known for ensuring transparent and legally compliant operations while safeguarding the company's interests. Committed to upholding high standards of corporate governance."
               },
               {
-                name: "Mr. Tara Chand",
+                name: "Mr. T. C. Sharma",
                 role: "Head of Finance & Accounts",
                 img: FinanceHead,
                 desc: "Accomplished Finance and Accounts professional with over 18 years of experience across manufacturing, banking, NBFC, and financial services sectors. Expertise in financial reporting, GST compliance, taxation, audit management, budgeting, MIS reporting, inventory control, and business finance. Proven track record of driving financial excellence, regulatory compliance, operational efficiency, and strategic decision-making."
