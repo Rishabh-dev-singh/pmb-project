@@ -98,7 +98,8 @@ function EmployeeDashboard() {
     const initializeDashboard = async () => {
       try {
         // 1. Fetch user profile securely (replaces localStorage)
-        const profileRes = await api.get('/profile/');
+        // FIX: Hata diya gaya leading slash
+        const profileRes = await api.get('profile/');
         const userData = profileRes.data;
         
         setEmployeeData({
@@ -109,7 +110,8 @@ function EmployeeDashboard() {
         });
 
         // 2. Fetch Employee map securely
-        const empRes = await api.get('/employees/');
+        // FIX: Hata diya gaya leading slash
+        const empRes = await api.get('employees/');
         const map = {};
         empRes.data.forEach((emp) => {
           map[emp.employee_id] = emp.first_name;
@@ -140,7 +142,8 @@ function EmployeeDashboard() {
   const handleLogout = async () => {
     try {
       // NAYA: Backend ko logout hit karein taaki cookie destroy ho jaye
-      await api.post('/logout/');
+      // FIX: Hata diya gaya leading slash
+      await api.post('logout/');
     } catch (e) {
       console.error("Logout Error:", e);
     }
@@ -155,9 +158,11 @@ function EmployeeDashboard() {
     let url = "";
 
     if (superUsers.includes(empId)) {
-      url = "/leads/?role=manager"; // Base URL pehle se api.js mein hai
+      // FIX: Hata diya gaya leading slash
+      url = "leads/?role=manager"; 
     } else {
-      url = `/leads/?owner=${encodeURIComponent(empId)}&role=employee`;
+      // FIX: Hata diya gaya leading slash
+      url = `leads/?owner=${encodeURIComponent(empId)}&role=employee`;
     }
 
     try {
@@ -204,9 +209,10 @@ function EmployeeDashboard() {
 
     try {
       // NAYA: Secure PUT request via api instance
-      const res = await api.put(`/leads/${lead.id}/update/`, {
+      // FIX: Hata diya gaya leading slash
+      const res = await api.put(`leads/${lead.id}/update/`, {
         progress: newStatus,
-        updated_by: employeeData.name, // NAYA: Ab ye actual profile name use karega
+        updated_by: employeeData.name, 
         updated_at: new Date().toISOString()
       });
 
