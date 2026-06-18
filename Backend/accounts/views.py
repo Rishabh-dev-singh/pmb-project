@@ -1,19 +1,20 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny # AllowAny add karna zaroori hai
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
-# 1. LOGIN VIEW (Secure with HttpOnly Cookies)
+# 1. LOGIN VIEW 
 class LoginView(APIView):
+    permission_classes = [AllowAny] # ISSE JARUR ADD KAREIN!
+
     def post(self, request):
-        employee_id = request.data.get('username')
+        employee_id = request.data.get('employee_id')
         password = request.data.get('password')
 
-        # Generic error check to prevent user enumeration
         try:
             user = User.objects.get(employee_id=employee_id)
         except User.DoesNotExist:
@@ -22,7 +23,6 @@ class LoginView(APIView):
         if user.check_password(password) and user.is_active:
             refresh = RefreshToken.for_user(user)
             
-            # Response object
             response = Response({
                 'status': 'success',
                 'name': user.first_name,
@@ -30,28 +30,28 @@ class LoginView(APIView):
                 'department': user.department,
             }, status=status.HTTP_200_OK)
 
-            # Access token ko HttpOnly Cookie mein set karein
             response.set_cookie(
                 key='access_token',
                 value=str(refresh.access_token),
-                httponly=True,   # JS se access nahi hoga (Prevents XSS)
-                secure=True,     # Sirf HTTPS par chalega
-                samesite='Lax'   # CSRF protection
+                httponly=True,
+                secure=True,
+                samesite='Lax'
             )
             return response
         
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-# 2. LOGOUT VIEW (Clears the cookie)
+# 2. LOGOUT VIEW
 class LogoutView(APIView):
+    permission_classes = [IsAuthenticated] # Logout ke liye login hona zaroori hai
     def post(self, request):
         response = Response({'message': 'Logged out successfully'})
         response.delete_cookie('access_token')
         return response
 
-# 3. USER PROFILE VIEW (Fetch user data securely)
+# 3. USER PROFILE VIEW
 class UserProfileView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated] # Profile ke liye login hona zaroori hai
 
     def get(self, request):
         user = request.user
