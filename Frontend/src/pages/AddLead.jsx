@@ -288,7 +288,7 @@ function AddLead() {
                   : "⚠️ Please Select Valid ID"}
               </span>
             )}
-            
+              
             <label style={labelStyle}>Status *</label>
             <select {...fieldProps("progress")}>
                <option value="">Select</option>

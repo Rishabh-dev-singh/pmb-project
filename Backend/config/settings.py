@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'fallback-secret'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'pmb.finance',
@@ -135,6 +135,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://pmb.finance',
 
     'https://www.pmb.finance',
+   
 
 ]
 

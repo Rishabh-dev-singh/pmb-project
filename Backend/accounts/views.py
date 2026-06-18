@@ -1,61 +1,63 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 
 User = get_user_model()
 
+# 1. LOGIN VIEW (Secure with HttpOnly Cookies)
 class LoginView(APIView):
-
     def post(self, request):
-
         employee_id = request.data.get('username')
         password = request.data.get('password')
 
-        print(f"DEBUG: Trying to find user with ID: {employee_id}")
-
+        # Generic error check to prevent user enumeration
         try:
             user = User.objects.get(employee_id=employee_id)
-
-            print(f"DEBUG: User found: {user.employee_id}")
-
         except User.DoesNotExist:
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-            print("DEBUG: User NOT found in database!")
-
-            return Response(
-                {'error': 'User with this ID does not exist'},
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        if user.check_password(password):
-
-            print("DEBUG: Password matched!")
-
-            if not user.is_active:
-
-                return Response(
-                    {'error': 'Account is disabled'},
-                    status=status.HTTP_401_UNAUTHORIZED
-                )
-
+        if user.check_password(password) and user.is_active:
             refresh = RefreshToken.for_user(user)
-
-            return Response({
+            
+            # Response object
+            response = Response({
                 'status': 'success',
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-                'name': getattr(user, 'first_name', ''),
-                'designation': getattr(user, 'designation', ''),
-                'department': getattr(user, 'department', ''),
+                'name': user.first_name,
+                'designation': user.designation,
+                'department': user.department,
             }, status=status.HTTP_200_OK)
 
-        else:
-
-            print("DEBUG: Password mismatch!")
-
-            return Response(
-                {'error': 'Invalid Password'},
-                status=status.HTTP_401_UNAUTHORIZED
+            # Access token ko HttpOnly Cookie mein set karein
+            response.set_cookie(
+                key='access_token',
+                value=str(refresh.access_token),
+                httponly=True,   # JS se access nahi hoga (Prevents XSS)
+                secure=True,     # Sirf HTTPS par chalega
+                samesite='Lax'   # CSRF protection
             )
+            return response
+        
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+# 2. LOGOUT VIEW (Clears the cookie)
+class LogoutView(APIView):
+    def post(self, request):
+        response = Response({'message': 'Logged out successfully'})
+        response.delete_cookie('access_token')
+        return response
+
+# 3. USER PROFILE VIEW (Fetch user data securely)
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            'name': user.first_name,
+            'id': user.employee_id,
+            'designation': user.designation,
+            'department': user.department,
+        })

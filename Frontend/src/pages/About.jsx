@@ -220,7 +220,7 @@ function About() {
                       objectPosition: "top center", // Protects hair/head cut
                       border: "5px solid rgba(255,255,255,0.2)", 
                       mb: 2 
-                    }} 
+                    }}  
                   />
                   <Typography variant="h5" sx={{ fontWeight: 800, textAlign: "center", fontSize: { xs: "1.3rem", md: "1.5rem" } }}>
                     Mr. Manvendra Singh
@@ -264,6 +264,7 @@ function About() {
                         <Typography sx={{ fontWeight: 700, color: primaryColor, display: "flex", alignItems: "center", gap: 1 }}>
                           ✉ Email
                         </Typography>
+                        
                         <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                           info@pmb.finance
                         </Typography>

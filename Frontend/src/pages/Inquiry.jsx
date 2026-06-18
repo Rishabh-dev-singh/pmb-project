@@ -17,10 +17,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
 
 import { useNavigate } from "react-router-dom";
-
-
-const API_BASE_URL = "https://pmb.finance"; 
-
+import api from "../api"; // NAYA: Secure API instance import kiya
 
 function LoanInquiry() {
   const navigate = useNavigate();
@@ -40,7 +37,7 @@ function LoanInquiry() {
   const primaryIndigo = "#1f2a7c";
   const successGreen = "#2e7d32";
 
-  
+  // LOAN SUBMIT (Updated with api.js)
   const handleLoanSubmit = async () => {
     if (loanData.name.trim() === "" || loanData.phone.trim() === "") {
       alert("Please fill Name and Mobile Number");
@@ -48,30 +45,23 @@ function LoanInquiry() {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/inquiry/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          full_name: loanData.name,
-          mobile: loanData.phone,
-          email: loanData.email
-        })
+      // api.post use kiya, URL api.js se aayega
+      const response = await api.post("/inquiry/", {
+        full_name: loanData.name,
+        mobile: loanData.phone,
+        email: loanData.email
       });
 
-      if (!response.ok) {
-        throw new Error("Server Error");
-      }
-
-      const data = await response.json();
-      localStorage.setItem("lead_id", data.id);
+      // Axios data response.data mein deta hai
+      localStorage.setItem("lead_id", response.data.id);
       navigate("/loan-type");
     } catch (error) {
       console.error("Loan Error:", error);
-      alert("Connection Error. Please check if your Local Server is running.");
+      alert("Connection Error. Please check if your Server is running.");
     }
   };
 
-  
+  // AGRO SUBMIT (Updated with api.js)
   const handleAgroSubmit = async () => {
     if (agroData.name.trim() === "" || agroData.phone.trim() === "") {
       alert("Please fill Name and Mobile Number");
@@ -79,26 +69,17 @@ function LoanInquiry() {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/agro-inquiry/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          full_name: agroData.name,
-          mobile: agroData.phone,
-          email: agroData.email
-        })
+      const response = await api.post("/agro-inquiry/", {
+        full_name: agroData.name,
+        mobile: agroData.phone,
+        email: agroData.email
       });
 
-      if (!response.ok) {
-        throw new Error("Server Error");
-      }
-
-      const data = await response.json();
-      localStorage.setItem("agri_id", data.id);
+      localStorage.setItem("agri_id", response.data.id);
       navigate("/agro-product");
     } catch (error) {
       console.error("Agro Error:", error);
-      alert("Connection Error. Please check if your Local Server is running.");
+      alert("Connection Error. Please check if your Server is running.");
     }
   };
 
@@ -112,7 +93,7 @@ function LoanInquiry() {
     textAlign: "center",
     boxShadow: "0 30px 60px rgba(0,0,0,0.25)",
     transition: "0.35s",
-    "&:hover": {
+    "&:hover": { 
       transform: "translateY(-10px)",
       boxShadow: "0 40px 70px rgba(0,0,0,0.35)"
     }

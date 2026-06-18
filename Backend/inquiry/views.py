@@ -80,7 +80,6 @@ def update_product(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
 
-
 @csrf_exempt
 def attendance_api(request):
     try:
@@ -108,7 +107,6 @@ def get_employees(request):
     employees = list(CustomUser.objects.all().values("employee_id", "first_name", "department", "designation"))
     return JsonResponse(employees, safe=False)
 
-
 @csrf_exempt
 def lead_list_create(request):
     if request.method == "GET":
@@ -122,7 +120,7 @@ def lead_list_create(request):
         leads = list(queryset.order_by("-id").values())
         return JsonResponse(leads, safe=False)
 
-    if request.method == "POST":
+    if request.method == "POST": 
         try:
             data = json.loads(request.body)
             lead = Lead.objects.create(

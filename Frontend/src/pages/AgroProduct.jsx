@@ -2,9 +2,7 @@ import Navbar from "../components/Navbar"
 import { Box, Typography, TextField, MenuItem, Button, Paper } from "@mui/material"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-
-
-const API_BASE_URL = "https://pmb.finance"; 
+import api from "../api"; // NAYA: Secure API instance import kiya
 
 function AgroProduct() {
   const navigate = useNavigate()
@@ -28,26 +26,21 @@ function AgroProduct() {
     try {
       const agriId = localStorage.getItem("agri_id")
       
-      
-      const response = await fetch(`${API_BASE_URL}/api/update-product/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          id: agriId,
-          product_name: product
-        })
-      })
+      // ✅ Fetch ko hata kar secure api.post call laga di
+      const response = await api.post("/update-product/", {
+        id: agriId,
+        product_name: product
+      });
 
-      if (response.ok) {
+      // Axios success par 200 series status deta hai
+      if (response.status === 200 || response.status === 201) {
         setSuccess(true)
       } else {
         alert("Server error. Please try again.")
       }
     } catch (error) {
-      console.error(error)
-      alert("Something went wrong. Connection to local server failed.")
+      console.error("Agro Product Update Error:", error)
+      alert("Something went wrong. Connection to server failed.")
     }
   }
 

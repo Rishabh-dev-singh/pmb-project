@@ -51,6 +51,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 
 import Attendance from "./Attendance";
+import api from "../api"; 
 
 const EMI = React.lazy(() => import("./EMI"));
 
@@ -64,7 +65,7 @@ function EmployeeDashboard() {
   const open = Boolean(anchorEl);
 
   const [employeeData, setEmployeeData] = useState({
-    name: "",
+    name: "Loading...",
     id: "",
     designation: "",
     department: ""
@@ -92,35 +93,41 @@ function EmployeeDashboard() {
     },
   });
 
+  // NAYA: API initialization flow for secure data fetching
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      navigate("/employee-login");
-      return;
-    }
-  }, [navigate]);
+    const initializeDashboard = async () => {
+      try {
+        // 1. Fetch user profile securely (replaces localStorage)
+        const profileRes = await api.get('/profile/');
+        const userData = profileRes.data;
+        
+        setEmployeeData({
+          name: userData.name || "Employee",
+          id: userData.id || "N/A",
+          designation: userData.designation || "N/A",
+          department: userData.department || "N/A",
+        });
 
-  useEffect(() => {
-    setEmployeeData({
-      name: localStorage.getItem("employeeName") || "Employee",
-      id: localStorage.getItem("employeeId") || "N/A",
-      designation: localStorage.getItem("designation") || "N/A",
-      department: localStorage.getItem("department") || "N/A",
-    });
-
-    fetch("https://pmb.finance/api/employees/")
-      .then((res) => res.json())
-      .then((data) => {
+        // 2. Fetch Employee map securely
+        const empRes = await api.get('/employees/');
         const map = {};
-        data.forEach((emp) => {
+        empRes.data.forEach((emp) => {
           map[emp.employee_id] = emp.first_name;
         });
         setEmpMap(map);
-      })
-      .catch((err) => console.error("Error fetching employees map:", err));
 
-    fetchLeads();
-  }, []);
+        // 3. Fetch Leads passing the authenticated user's ID
+        fetchLeads(userData.id);
+
+      } catch (err) {
+        console.error("Authentication Error:", err);
+        // Agar profile fetch fail hua (no cookie), toh login par bhejo
+        navigate("/employee-login"); 
+      }
+    };
+
+    initializeDashboard();
+  }, [navigate]);
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -130,29 +137,35 @@ function EmployeeDashboard() {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
+  const handleLogout = async () => {
+    try {
+      // NAYA: Backend ko logout hit karein taaki cookie destroy ho jaye
+      await api.post('/logout/');
+    } catch (e) {
+      console.error("Logout Error:", e);
+    }
     navigate("/");
   };
 
-  const fetchLeads = () => {
-    const employeeId = localStorage.getItem("employeeId");
+  // NAYA: Function signature mein empId parameter add kiya taaki direct profile se ID le sake
+  const fetchLeads = async (empId = employeeData.id) => {
+    if (!empId) return;
+
     const superUsers = ["3800", "3801", "3802", "3803"];
     let url = "";
 
-    if (superUsers.includes(employeeId)) {
-      url = "https://pmb.finance/api/leads/?role=manager";
+    if (superUsers.includes(empId)) {
+      url = "/leads/?role=manager"; // Base URL pehle se api.js mein hai
     } else {
-      url = `https://pmb.finance/api/leads/?owner=${encodeURIComponent(employeeId)}&role=employee`;
+      url = `/leads/?owner=${encodeURIComponent(empId)}&role=employee`;
     }
 
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed To Fetch Leads");
-        return res.json();
-      })
-      .then((data) => setLeads(data))
-      .catch((err) => console.error(err));
+    try {
+      const res = await api.get(url);
+      setLeads(res.data);
+    } catch (err) {
+      console.error("Failed To Fetch Leads:", err);
+    }
   };
 
   useEffect(() => {
@@ -170,7 +183,6 @@ function EmployeeDashboard() {
     return num;
   };
 
-  // NAYA FUNCTION: Date ko strictly DD/MM/YYYY format me convert karne ke liye
   const formatDate = (dateString) => {
     if (!dateString) return "-";
     const d = new Date(dateString);
@@ -191,20 +203,14 @@ function EmployeeDashboard() {
     if (!confirmChange) return;
 
     try {
-      const res = await fetch(
-        `https://pmb.finance/api/leads/${lead.id}/update/`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            progress: newStatus,
-            updated_by: "Rishabh",
-            updated_at: new Date().toISOString()
-          })
-        }
-      );
+      // NAYA: Secure PUT request via api instance
+      const res = await api.put(`/leads/${lead.id}/update/`, {
+        progress: newStatus,
+        updated_by: employeeData.name, // NAYA: Ab ye actual profile name use karega
+        updated_at: new Date().toISOString()
+      });
 
-      if (res.ok) {
+      if (res.status === 200 || res.status === 201) {
         alert("✅ Progress updated");
         setLeads((prev) =>
           prev.map((l) => (l.id === lead.id ? { ...l, progress: newStatus } : l))
@@ -247,7 +253,6 @@ function EmployeeDashboard() {
         `"${l.bankName || "-"}"`,
         `"${l.rmName || "-"}"`,
         `"${l.progress || ""}"`,
-        // Yaha par formatDate function lagaya hai
         `"${formatDate(l.created_at)}"`
       ];
     });
@@ -367,17 +372,17 @@ function EmployeeDashboard() {
           </List>
         </Drawer>
 
-        {/* MAIN CONTAINER: Scrollable banaya gaya hai */}
+        {/* MAIN CONTAINER */}
         <Box sx={{ 
           flexGrow: 1, 
           width: `calc(100% - ${sidebarWidth}px)`, 
           transition: "width 0.3s ease",
-          height: "100vh",       // FIX: Set height to 100 viewport height
-          overflowY: "auto",     // FIX: Enable vertical scroll for content
+          height: "100vh",
+          overflowY: "auto",
           overflowX: "hidden"
         }}>
           
-          {/* TOP HEADER: Sticky banaya gaya hai */}
+          {/* TOP HEADER */}
           <Box
             sx={{
               display: "flex",
@@ -386,9 +391,9 @@ function EmployeeDashboard() {
               p: { xs: 1.5, md: 2 },
               bgcolor: "background.paper",
               boxShadow: 1,
-              position: "sticky", // FIX: Header fix ho jayega
-              top: 0,             // FIX: Top edge par
-              zIndex: 1100        // FIX: Scroll hone wale content ke upar dikhega
+              position: "sticky",
+              top: 0,
+              zIndex: 1100
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -533,7 +538,6 @@ function EmployeeDashboard() {
                             </select>
                           </TableCell>
 
-                          {/* Yaha bhi UI par sahi format dikhane ke liye update kar diya */}
                           <TableCell sx={{ color: "text.primary" }}>{formatDate(l.created_at)}</TableCell>
 
                           <TableCell>
