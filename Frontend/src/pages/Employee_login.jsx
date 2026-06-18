@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Typography, TextField, Button, CircularProgress, IconButton, InputAdornment } from "@mui/material";
+import { Box, Typography, TextField, Button, CircularProgress, IconButton, InputAdornment, alpha } from "@mui/material";
 import { Visibility, VisibilityOff, LockOutlined, BadgeOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import api from "../api"; 
@@ -14,18 +14,10 @@ function EmployeeLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      // YAHAN CHANGE KIYA HAI: "/login/" ki jagah sirf "login/" rakha hai
-      // Taaki api.js ke baseURL ke sath milkar ye "https://pmb.finance/api/login/" ban jaye
       await api.post("login/", formData);
       navigate("/employee-dashboard");
     } catch (err) {
-      // Error handling behtar ki hai taaki debugging aasan ho
-      if (err.response && err.response.status === 401) {
-        alert("Wrong ID or Password!");
-      } else {
-        alert("Server Error! Please check console for details.");
-        console.error("Login Error Details:", err);
-      }
+      alert("Invalid Credentials!");
     } finally {
       setLoading(false);
     }
@@ -37,62 +29,59 @@ function EmployeeLogin() {
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      background: "radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%)", // Deep Space Background
-      padding: 2
+      // Modern Aurora Background
+      background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)",
+      padding: 2,
+      overflow: "hidden"
     }}>
+      {/* Decorative Glow Elements */}
+      <Box sx={{ position: "absolute", width: 400, height: 400, borderRadius: "50%", background: "#38bdf8", filter: "blur(120px)", opacity: 0.15, top: -100, left: -100 }} />
+      <Box sx={{ position: "absolute", width: 400, height: 400, borderRadius: "50%", background: "#818cf8", filter: "blur(120px)", opacity: 0.15, bottom: -100, right: -100 }} />
+
       <Box sx={{
-        width: "100%",
-        maxWidth: 400,
-        padding: 4,
-        borderRadius: "30px",
-        background: "rgba(255, 255, 255, 0.05)",
-        backdropFilter: "blur(20px)", // Glass Effect
+        width: "100%", maxWidth: 420, padding: 5, borderRadius: "40px",
+        background: "rgba(255, 255, 255, 0.03)",
+        backdropFilter: "blur(25px)",
         border: "1px solid rgba(255, 255, 255, 0.1)",
-        boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-        textAlign: "center",
-        color: "white"
+        boxShadow: "0 20px 40px rgba(0,0,0,0.4), inset 0 0 0 1px rgba(255,255,255,0.05)",
+        textAlign: "center", color: "white"
       }}>
-        <Typography variant="h4" sx={{ fontWeight: 800, mb: 1, letterSpacing: "-1px" }}>
-          PMB <span style={{ color: "#38bdf8" }}>Portal</span>
+        <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, letterSpacing: "-2px", background: "linear-gradient(to right, #fff, #94a3b8)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+          PMB Portal
         </Typography>
-        <Typography variant="body2" sx={{ opacity: 0.6, mb: 4 }}>Access your workspace securely.</Typography>
+        <Typography variant="body1" sx={{ opacity: 0.7, mb: 5, letterSpacing: "1px" }}>SECURE ACCESS</Typography>
 
         <form onSubmit={handleSubmit}>
           <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Employee ID"
+            fullWidth variant="outlined" placeholder="Employee ID"
             onChange={(e) => setFormData({...formData, username: e.target.value})}
-            sx={{ mb: 2, "& .MuiOutlinedInput-root": { color: "white", borderRadius: "12px", background: "rgba(255,255,255,0.05)" } }}
-            InputProps={{ startAdornment: <InputAdornment position="start"><BadgeOutlined sx={{color: "#94a3b8"}}/></InputAdornment> }}
+            sx={{ mb: 3, "& .MuiOutlinedInput-root": { color: "white", borderRadius: "16px", background: alpha("#fff", 0.05), "& fieldset": { borderColor: "rgba(255,255,255,0.1)" }, "&:hover fieldset": { borderColor: "#38bdf8" } } }}
+            InputProps={{ startAdornment: <InputAdornment position="start"><BadgeOutlined sx={{color: "#38bdf8"}}/></InputAdornment> }}
           />
 
           <TextField
-            fullWidth
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
+            fullWidth type={showPassword ? "text" : "password"} placeholder="Password"
             onChange={(e) => setFormData({...formData, password: e.target.value})}
-            sx={{ mb: 4, "& .MuiOutlinedInput-root": { color: "white", borderRadius: "12px", background: "rgba(255,255,255,0.05)" } }}
+            sx={{ mb: 5, "& .MuiOutlinedInput-root": { color: "white", borderRadius: "16px", background: alpha("#fff", 0.05), "& fieldset": { borderColor: "rgba(255,255,255,0.1)" }, "&:hover fieldset": { borderColor: "#38bdf8" } } }}
             InputProps={{ 
-              startAdornment: <InputAdornment position="start"><LockOutlined sx={{color: "#94a3b8"}}/></InputAdornment>,
+              startAdornment: <InputAdornment position="start"><LockOutlined sx={{color: "#38bdf8"}}/></InputAdornment>,
               endAdornment: <IconButton onClick={() => setShowPassword(!showPassword)}><Visibility sx={{color: "#94a3b8"}}/></IconButton>
             }}
           />
 
           <Button type="submit" fullWidth sx={{
-            py: 1.5,
-            borderRadius: "12px",
-            background: "linear-gradient(90deg, #38bdf8 0%, #818cf8 100%)",
-            color: "white",
-            fontWeight: 700,
-            "&:hover": { filter: "brightness(1.2)" }
+            py: 2, borderRadius: "16px",
+            background: "linear-gradient(90deg, #38bdf8, #818cf8)",
+            color: "white", fontWeight: 700, fontSize: "1rem",
+            boxShadow: "0 10px 20px rgba(56, 189, 248, 0.3)",
+            "&:hover": { transform: "translateY(-2px)", boxShadow: "0 15px 30px rgba(56, 189, 248, 0.5)" },
+            transition: "all 0.3s ease"
           }}>
-            {loading ? <CircularProgress size={24} color="inherit" /> : "Secure Login"}
+            {loading ? <CircularProgress size={24} color="inherit" /> : "Sign In"}
           </Button>
         </form>
       </Box>
     </Box>
   );
 }
-
 export default EmployeeLogin;
