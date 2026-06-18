@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny # AllowAny add karna zaroori hai
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -9,7 +9,7 @@ User = get_user_model()
 
 # 1. LOGIN VIEW 
 class LoginView(APIView):
-    permission_classes = [AllowAny] # ISSE JARUR ADD KAREIN!
+    permission_classes = [AllowAny]
 
     def post(self, request):
         employee_id = request.data.get('employee_id')
@@ -30,12 +30,14 @@ class LoginView(APIView):
                 'department': user.department,
             }, status=status.HTTP_200_OK)
 
+            # Cookie set karna (path='/' add kiya gaya hai)
             response.set_cookie(
                 key='access_token',
                 value=str(refresh.access_token),
                 httponly=True,
-                secure=True,
-                samesite='Lax'
+                secure=True,      # Production (HTTPS) ke liye True rakhein. Localhost ke liye False karein.
+                samesite='Lax',
+                path='/'          # YE SABSE ZAROORI HAI COOKIE SAVE HONE KE LIYE
             )
             return response
         
@@ -43,15 +45,16 @@ class LoginView(APIView):
 
 # 2. LOGOUT VIEW
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated] # Logout ke liye login hona zaroori hai
+    permission_classes = [IsAuthenticated] 
+    
     def post(self, request):
         response = Response({'message': 'Logged out successfully'})
-        response.delete_cookie('access_token')
+        response.delete_cookie('access_token', path='/') # Logout par bhi path dena zaroori hai
         return response
 
 # 3. USER PROFILE VIEW
 class UserProfileView(APIView):
-    permission_classes = [IsAuthenticated] # Profile ke liye login hona zaroori hai
+    permission_classes = [IsAuthenticated] 
 
     def get(self, request):
         user = request.user

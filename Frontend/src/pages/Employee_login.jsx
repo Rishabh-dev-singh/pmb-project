@@ -8,7 +8,8 @@ function EmployeeLogin() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({ username: "", password: "" });
+  // FIX 1: 'username' ki jagah 'employee_id' use karein
+  const [formData, setFormData] = useState({ employee_id: "", password: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,18 +23,17 @@ function EmployeeLogin() {
       setLoading(false);
     }
   };
+
   return (
     <Box sx={{
       height: "100vh",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      // Modern Aurora Background
       background: "linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%)",
       padding: 2,
       overflow: "hidden"
     }}>
-      {/* Decorative Glow Elements */}
       <Box sx={{ position: "absolute", width: 400, height: 400, borderRadius: "50%", background: "#38bdf8", filter: "blur(120px)", opacity: 0.15, top: -100, left: -100 }} />
       <Box sx={{ position: "absolute", width: 400, height: 400, borderRadius: "50%", background: "#818cf8", filter: "blur(120px)", opacity: 0.15, bottom: -100, right: -100 }} />
 
@@ -53,7 +53,8 @@ function EmployeeLogin() {
         <form onSubmit={handleSubmit}>
           <TextField
             fullWidth variant="outlined" placeholder="Employee ID"
-            onChange={(e) => setFormData({...formData, username: e.target.value})}
+            // FIX 2: 'username' ki jagah 'employee_id' update karein
+            onChange={(e) => setFormData({...formData, employee_id: e.target.value})}
             sx={{ mb: 3, "& .MuiOutlinedInput-root": { color: "white", borderRadius: "16px", background: alpha("#fff", 0.05), "& fieldset": { borderColor: "rgba(255,255,255,0.1)" }, "&:hover fieldset": { borderColor: "#38bdf8" } } }}
             InputProps={{ startAdornment: <InputAdornment position="start"><BadgeOutlined sx={{color: "#38bdf8"}}/></InputAdornment> }}
           />
