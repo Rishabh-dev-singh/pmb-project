@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import LoginView, LogoutView, UserProfileView # Apni views import karein
+from .views import LoginView, LogoutView, UserProfileView
 
 urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),

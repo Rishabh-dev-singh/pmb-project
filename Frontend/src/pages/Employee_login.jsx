@@ -14,10 +14,18 @@ function EmployeeLogin() {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.post("/login/", formData);
+      // YAHAN CHANGE KIYA HAI: "/login/" ki jagah sirf "login/" rakha hai
+      // Taaki api.js ke baseURL ke sath milkar ye "https://pmb.finance/api/login/" ban jaye
+      await api.post("login/", formData);
       navigate("/employee-dashboard");
     } catch (err) {
-      alert("Invalid Credentials!");
+      // Error handling behtar ki hai taaki debugging aasan ho
+      if (err.response && err.response.status === 401) {
+        alert("Wrong ID or Password!");
+      } else {
+        alert("Server Error! Please check console for details.");
+        console.error("Login Error Details:", err);
+      }
     } finally {
       setLoading(false);
     }
