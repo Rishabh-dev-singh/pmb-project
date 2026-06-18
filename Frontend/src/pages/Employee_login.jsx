@@ -84,8 +84,10 @@ function EmployeeLogin() {
           WebkitBackgroundClip: "text", 
           WebkitTextFillColor: "transparent" 
         }}>
-          PMB Portal
+          PMB CRM
         </Typography>
+        
+        {/* Security / Trust text */}
         <Typography variant="subtitle2" sx={{ 
           opacity: 0.6, 
           mb: 5, 
@@ -93,7 +95,7 @@ function EmployeeLogin() {
           fontWeight: 600,
           textTransform: "uppercase"
         }}>
-          Premium Access
+          SECURE WORKSPACE
         </Typography>
 
         <form onSubmit={handleSubmit}>
