@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import api from "../api"; // NAYA: Secure API connection
 
 function AddLead() {
   const initialFormState = {
@@ -14,6 +15,7 @@ function AddLead() {
   const [bankList, setBankList] = useState([]); 
   const [empMap, setEmpMap] = useState({}); 
   const [empList, setEmpList] = useState([]); 
+  const [currentEmpId, setCurrentEmpId] = useState(""); // NAYA: State for current employee ID
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -21,21 +23,37 @@ function AddLead() {
   const existingLead = location.state?.lead;
   const isEditing = !!existingLead;
 
-  // CURRENT LOGGED IN USER ID AUR SUPER USER CHECK
-  const currentEmpId = localStorage.getItem("employeeId") || "";
+  // SUPER USER CHECK
   const isSuperUser = ["3800", "3801", "3802", "3803"].includes(currentEmpId);
 
   useEffect(() => {
-    // Bank List Fetch
-    fetch("https://pmb.finance/api/banks/")
-      .then((res) => res.json())
-      .then((data) => setBankList(data))
-      .catch((err) => console.error("Bank list fetch error:", err));
+    // 1. Fetch Current Logged-in User Profile (Replaces localStorage)
+    const fetchProfile = async () => {
+      try {
+        const res = await api.get('profile/');
+        setCurrentEmpId(res.data.id);
+      } catch (err) {
+        console.error("Failed to fetch profile. Session might be expired.");
+        navigate("/employee-login"); // Redirect to login if cookie is missing
+      }
+    };
+    
+    // 2. Fetch Bank List (using secure api instance)
+    const fetchBanks = async () => {
+      try {
+        const res = await api.get('banks/');
+        setBankList(res.data);
+      } catch (err) {
+        console.error("Bank list fetch error:", err);
+      }
+    };
 
-    // Employee List Fetch
-    fetch("https://pmb.finance/api/employees/")
-      .then((res) => res.json())
-      .then((data) => {
+    // 3. Fetch Employee List (using secure api instance)
+    const fetchEmployees = async () => {
+      try {
+        const res = await api.get('employees/');
+        const data = res.data;
+
         // FILTER: Admin wali IDs ko dropdown se hatane ke liye logic
         const onlyEmployees = data.filter(emp => {
           const empId = emp.employee_id ? emp.employee_id.toLowerCase() : "";
@@ -50,16 +68,24 @@ function AddLead() {
           map[emp.employee_id] = emp.first_name;
         });
         setEmpMap(map);
-      })
-      .catch((err) => console.error("Error fetching employees map:", err));
-  }, []);
+      } catch (err) {
+        console.error("Error fetching employees map:", err);
+      }
+    };
+
+    fetchProfile();
+    fetchBanks();
+    fetchEmployees();
+  }, [navigate]);
 
   useEffect(() => {
     if (isEditing) {
       setFormData({ ...initialFormState, ...existingLead });
-    } else {
+    } else if (currentEmpId) {
+      // Jab currentEmpId mil jaye, toh formData mein update kar dein
       setFormData({ ...initialFormState, owner: currentEmpId.toUpperCase() });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditing, existingLead, currentEmpId]);
 
   const requiredFields = [
@@ -126,23 +152,21 @@ function AddLead() {
       }
     }
 
-    const url = isEditing ? `https://pmb.finance/api/leads/${existingLead.id}/update/` : "https://pmb.finance/api/leads/";
-    const method = isEditing ? "PUT" : "POST";
+    // NAYA: Secure API URL routing via Axios instance
+    const url = isEditing ? `leads/${existingLead.id}/update/` : "leads/";
+    const method = isEditing ? "put" : "post";
 
     try {
-      const res = await fetch(url, {
-        method: method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (res.ok) {
+      // NAYA: Using api instead of vanilla fetch
+      const res = await api[method](url, payload);
+      if (res.status === 200 || res.status === 201) {
         alert(isEditing ? "✅ Lead Updated Successfully" : "✅ Lead Saved Successfully");
         navigate("/employee-dashboard", { state: { refresh: true } });
       } else {
-        alert("❌ Error: " + JSON.stringify(await res.json()));
+        alert("❌ Error saving lead");
       }
     } catch (error) {
-      alert("Server error, please check connection.");
+      alert("Server error, please check connection or verify the form data.");
     }
   };
 
@@ -178,7 +202,6 @@ function AddLead() {
             <label style={labelStyle}>Prospect Type *</label>
             <select {...fieldProps("prospectType")}>
               <option value="">Select</option>
-              {/* FIX: yaha value UPPERCASE kardi hai matching ke liye */}
               <option value="COMPANY">Company</option>
               <option value="INDIVIDUAL">Individual</option>
             </select>
