@@ -6,7 +6,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 from accounts.models import CustomUser
 from .models import LoanInquiry, AgriInquiry, Attendance, Lead, SoftwareInquiry
-
+from .models import Productivity 
 # -----------------------------------
 # EMAIL FUNCTION
 # -----------------------------------
@@ -195,3 +195,44 @@ def get_bank_list(request):
         return JsonResponse({"status": "error", "message": str(e)})
 
 
+# -----------------------------------
+# PRODUCTIVITY API
+# -----------------------------------
+@csrf_exempt
+def productivity_list_create(request):
+    if request.method == "GET":
+        # Logged-in user ke hisaab se data fetch karein
+        # Agar user staff/manager hai, to sabka data dikha sakte hain
+        # Yahan simple logic hai: employee_id ke through filter
+        emp_id = request.GET.get("employee_id")
+        if emp_id:
+            data = list(Productivity.objects.filter(employee__employee_id=emp_id).order_by("-date").values())
+        else:
+            data = list(Productivity.objects.all().order_by("-date").values())
+        return JsonResponse(data, safe=False)
+
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            # CustomUser (employee) ko fetch karein
+            emp = CustomUser.objects.get(employee_id=data.get("employee_id"))
+            
+            record = Productivity.objects.create(
+                employee=emp,
+                total_calls=data.get("total_calls", 0),
+                connected_calls=data.get("connected_calls", 0),
+                interested_customers=data.get("interested_customers", ""),
+                followup_customers=data.get("followup_customers", ""),
+                remark=data.get("remark", "")
+            )
+            return JsonResponse({"status": "success", "id": record.id})
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)})
+
+@csrf_exempt
+def delete_productivity(request, pk):
+    try:
+        Productivity.objects.get(id=pk).delete()
+        return JsonResponse({"status": "deleted"})
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)})

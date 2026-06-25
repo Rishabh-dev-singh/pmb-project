@@ -35,11 +35,13 @@ urlpatterns = [
         views.delete_lead,
         name='delete_lead'
     ),
+
+    # --- NAYE PRODUCTIVITY URLS (BAAKI SAB WAHI HAI) ---
+    path('api/productivity/', views.productivity_list_create, name='productivity-list-create'),
+    path('api/productivity/<int:pk>/delete/', views.delete_productivity, name='delete-productivity'),
 ]
 
 urlpatterns += static(
     settings.MEDIA_URL,
     document_root=settings.MEDIA_ROOT
 )
-
-

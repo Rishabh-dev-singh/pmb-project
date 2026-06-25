@@ -35,12 +35,14 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Tooltip
 } from "@mui/material";
 
 import {
   Dashboard as DashIcon,
   Assignment,
+  AssignmentTurnedIn,
   Calculate,
   AddCircle,
   ListAlt,
@@ -49,7 +51,8 @@ import {
   Menu as MenuIcon,
   MenuOpen as MenuOpenIcon,
   DarkMode,
-  LightMode
+  LightMode,
+  PictureAsPdf as PdfIcon
 } from "@mui/icons-material";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -71,13 +74,14 @@ function EmployeeDashboard() {
   const [filterStatus, setFilterStatus] = useState("");
   const [empMap, setEmpMap] = useState({});
 
-  // PRODUCTIVITY POPUP STATE
+  // PRODUCTIVITY STATE
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [productivityList, setProductivityList] = useState([]); // Database se fetch hoga
   const [productivity, setProductivity] = useState({
     total_calls: '', 
     connected_calls: '', 
-    interested: '', 
-    followup: '', 
+    interested_customers: '', 
+    followup_customers: '', 
     remark: ''
   });
 
@@ -134,6 +138,7 @@ function EmployeeDashboard() {
         setEmpMap(map);
 
         fetchLeads(userData.id);
+        fetchProductivity(userData.id); // PRODUCTIVITY FETCH CALL
 
       } catch (err) {
         console.error("Authentication Error:", err);
@@ -181,9 +186,21 @@ function EmployeeDashboard() {
     }
   };
 
+  // PRODUCTIVITY FETCH API FUNCTION
+  const fetchProductivity = async (empId = employeeData.id) => {
+    if (!empId) return;
+    try {
+      const res = await api.get(`productivity/?employee_id=${encodeURIComponent(empId)}`);
+      setProductivityList(res.data);
+    } catch (err) {
+      console.error("Failed To Fetch Productivity:", err);
+    }
+  };
+
   useEffect(() => {
     if (location.state?.refresh) {
       fetchLeads();
+      fetchProductivity(); // Isko bhi refresh karein
     }
   }, [location]);
 
@@ -240,54 +257,111 @@ function EmployeeDashboard() {
     navigate("/add-lead", { state: { lead } });
   };
 
-  // PRODUCTIVITY HANDLERS
+  // PRODUCTIVITY POST API HANDLER
   const handleProductivitySubmit = async () => {
-  try {
-    const res = await api.post("productivity/", {
-      employee_id: employeeData.id,
-      total_calls: productivity.total_calls,
-      connected_calls: productivity.connected_calls,
-      interested: productivity.interested,
-      followup: productivity.followup,
-      remark: productivity.remark,
-    });
-
-    if (res.data.status === "success") {
-      alert("✅ Productivity Saved Successfully");
-
-      setOpenUpdateDialog(false);
-
-      setProductivity({
-        total_calls: "",
-        connected_calls: "",
-        interested: "",
-        followup: "",
-        remark: "",
-      });
-    } else {
-      alert(res.data.message);
+    if (!productivity.total_calls) {
+        alert("Please enter Total Calls.");
+        return;
     }
-  } catch (err) {
-    console.error(err);
-    alert("❌ Server Error");
-  }
-};
 
-  const downloadPDFReport = () => {
+    try {
+      const payload = {
+        employee_id: employeeData.id,
+        total_calls: productivity.total_calls,
+        connected_calls: productivity.connected_calls,
+        interested_customers: productivity.interested_customers,
+        followup_customers: productivity.followup_customers,
+        remark: productivity.remark
+      };
+
+      const res = await api.post('productivity/', payload);
+
+      if (res.status === 200 || res.status === 201) {
+        alert("✅ Productivity Saved successfully!");
+        
+        // Data save hone ke baad list refresh karein
+        fetchProductivity(employeeData.id);
+        
+        // Form Reset
+        setProductivity({
+          total_calls: '', 
+          connected_calls: '', 
+          interested_customers: '', 
+          followup_customers: '', 
+          remark: ''
+        });
+        setOpenUpdateDialog(false);
+      } else {
+        alert("❌ Failed to save record.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Server error while saving productivity.");
+    }
+  };
+
+  const downloadCurrentPDFReport = () => {
+    generatePDF(productivity, "Current_Draft");
+  };
+
+  const downloadRowPDF = (row) => {
+    generatePDF(row, row.date);
+  };
+
+  const generatePDF = (data, dateLabel) => {
     const doc = new jsPDF();
-    doc.text(`Daily Work Report - ${employeeData.name}`, 14, 15);
+    doc.text(`Daily Work Report - ${employeeData.name} (${dateLabel})`, 14, 15);
     doc.autoTable({
-      head: [['Field', 'Value']],
+      head: [['Field', 'Details']],
       body: [
-        ['Total Calls', productivity.total_calls || 0],
-        ['Connected Calls', productivity.connected_calls || 0],
-        ['Interested Customers', productivity.interested || 0],
-        ['Followup', productivity.followup || 0],
-        ['Remark', productivity.remark || 'N/A'],
+        ['Total Calls', data.total_calls || '0'],
+        ['Connected Calls', data.connected_calls || '0'],
+        ['Interested Customers', data.interested_customers || 'N/A'],
+        ['Followup Customers', data.followup_customers || 'N/A'],
+        ['Remark', data.remark || 'N/A'],
       ],
-      startY: 20
+      startY: 20,
+      styles: { cellWidth: 'wrap' },
+      columnStyles: {
+        0: { cellWidth: 50 },
+        1: { cellWidth: 'auto' }
+      }
     });
-    doc.save(`Daily_Report_${employeeData.name}.pdf`);
+    doc.save(`Productivity_Report_${dateLabel}.pdf`);
+  };
+
+  // DOWNLOAD PRODUCTIVITY CSV FOR MANAGER
+  const downloadProductivityCSV = () => {
+    if (productivityList.length === 0) {
+      alert("No productivity data available to download.");
+      return;
+    }
+
+    const headers = [
+      "Date", "Total Calls", "Connected Calls", "Interested Customers", "Followup Customers", "Remark"
+    ];
+
+    const rows = productivityList.map((p) => [
+      `"${p.date}"`,
+      `"${p.total_calls}"`,
+      `"${p.connected_calls}"`,
+      `"${(p.interested_customers || "").replace(/"/g, '""')}"`, 
+      `"${(p.followup_customers || "").replace(/"/g, '""')}"`,
+      `"${(p.remark || "").replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `Daily_Productivity_${employeeData.name}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
   };
 
   const filteredLeads = leads.filter((l) => {
@@ -346,6 +420,7 @@ function EmployeeDashboard() {
   const menuItems = [
     { text: "Overview", icon: <DashIcon />, id: "overview" },
     { text: "Leads", icon: <ListAlt />, id: "leads" },
+    { text: "Productivity", icon: <AssignmentTurnedIn />, id: "productivity" },
     { text: "Attendance", icon: <Assignment />, id: "attendance" },
     { text: "EMI", icon: <Calculate />, id: "emi" }
   ];
@@ -400,6 +475,7 @@ function EmployeeDashboard() {
                 onClick={() => {
                   setActivePanel(item.id);
                   if (item.id === "leads") fetchLeads();
+                  if (item.id === "productivity") fetchProductivity();
                   if (isMobile) setMobileOpen(false);
                 }}
                 sx={{
@@ -474,7 +550,6 @@ function EmployeeDashboard() {
 
             <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 2 }}>
               
-              {/* NAYA BUTTON: SUBMIT PRODUCTIVITY */}
               <Button 
                 variant="contained" 
                 size="small"
@@ -482,20 +557,20 @@ function EmployeeDashboard() {
                 sx={{ 
                   background: "#8b5cf6", 
                   "&:hover": { background: "#7c3aed" },
-                  display: { xs: "none", sm: "flex" } // Hides on very small screens to save space
+                  display: { xs: "none", sm: "flex" },
+                  fontWeight: "bold",
+                  boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)"
                 }}
               >
-                Submit Productivity
+                + Update Productivity
               </Button>
-              {/* Mobile icon equivalent for Productivity */}
               <IconButton 
                 onClick={() => setOpenUpdateDialog(true)} 
                 sx={{ display: { xs: "flex", sm: "none" }, color: "#8b5cf6" }}
               >
-                <Assignment />
+                <AssignmentTurnedIn />
               </IconButton>
 
-              {/* DARK MODE TOGGLE */}
               <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
                 {darkMode ? <LightMode sx={{ color: "#fbbf24" }} /> : <DarkMode sx={{ color: "#3b82f6" }} />}
               </IconButton>
@@ -507,7 +582,6 @@ function EmployeeDashboard() {
               </IconButton>
             </Box>
 
-            {/* PROFILE MENU */}
             <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
               <Box sx={{ px: 2, py: 1, minWidth: "220px" }}>
                 <Typography fontWeight="bold" sx={{ mb: 1 }}>{employeeData.name}</Typography>
@@ -558,58 +632,37 @@ function EmployeeDashboard() {
                   Lead Tracker
                 </Typography>
 
-                <Button variant="contained" onClick={downloadExcel} fullWidth={isMobile} sx={{ mb: 2, background: "#16a34a", "&:hover": { background: "#15803d" } }}>
-                  Download Your Lead
-                </Button>
+                {/* ACTION BUTTONS: Download Leads AND Download Productivity */}
+                <Box sx={{ display: "flex", gap: 2, mb: 2, flexDirection: { xs: "column", sm: "row" } }}>
+                  <Button variant="contained" onClick={downloadExcel} fullWidth={isMobile} sx={{ background: "#16a34a", "&:hover": { background: "#15803d" } }}>
+                    Download Your Lead
+                  </Button>
+                  <Button variant="contained" onClick={downloadProductivityCSV} fullWidth={isMobile} sx={{ background: "#f59e0b", "&:hover": { background: "#d97706" } }}>
+                    Download Productivity Report
+                  </Button>
+                </Box>
 
-                {/* FILTERING SECTION UI */}
+                {/* FILTERING SECTION */}
                 <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: 2 }}>
-                  <TextField
-                    label="Search by name or mobile"
-                    fullWidth
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                  <TextField
-                    select
-                    label="Filter by Employee"
-                    value={filterEmployee}
-                    onChange={(e) => setFilterEmployee(e.target.value)}
-                    sx={{ minWidth: { xs: '100%', md: '200px' } }}
-                  >
+                  <TextField label="Search by name or mobile" fullWidth value={search} onChange={(e) => setSearch(e.target.value)} />
+                  <TextField select label="Filter by Employee" value={filterEmployee} onChange={(e) => setFilterEmployee(e.target.value)} sx={{ minWidth: { xs: '100%', md: '200px' } }}>
                     <MenuItem value="">All Employees</MenuItem>
                     {Object.entries(empMap).map(([id, name]) => (
                       <MenuItem key={id} value={id}>{name}</MenuItem>
                     ))}
                   </TextField>
-                  <TextField
-                    select
-                    label="Filter by Status"
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    sx={{ minWidth: { xs: '100%', md: '200px' } }}
-                  >
+                  <TextField select label="Filter by Status" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} sx={{ minWidth: { xs: '100%', md: '200px' } }}>
                     <MenuItem value="">All Status</MenuItem>
-                    <MenuItem value="PIPELINE">PIPELINE</MenuItem>
-                    <MenuItem value="DOCUMENT LIST SEND">DOCUMENT LIST SEND</MenuItem>
-                    <MenuItem value="DOCUMENT RECIEVED">DOCUMENT RECIEVED</MenuItem>
-                    <MenuItem value="QUERY">QUERY</MenuItem>
-                    <MenuItem value="DEDUPE CHECK">DEDUPE CHECK</MenuItem>
-                    <MenuItem value="DEDUPE DONE">DEDUPE DONE</MenuItem>
-                    <MenuItem value="LOGIN">LOGIN</MenuItem>
-                    <MenuItem value="IN PROGRESS">IN PROGRESS</MenuItem>
-                    <MenuItem value="UNDER WRITING">UNDER WRITING</MenuItem>
-                    <MenuItem value="PD INITIATE">PD INITIATE</MenuItem>
-                    <MenuItem value="PD DONE">PD DONE</MenuItem>
-                    <MenuItem value="TECHNICAL INITIATE">TECHNICAL INITIATE</MenuItem>
-                    <MenuItem value="TECHNICAL DONE">TECHNICAL DONE</MenuItem>
-                    <MenuItem value="VALUATION INITIATE">VALUATION INITIATE</MenuItem>
-                    <MenuItem value="VALUATION DONE">VALUATION DONE</MenuItem>
-                    <MenuItem value="UNDER SANCTION">UNDER SANCTION</MenuItem>
-                    <MenuItem value="SANCTION">SANCTION</MenuItem>
-                    <MenuItem value="DOC KIT ASIGN">DOC KIT ASIGN</MenuItem>
-                    <MenuItem value="REJECT">REJECT</MenuItem>
-                    <MenuItem value="DISBURSEMENT">DISBURSEMENT</MenuItem>
+                    <MenuItem value="PIPELINE">PIPELINE</MenuItem><MenuItem value="DOCUMENT LIST SEND">DOCUMENT LIST SEND</MenuItem>
+                    <MenuItem value="DOCUMENT RECIEVED">DOCUMENT RECIEVED</MenuItem><MenuItem value="QUERY">QUERY</MenuItem>
+                    <MenuItem value="DEDUPE CHECK">DEDUPE CHECK</MenuItem><MenuItem value="DEDUPE DONE">DEDUPE DONE</MenuItem>
+                    <MenuItem value="LOGIN">LOGIN</MenuItem><MenuItem value="IN PROGRESS">IN PROGRESS</MenuItem>
+                    <MenuItem value="UNDER WRITING">UNDER WRITING</MenuItem><MenuItem value="PD INITIATE">PD INITIATE</MenuItem>
+                    <MenuItem value="PD DONE">PD DONE</MenuItem><MenuItem value="TECHNICAL INITIATE">TECHNICAL INITIATE</MenuItem>
+                    <MenuItem value="TECHNICAL DONE">TECHNICAL DONE</MenuItem><MenuItem value="VALUATION INITIATE">VALUATION INITIATE</MenuItem>
+                    <MenuItem value="VALUATION DONE">VALUATION DONE</MenuItem><MenuItem value="UNDER SANCTION">UNDER SANCTION</MenuItem>
+                    <MenuItem value="SANCTION">SANCTION</MenuItem><MenuItem value="DOC KIT ASIGN">DOC KIT ASIGN</MenuItem>
+                    <MenuItem value="REJECT">REJECT</MenuItem><MenuItem value="DISBURSEMENT">DISBURSEMENT</MenuItem>
                   </TextField>
                 </Box>
 
@@ -636,14 +689,11 @@ function EmployeeDashboard() {
                           <TableCell sx={{ color: "text.primary" }}>{l.fullName}</TableCell>
                           <TableCell sx={{ color: "text.primary" }}>{l.mobile}</TableCell>
                           <TableCell sx={{ color: "text.primary" }}>{formatAmount(l.requiredLoanAmount)}</TableCell>
-                          
                           <TableCell sx={{ color: "text.primary" }}>
                             {l.owner} {empMap[l.owner] ? <span style={{ color: "#16a34a", fontWeight: "600" }}>({empMap[l.owner]})</span> : ""}
                           </TableCell>
-
                           <TableCell sx={{ color: "text.primary" }}>{l.bankName || "-"}</TableCell>
                           <TableCell sx={{ color: "text.primary" }}>{l.rmName || "-"}</TableCell>
-
                           <TableCell>
                             <select
                               value={l.progress || ""}
@@ -666,9 +716,7 @@ function EmployeeDashboard() {
                               <option>SANCTION</option><option>DOC KIT ASIGN</option><option>REJECT</option><option>DISBURSEMENT</option>
                             </select>
                           </TableCell>
-
                           <TableCell sx={{ color: "text.primary" }}>{formatDate(l.created_at)}</TableCell>
-
                           <TableCell>
                             <IconButton onClick={() => handleEdit(l)}>
                               <EditIcon sx={{ color: darkMode ? "#38bdf8" : "#1976d2" }} />
@@ -679,6 +727,56 @@ function EmployeeDashboard() {
                     </TableBody>
                   </Table>
                 </TableContainer>
+              </Paper>
+            )}
+
+            {/* PRODUCTIVITY HISTORY TAB */}
+            {activePanel === "productivity" && (
+              <Paper sx={card}>
+                <Typography variant="h5" sx={{ mb: 3, fontSize: { xs: "20px", md: "30px" }, color: "text.primary" }}>
+                  Daily Productivity Logs
+                </Typography>
+                
+                {productivityList.length === 0 ? (
+                   <Typography sx={{ color: "text.secondary", textAlign: "center", py: 5 }}>
+                     No productivity logs found. Click on 'Update Productivity' to add today's report.
+                   </Typography>
+                ) : (
+                  <TableContainer sx={{ overflowX: "auto" }}>
+                    <Table sx={{ minWidth: 1000 }}>
+                      <TableHead sx={{ bgcolor: darkMode ? "#334155" : "#f1f5f9" }}>
+                        <TableRow>
+                          <TableCell sx={{ fontWeight: "bold", width: "100px" }}>Date</TableCell>
+                          <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Total Calls</TableCell>
+                          <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Connected</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Interested Customers</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Followup Customers</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Remark</TableCell>
+                          <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Action</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {productivityList.map((row) => (
+                          <TableRow key={row.id} hover>
+                            <TableCell>{row.date}</TableCell>
+                            <TableCell align="center">{row.total_calls}</TableCell>
+                            <TableCell align="center">{row.connected_calls}</TableCell>
+                            <TableCell sx={{ whiteSpace: "pre-line" }}>{row.interested_customers || "-"}</TableCell>
+                            <TableCell sx={{ whiteSpace: "pre-line" }}>{row.followup_customers || "-"}</TableCell>
+                            <TableCell>{row.remark || "-"}</TableCell>
+                            <TableCell align="center">
+                              <Tooltip title="Download PDF">
+                                <IconButton onClick={() => downloadRowPDF(row)} sx={{ color: "#ef4444" }}>
+                                  <PdfIcon />
+                                </IconButton>
+                              </Tooltip>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
               </Paper>
             )}
 
@@ -704,17 +802,25 @@ function EmployeeDashboard() {
         </Box>
 
         {/* PRODUCTIVITY DIALOG COMPONENT */}
-        <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} fullWidth maxWidth="sm">
-          <DialogTitle sx={{ bgcolor: darkMode ? "#1e293b" : "#fff", color: darkMode ? "#fff" : "#000" }}>
-            Daily Productivity Update
+        <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} fullWidth maxWidth="md">
+          <DialogTitle sx={{ 
+            bgcolor: darkMode ? "#1e293b" : "#f8fafc", 
+            color: darkMode ? "#fff" : "#0f172a",
+            fontWeight: "bold",
+            borderBottom: darkMode ? "1px solid #334155" : "1px solid #e2e8f0"
+          }}>
+            Update Daily Productivity
           </DialogTitle>
-          <DialogContent sx={{ bgcolor: darkMode ? "#1e293b" : "#fff" }}>
-            <Grid container spacing={2} sx={{ mt: 1 }}>
+          <DialogContent sx={{ bgcolor: darkMode ? "#1e293b" : "#fff", p: { xs: 2, md: 4 } }}>
+            <Grid container spacing={3} sx={{ mt: 1 }}>
+              
+              {/* Row 1: Numbers */}
               <Grid item xs={12} sm={6}>
                 <TextField 
                   fullWidth 
                   label="Total Calls" 
                   type="number" 
+                  variant="outlined"
                   value={productivity.total_calls}
                   onChange={(e) => setProductivity({...productivity, total_calls: e.target.value})} 
                 />
@@ -724,49 +830,70 @@ function EmployeeDashboard() {
                   fullWidth 
                   label="Connected Calls" 
                   type="number" 
+                  variant="outlined"
                   value={productivity.connected_calls}
                   onChange={(e) => setProductivity({...productivity, connected_calls: e.target.value})} 
                 />
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField 
-                  fullWidth 
-                  label="Interested Customers" 
-                  type="number" 
-                  value={productivity.interested}
-                  onChange={(e) => setProductivity({...productivity, interested: e.target.value})} 
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField 
-                  fullWidth 
-                  label="Followup" 
-                  type="number" 
-                  value={productivity.followup}
-                  onChange={(e) => setProductivity({...productivity, followup: e.target.value})} 
-                />
-              </Grid>
+
+              {/* Row 2: Interested Customers */}
               <Grid item xs={12}>
                 <TextField 
                   fullWidth 
-                  label="Any Remark" 
+                  label="Interested Customers (Names)" 
+                  placeholder="Example:&#10;1) Amit Kumar&#10;2) Rahul Sharma"
                   multiline 
-                  rows={3} 
+                  rows={4} 
+                  variant="outlined"
+                  value={productivity.interested_customers}
+                  onChange={(e) => setProductivity({...productivity, interested_customers: e.target.value})} 
+                  helperText="Please list interested customer names with serial numbers (1, 2, ...)"
+                />
+              </Grid>
+
+              {/* Row 3: Followup Customers */}
+              <Grid item xs={12}>
+                <TextField 
+                  fullWidth 
+                  label="Followup Customers (Names)" 
+                  placeholder="Example:&#10;1) Rohit Singh&#10;2) Virat Kohli"
+                  multiline 
+                  rows={4} 
+                  variant="outlined"
+                  value={productivity.followup_customers}
+                  onChange={(e) => setProductivity({...productivity, followup_customers: e.target.value})} 
+                  helperText="Please list followup customer names with serial numbers (1, 2, ...)"
+                />
+              </Grid>
+
+              {/* Row 4: Remarks */}
+              <Grid item xs={12}>
+                <TextField 
+                  fullWidth 
+                  label="Any Remark / Notes" 
+                  multiline 
+                  rows={2} 
+                  variant="outlined"
                   value={productivity.remark}
                   onChange={(e) => setProductivity({...productivity, remark: e.target.value})} 
                 />
               </Grid>
             </Grid>
           </DialogContent>
-          <DialogActions sx={{ bgcolor: darkMode ? "#1e293b" : "#fff", p: 2 }}>
+          
+          <DialogActions sx={{ 
+            bgcolor: darkMode ? "#1e293b" : "#f8fafc", 
+            p: 2, 
+            borderTop: darkMode ? "1px solid #334155" : "1px solid #e2e8f0" 
+          }}>
             <Button onClick={() => setOpenUpdateDialog(false)} sx={{ color: darkMode ? "#cbd5e1" : "inherit" }}>
               Cancel
             </Button>
-            <Button variant="outlined" color="primary" onClick={downloadPDFReport}>
-              Download PDF
+            <Button variant="outlined" color="primary" onClick={downloadCurrentPDFReport}>
+              Download Current PDF
             </Button>
-            <Button variant="contained" color="success" onClick={handleProductivitySubmit}>
-              Submit
+            <Button variant="contained" onClick={handleProductivitySubmit} sx={{ background: "#8b5cf6", "&:hover": { background: "#7c3aed" } }}>
+              Submit Record
             </Button>
           </DialogActions>
         </Dialog>
