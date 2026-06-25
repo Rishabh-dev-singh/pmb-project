@@ -20,7 +20,6 @@ import {
 
 import { useNavigate, useLocation } from "react-router-dom";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
 
 import Attendance from "./Attendance";
 import api from "../api"; 
@@ -768,7 +767,7 @@ function EmployeeDashboard() {
                             <TableCell align="center">
                               <Tooltip title="Download PDF">
                                 <IconButton onClick={() => downloadRowPDF(row)} sx={{ color: "#ef4444" }}>
-                                  <PdfIcon />
+                                  
                                 </IconButton>
                               </Tooltip>
                             </TableCell>
