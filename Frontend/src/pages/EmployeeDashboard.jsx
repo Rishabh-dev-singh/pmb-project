@@ -841,7 +841,7 @@ function EmployeeDashboard() {
                 <TextField 
                   fullWidth 
                   label="Interested Customers (Names)" 
-                  placeholder="Example:&#10;1) Amit Kumar&#10;2) Rahul Sharma"
+                  placeholder="Example:&#10;1) Name &#10;2) Name"
                   multiline 
                   rows={4} 
                   variant="outlined"

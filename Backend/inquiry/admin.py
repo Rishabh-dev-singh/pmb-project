@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import LoanInquiry, AgriInquiry, Attendance, Lead, SoftwareInquiry
+from .models import LoanInquiry, AgriInquiry, Attendance, Lead, SoftwareInquiry, Productivity
 
 @admin.register(LoanInquiry)
 class LoanInquiryAdmin(admin.ModelAdmin):
@@ -22,7 +22,6 @@ class AttendanceAdmin(admin.ModelAdmin):
 
 @admin.register(Lead)
 class LeadAdmin(admin.ModelAdmin):
-    # ADMIN PANEL MEIN BHI BANK AUR RM DIKHEGA
     list_display = (
         "fullName", "mobile", "loanType", 
         "requiredLoanAmount", "location", "bankName", "rmName",
@@ -39,3 +38,11 @@ class SoftwareInquiryAdmin(admin.ModelAdmin):
     list_filter = ("service_type", "created_at")
     search_fields = ("full_name", "mobile", "service_type")
     date_hierarchy = 'created_at'
+
+# NAYA PRODUCTIVITY ADMIN REGISTRATION
+@admin.register(Productivity)
+class ProductivityAdmin(admin.ModelAdmin):
+    list_display = ("employee", "date", "total_calls", "connected_calls", "remark")
+    list_filter = ("date", "employee")
+    search_fields = ("employee__username", "remark")
+    date_hierarchy = 'date'
