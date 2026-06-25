@@ -17,7 +17,7 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import AgricultureIcon from "@mui/icons-material/Agriculture";
 
 import { useNavigate } from "react-router-dom";
-import api from "../api"; // NAYA: Secure API instance import kiya
+import api from "../api"; 
 
 function LoanInquiry() {
   const navigate = useNavigate();
@@ -45,7 +45,6 @@ function LoanInquiry() {
     }
 
     try {
-      // api.post use kiya, URL api.js se aayega
       const response = await api.post("/inquiry/", {
         full_name: loanData.name,
         mobile: loanData.phone,
@@ -61,7 +60,7 @@ function LoanInquiry() {
     }
   };
 
-  // AGRO SUBMIT (Updated with api.js)
+
   const handleAgroSubmit = async () => {
     if (agroData.name.trim() === "" || agroData.phone.trim() === "") {
       alert("Please fill Name and Mobile Number");

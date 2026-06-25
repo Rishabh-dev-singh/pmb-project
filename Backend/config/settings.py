@@ -37,7 +37,6 @@ ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-# JWT and Authentication Settings (MERGED)
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'accounts.authentication.CookieJWTAuthentication',

@@ -59,6 +59,11 @@ function EmployeeDashboard() {
   const [activePanel, setActivePanel] = useState("overview");
   const [leads, setLeads] = useState([]);
   const [search, setSearch] = useState("");
+  
+  // NAYE STATES FILTER KE LIYE
+  const [filterEmployee, setFilterEmployee] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+
   const [empMap, setEmpMap] = useState({});
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -93,12 +98,9 @@ function EmployeeDashboard() {
     },
   });
 
-  // NAYA: API initialization flow for secure data fetching
   useEffect(() => {
     const initializeDashboard = async () => {
       try {
-        // 1. Fetch user profile securely (replaces localStorage)
-        // FIX: Hata diya gaya leading slash
         const profileRes = await api.get('profile/');
         const userData = profileRes.data;
         
@@ -109,8 +111,6 @@ function EmployeeDashboard() {
           department: userData.department || "N/A",
         });
 
-        // 2. Fetch Employee map securely
-        // FIX: Hata diya gaya leading slash
         const empRes = await api.get('employees/');
         const map = {};
         empRes.data.forEach((emp) => {
@@ -118,12 +118,10 @@ function EmployeeDashboard() {
         });
         setEmpMap(map);
 
-        // 3. Fetch Leads passing the authenticated user's ID
         fetchLeads(userData.id);
 
       } catch (err) {
         console.error("Authentication Error:", err);
-        // Agar profile fetch fail hua (no cookie), toh login par bhejo
         navigate("/employee-login"); 
       }
     };
@@ -141,8 +139,6 @@ function EmployeeDashboard() {
 
   const handleLogout = async () => {
     try {
-      // NAYA: Backend ko logout hit karein taaki cookie destroy ho jaye
-      // FIX: Hata diya gaya leading slash
       await api.post('logout/');
     } catch (e) {
       console.error("Logout Error:", e);
@@ -150,7 +146,6 @@ function EmployeeDashboard() {
     navigate("/");
   };
 
-  // NAYA: Function signature mein empId parameter add kiya taaki direct profile se ID le sake
   const fetchLeads = async (empId = employeeData.id) => {
     if (!empId) return;
 
@@ -158,10 +153,8 @@ function EmployeeDashboard() {
     let url = "";
 
     if (superUsers.includes(empId)) {
-      // FIX: Hata diya gaya leading slash
       url = "leads/?role=manager"; 
     } else {
-      // FIX: Hata diya gaya leading slash
       url = `leads/?owner=${encodeURIComponent(empId)}&role=employee`;
     }
 
@@ -208,8 +201,6 @@ function EmployeeDashboard() {
     if (!confirmChange) return;
 
     try {
-      // NAYA: Secure PUT request via api instance
-      // FIX: Hata diya gaya leading slash
       const res = await api.put(`leads/${lead.id}/update/`, {
         progress: newStatus,
         updated_by: employeeData.name, 
@@ -234,11 +225,14 @@ function EmployeeDashboard() {
     navigate("/add-lead", { state: { lead } });
   };
 
-  const filteredLeads = leads.filter(
-    (l) =>
-      l.fullName?.toLowerCase().includes(search.toLowerCase()) ||
-      l.mobile?.includes(search)
-  );
+  // NAYA: FILTER LOGIC UPDATE KIYA GAYA HAI
+  const filteredLeads = leads.filter((l) => {
+    const matchesSearch = l.fullName?.toLowerCase().includes(search.toLowerCase()) || l.mobile?.includes(search);
+    const matchesEmployee = filterEmployee ? l.owner === filterEmployee : true;
+    const matchesStatus = filterStatus ? l.progress === filterStatus : true;
+    
+    return matchesSearch && matchesEmployee && matchesStatus;
+  });
 
   const downloadExcel = () => {
     const headers = [
@@ -482,13 +476,60 @@ function EmployeeDashboard() {
                   Download Your Lead
                 </Button>
 
-                <TextField
-                  label="Search by name or mobile"
-                  fullWidth
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  sx={{ mb: 2 }}
-                />
+                {/* NAYA: FILTERING SECTION UI */}
+                <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: 2 }}>
+                  <TextField
+                    label="Search by name or mobile"
+                    fullWidth
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+
+                  {/* Employee Dropdown - Yeh superusers ko useful lagega */}
+                  <TextField
+                    select
+                    label="Filter by Employee"
+                    value={filterEmployee}
+                    onChange={(e) => setFilterEmployee(e.target.value)}
+                    sx={{ minWidth: { xs: '100%', md: '200px' } }}
+                  >
+                    <MenuItem value="">All Employees</MenuItem>
+                    {Object.entries(empMap).map(([id, name]) => (
+                      <MenuItem key={id} value={id}>{name}</MenuItem>
+                    ))}
+                  </TextField>
+
+                  {/* Status Dropdown */}
+                  <TextField
+                    select
+                    label="Filter by Status"
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    sx={{ minWidth: { xs: '100%', md: '200px' } }}
+                  >
+                    <MenuItem value="">All Status</MenuItem>
+                    <MenuItem value="PIPELINE">PIPELINE</MenuItem>
+                    <MenuItem value="DOCUMENT LIST SEND">DOCUMENT LIST SEND</MenuItem>
+                    <MenuItem value="DOCUMENT RECIEVED">DOCUMENT RECIEVED</MenuItem>
+                    <MenuItem value="QUERY">QUERY</MenuItem>
+                    <MenuItem value="DEDUPE CHECK">DEDUPE CHECK</MenuItem>
+                    <MenuItem value="DEDUPE DONE">DEDUPE DONE</MenuItem>
+                    <MenuItem value="LOGIN">LOGIN</MenuItem>
+                    <MenuItem value="IN PROGRESS">IN PROGRESS</MenuItem>
+                    <MenuItem value="UNDER WRITING">UNDER WRITING</MenuItem>
+                    <MenuItem value="PD INITIATE">PD INITIATE</MenuItem>
+                    <MenuItem value="PD DONE">PD DONE</MenuItem>
+                    <MenuItem value="TECHNICAL INITIATE">TECHNICAL INITIATE</MenuItem>
+                    <MenuItem value="TECHNICAL DONE">TECHNICAL DONE</MenuItem>
+                    <MenuItem value="VALUATION INITIATE">VALUATION INITIATE</MenuItem>
+                    <MenuItem value="VALUATION DONE">VALUATION DONE</MenuItem>
+                    <MenuItem value="UNDER SANCTION">UNDER SANCTION</MenuItem>
+                    <MenuItem value="SANCTION">SANCTION</MenuItem>
+                    <MenuItem value="DOC KIT ASIGN">DOC KIT ASIGN</MenuItem>
+                    <MenuItem value="REJECT">REJECT</MenuItem>
+                    <MenuItem value="DISBURSEMENT">DISBURSEMENT</MenuItem>
+                  </TextField>
+                </Box>
 
                 <TableContainer sx={{ overflowX: "auto" }}>
                   <Table sx={{ minWidth: 1200 }}>

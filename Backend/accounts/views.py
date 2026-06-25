@@ -30,14 +30,14 @@ class LoginView(APIView):
                 'department': user.department,
             }, status=status.HTTP_200_OK)
 
-            # Cookie set karna (path='/' add kiya gaya hai)
+           
             response.set_cookie(
                 key='access_token',
                 value=str(refresh.access_token),
                 httponly=True,
-                secure=True,      # Production (HTTPS) ke liye True rakhein. Localhost ke liye False karein.
+                secure=True,      
                 samesite='Lax',
-                path='/'          # YE SABSE ZAROORI HAI COOKIE SAVE HONE KE LIYE
+                path='/'          
             )
             return response
         
@@ -49,7 +49,7 @@ class LogoutView(APIView):
     
     def post(self, request):
         response = Response({'message': 'Logged out successfully'})
-        response.delete_cookie('access_token', path='/') # Logout par bhi path dena zaroori hai
+        response.delete_cookie('access_token', path='/') 
         return response
 
 # 3. USER PROFILE VIEW
