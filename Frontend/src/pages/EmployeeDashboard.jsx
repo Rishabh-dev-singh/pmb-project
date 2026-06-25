@@ -5,54 +5,17 @@ import React, {
 } from "react";
 
 import {
-  Box,
-  Grid,
-  Paper,
-  Typography,
-  Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  TextField,
-  CssBaseline,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Button,
-  Avatar,
-  Menu,
-  MenuItem,
-  Divider,
-  useMediaQuery,
-  useTheme,
-  ThemeProvider,
-  createTheme,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Tooltip
+  Box, Grid, Paper, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText,
+  TextField, CssBaseline, Table, TableBody, TableCell, TableContainer, TableHead,
+  TableRow, IconButton, Button, Avatar, Menu, MenuItem, Divider, useMediaQuery,
+  useTheme, ThemeProvider, createTheme, Dialog, DialogTitle, DialogContent,
+  DialogActions, Tooltip
 } from "@mui/material";
 
 import {
-  Dashboard as DashIcon,
-  Assignment,
-  AssignmentTurnedIn,
-  Calculate,
-  AddCircle,
-  ListAlt,
-  Edit as EditIcon,
-  Logout as LogoutIcon,
-  Menu as MenuIcon,
-  MenuOpen as MenuOpenIcon,
-  DarkMode,
-  LightMode,
-  PictureAsPdf as PdfIcon
+  Dashboard as DashIcon, Assignment, AssignmentTurnedIn, Calculate, AddCircle,
+  ListAlt, Edit as EditIcon, Logout as LogoutIcon, Menu as MenuIcon,
+  MenuOpen as MenuOpenIcon, DarkMode, LightMode, PictureAsPdf as PdfIcon
 } from "@mui/icons-material";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -76,7 +39,7 @@ function EmployeeDashboard() {
 
   // PRODUCTIVITY STATE
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-  const [productivityList, setProductivityList] = useState([]); // Database se fetch hoga
+  const [productivityList, setProductivityList] = useState([]); 
   const [productivity, setProductivity] = useState({
     total_calls: '', 
     connected_calls: '', 
@@ -88,11 +51,13 @@ function EmployeeDashboard() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
+  // USER ROLE & DATA STATE
   const [employeeData, setEmployeeData] = useState({
     name: "Loading...",
     id: "",
     designation: "",
-    department: ""
+    department: "",
+    role: "employee" // NEW: Added role property
   });
 
   const navigate = useNavigate();
@@ -123,11 +88,16 @@ function EmployeeDashboard() {
         const profileRes = await api.get('profile/');
         const userData = profileRes.data;
         
+        // MANAGER ROLE IDENTIFICATION LOGIC
+        const superUsers = ["3800", "3801", "3802", "3803"];
+        const userRole = superUsers.includes(String(userData.id)) ? "manager" : "employee";
+
         setEmployeeData({
           name: userData.name || "Employee",
           id: userData.id || "N/A",
           designation: userData.designation || "N/A",
           department: userData.department || "N/A",
+          role: userRole // Setting role to state
         });
 
         const empRes = await api.get('employees/');
@@ -138,7 +108,7 @@ function EmployeeDashboard() {
         setEmpMap(map);
 
         fetchLeads(userData.id);
-        fetchProductivity(userData.id); // PRODUCTIVITY FETCH CALL
+        fetchProductivity(userData.id, userRole); // Pass role for fetching productivity
 
       } catch (err) {
         console.error("Authentication Error:", err);
@@ -186,11 +156,11 @@ function EmployeeDashboard() {
     }
   };
 
-  // PRODUCTIVITY FETCH API FUNCTION
-  const fetchProductivity = async (empId = employeeData.id) => {
+  // UPDATED: PRODUCTIVITY FETCH API FUNCTION (Accepts Role)
+  const fetchProductivity = async (empId = employeeData.id, role = employeeData.role) => {
     if (!empId) return;
     try {
-      const res = await api.get(`productivity/?employee_id=${encodeURIComponent(empId)}`);
+      const res = await api.get(`productivity/?employee_id=${encodeURIComponent(empId)}&role=${role}`);
       setProductivityList(res.data);
     } catch (err) {
       console.error("Failed To Fetch Productivity:", err);
@@ -200,7 +170,7 @@ function EmployeeDashboard() {
   useEffect(() => {
     if (location.state?.refresh) {
       fetchLeads();
-      fetchProductivity(); // Isko bhi refresh karein
+      fetchProductivity(); 
     }
   }, [location]);
 
@@ -279,8 +249,7 @@ function EmployeeDashboard() {
       if (res.status === 200 || res.status === 201) {
         alert("✅ Productivity Saved successfully!");
         
-        // Data save hone ke baad list refresh karein
-        fetchProductivity(employeeData.id);
+        fetchProductivity(); // List refresh
         
         // Form Reset
         setProductivity({
@@ -330,25 +299,41 @@ function EmployeeDashboard() {
     doc.save(`Productivity_Report_${dateLabel}.pdf`);
   };
 
-  // DOWNLOAD PRODUCTIVITY CSV FOR MANAGER
+  // UPDATED: DOWNLOAD PRODUCTIVITY CSV (Includes SR & Dynamic Employee Name for Managers)
   const downloadProductivityCSV = () => {
     if (productivityList.length === 0) {
       alert("No productivity data available to download.");
       return;
     }
 
-    const headers = [
-      "Date", "Total Calls", "Connected Calls", "Interested Customers", "Followup Customers", "Remark"
-    ];
+    // Header array setup
+    const headers = ["SR"];
+    if (employeeData.role === 'manager') {
+      headers.push("Employee Name");
+    }
+    headers.push("Date", "Total Calls", "Connected Calls", "Interested Customers", "Followup Customers", "Remark");
 
-    const rows = productivityList.map((p) => [
-      `"${p.date}"`,
-      `"${p.total_calls}"`,
-      `"${p.connected_calls}"`,
-      `"${(p.interested_customers || "").replace(/"/g, '""')}"`, 
-      `"${(p.followup_customers || "").replace(/"/g, '""')}"`,
-      `"${(p.remark || "").replace(/"/g, '""')}"`
-    ]);
+    // Mapping rows with Auto Serial Number
+    const rows = productivityList.map((p, index) => {
+      const rowArray = [
+        `"${index + 1}"` // SR Number Auto Generated
+      ];
+      
+      if (employeeData.role === 'manager') {
+        rowArray.push(`"${p.employee__first_name || employeeData.name}"`);
+      }
+
+      rowArray.push(
+        `"${p.date}"`,
+        `"${p.total_calls}"`,
+        `"${p.connected_calls}"`,
+        `"${(p.interested_customers || "").replace(/"/g, '""')}"`, 
+        `"${(p.followup_customers || "").replace(/"/g, '""')}"`,
+        `"${(p.remark || "").replace(/"/g, '""')}"`
+      );
+
+      return rowArray;
+    });
 
     const csvContent = "\uFEFF" + [headers.join(","), ...rows.map((e) => e.join(","))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -746,6 +731,14 @@ function EmployeeDashboard() {
                     <Table sx={{ minWidth: 1000 }}>
                       <TableHead sx={{ bgcolor: darkMode ? "#334155" : "#f1f5f9" }}>
                         <TableRow>
+                          {/* UPDATED: SR NUMBER HEADER */}
+                          <TableCell sx={{ fontWeight: "bold", width: "60px" }}>SR</TableCell>
+                          
+                          {/* UPDATED: MANAGER VIEW EMPLOYEE NAME */}
+                          {employeeData.role === 'manager' && (
+                            <TableCell sx={{ fontWeight: "bold" }}>Employee</TableCell>
+                          )}
+
                           <TableCell sx={{ fontWeight: "bold", width: "100px" }}>Date</TableCell>
                           <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Total Calls</TableCell>
                           <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Connected</TableCell>
@@ -756,8 +749,16 @@ function EmployeeDashboard() {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {productivityList.map((row) => (
+                        {productivityList.map((row, index) => (
                           <TableRow key={row.id} hover>
+                            {/* UPDATED: AUTO SERIAL NUMBER */}
+                            <TableCell>{index + 1}</TableCell>
+                            
+                            {/* UPDATED: MANAGER VIEW EMPLOYEE NAME DATA */}
+                            {employeeData.role === 'manager' && (
+                               <TableCell>{row.employee__first_name || "Self"}</TableCell>
+                            )}
+
                             <TableCell>{row.date}</TableCell>
                             <TableCell align="center">{row.total_calls}</TableCell>
                             <TableCell align="center">{row.connected_calls}</TableCell>
@@ -856,7 +857,7 @@ function EmployeeDashboard() {
                 <TextField 
                   fullWidth 
                   label="Followup Customers (Names)" 
-                  placeholder="Example:&#10;1) Rohit Singh&#10;2) Virat Kohli"
+                  placeholder="Example:&#10;1) Name&#10;2) Name"
                   multiline 
                   rows={4} 
                   variant="outlined"

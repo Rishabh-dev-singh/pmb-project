@@ -1,12 +1,14 @@
 import json
+import csv
 from datetime import datetime
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.conf import settings
 from accounts.models import CustomUser
 from .models import LoanInquiry, AgriInquiry, Attendance, Lead, SoftwareInquiry
 from .models import Productivity 
+
 # -----------------------------------
 # EMAIL FUNCTION
 # -----------------------------------
@@ -80,6 +82,10 @@ def update_product(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
 
+
+# -----------------------------------
+# ATTENDANCE
+# -----------------------------------
 @csrf_exempt
 def attendance_api(request):
     try:
@@ -107,6 +113,10 @@ def get_employees(request):
     employees = list(CustomUser.objects.all().values("employee_id", "first_name", "department", "designation"))
     return JsonResponse(employees, safe=False)
 
+
+# -----------------------------------
+# LEADS
+# -----------------------------------
 @csrf_exempt
 def lead_list_create(request):
     if request.method == "GET":
@@ -132,11 +142,8 @@ def lead_list_create(request):
                 requiredLoanAmount=data.get("requiredLoanAmount"),
                 location=data.get("location"),
                 owner=data.get("owner"),
-                
-    
                 bankName=data.get("bankName"),
                 rmName=data.get("rmName"),
-                
                 progress=data.get("progress"),
                 source=data.get("source"),
                 subSource=data.get("subSource"),
@@ -171,6 +178,9 @@ def delete_lead(request, pk):
         return JsonResponse({"status": "error", "message": str(e)})
 
 
+# -----------------------------------
+# SOFTWARE INQUIRY
+# -----------------------------------
 @csrf_exempt
 def save_software_inquiry(request):
     try:
@@ -201,14 +211,23 @@ def get_bank_list(request):
 @csrf_exempt
 def productivity_list_create(request):
     if request.method == "GET":
-        # Logged-in user ke hisaab se data fetch karein
-        # Agar user staff/manager hai, to sabka data dikha sakte hain
-        # Yahan simple logic hai: employee_id ke through filter
         emp_id = request.GET.get("employee_id")
-        if emp_id:
-            data = list(Productivity.objects.filter(employee__employee_id=emp_id).order_by("-date").values())
+        role = request.GET.get("role")
+        super_users = ["3800", "3801", "3802", "3803"]
+
+        # Agar user manager hai ya super_user list mein hai, toh sabka data dikhao
+        if role == "manager" or emp_id in super_users:
+            queryset = Productivity.objects.all().order_by("-date")
         else:
-            data = list(Productivity.objects.all().order_by("-date").values())
+            # Normal employee sirf apna data dekhega
+            queryset = Productivity.objects.filter(employee__employee_id=emp_id).order_by("-date")
+        
+        # .values() mein employee details (name, id) pass karna zaroori hai taaki dashboard par identify ho sake
+        data = list(queryset.values(
+            "id", "date", "total_calls", "connected_calls", 
+            "interested_customers", "followup_customers", "remark",
+            "employee__employee_id", "employee__first_name"
+        ))
         return JsonResponse(data, safe=False)
 
     if request.method == "POST":
@@ -236,3 +255,48 @@ def delete_productivity(request, pk):
         return JsonResponse({"status": "deleted"})
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
+
+@csrf_exempt
+def download_productivity_csv(request):
+    if request.method == "GET":
+        emp_id = request.GET.get("employee_id")
+        role = request.GET.get("role")
+        super_users = ["3800", "3801", "3802", "3803"]
+
+        # Sirf Super Users aur Managers download kar sakte hain
+        if role != "manager" and emp_id not in super_users:
+            return JsonResponse({"status": "error", "message": "You are not authorized to download this report."})
+
+        # Saara data fetch karein
+        records = Productivity.objects.all().order_by("-date", "employee__first_name")
+
+        # HttpResponse setup for CSV
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="productivity_report.csv"'
+
+        writer = csv.writer(response)
+        
+        # CSV Headers
+        writer.writerow([
+            'Date', 'Employee ID', 'Employee Name', 'Total Calls', 
+            'Connected Calls', 'Interested Customers', 'Followup Customers', 'Remarks'
+        ])
+
+        # CSV Data Rows
+        for record in records:
+            # Handle possible empty fields or dates
+            emp_name = f"{record.employee.first_name or ''}".strip()
+            date_str = record.date.strftime("%Y-%m-%d") if record.date else ""
+            
+            writer.writerow([
+                date_str,
+                record.employee.employee_id,
+                emp_name,
+                record.total_calls,
+                record.connected_calls,
+                record.interested_customers,
+                record.followup_customers,
+                record.remark
+            ])
+
+        return response

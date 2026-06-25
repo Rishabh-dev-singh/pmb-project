@@ -43,6 +43,7 @@ function About() {
     <Box sx={{ bgcolor: "#f4f7f6", pb: 10 }}>
       
       {/* ================= HERO SECTION ================= */}
+
       <Box
         sx={{
           background: `linear-gradient(135deg, ${primaryColor}, #1e3c72)`,
@@ -84,6 +85,7 @@ function About() {
       <Container maxWidth="xl" sx={{ mt: 6 }}>
         
         {/* ================= ABOUT US & STATS SECTION ================= */}
+
         <Grid container spacing={4}>
           
           {/* Left: About Us Text */}
@@ -176,6 +178,7 @@ function About() {
         </Grid>
 
         {/* ================= LEADERSHIP SECTION ================= */}
+
         <Box sx={{ mt: 10 }}>
           <Typography variant="h3" align="center" sx={{ fontWeight: 900, color: primaryColor, mb: 6, fontSize: { xs: "2rem", md: "3rem" } }}>
             Our Leadership
@@ -196,6 +199,7 @@ function About() {
                 }}
               >
                 {/* Image Side - Fixed for Mobile */}
+
                 <Box 
                   sx={{ 
                     flex: { xs: "none", md: "0 0 35%" }, // Fixed Width issue
@@ -231,6 +235,7 @@ function About() {
                 </Box>
 
                 {/* Content Side - Responsive Text & Padding */}
+
                 <Box sx={{ flex: 1, p: { xs: 2.5, sm: 4, md: 5 } }}>
                   <Typography sx={{ fontSize: { xs: "0.95rem", md: "1rem" }, lineHeight: 1.8, color: "#444", textAlign: { xs: "left", md: "justify" }, mb: 4 }}>
                     Our Managing Director is a young and visionary entrepreneur who strongly believes that the true strength of any organization lies in its people. He values every team member as an important contributor to the company’s growth, success, and long-term vision. His leadership is built on trust, transparency, innovation, and collective progress.
@@ -276,6 +281,7 @@ function About() {
             </Grid>
 
             {/* --- OTHER LEADERS (Uniform Grid Layout) --- */}
+            
             {[
               {
                 name: "Mr. Atar Singh",

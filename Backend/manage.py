@@ -21,9 +21,5 @@ def main():
 if __name__ == '__main__':
     main()
 
-# THIS FILE TEST
-
-def mainn():
-    print("This is a test file")
 
   

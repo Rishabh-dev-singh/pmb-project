@@ -188,7 +188,7 @@ function Career() {
                 fontSize: "1.05rem",
                 lineHeight: 1.8,
               }}
-            >
+            > 
               Interested candidates can send their resume and
               professional details to our official email address.
             </Typography>
