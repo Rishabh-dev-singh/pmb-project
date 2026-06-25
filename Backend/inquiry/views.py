@@ -5,8 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.conf import settings
 from accounts.models import CustomUser
-from .models import LoanInquiry, AgriInquiry, Attendance, Lead, SoftwareInquiry,DailyProductivity
-
+from .models import LoanInquiry, AgriInquiry, Attendance, Lead, SoftwareInquiry
 
 # -----------------------------------
 # EMAIL FUNCTION
@@ -195,43 +194,4 @@ def get_bank_list(request):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
 
-@csrf_exempt
-def save_productivity(request):
 
-    if request.method != "POST":
-        return JsonResponse({
-            "status": "error",
-            "message": "POST request only"
-        })
-
-    try:
-
-        data = json.loads(request.body)
-
-        employee = CustomUser.objects.get(
-            employee_id=data.get("employee_id")
-        )
-
-        productivity, created = DailyProductivity.objects.get_or_create(
-            employee=employee
-        )
-
-        productivity.total_calls = int(data.get("total_calls", 0))
-        productivity.connected_calls = int(data.get("connected_calls", 0))
-        productivity.interested = int(data.get("interested", 0))
-        productivity.followup = int(data.get("followup", 0))
-        productivity.remark = data.get("remark", "")
-
-        productivity.save()
-
-        return JsonResponse({
-            "status": "success",
-            "message": "Daily Productivity Saved Successfully"
-        })
-
-    except Exception as e:
-
-        return JsonResponse({
-            "status": "error",
-            "message": str(e)
-        })
