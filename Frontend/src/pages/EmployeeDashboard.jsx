@@ -889,9 +889,7 @@ function EmployeeDashboard() {
             <Button onClick={() => setOpenUpdateDialog(false)} sx={{ color: darkMode ? "#cbd5e1" : "inherit" }}>
               Cancel
             </Button>
-            <Button variant="outlined" color="primary" onClick={downloadCurrentPDFReport}>
-              Download Current PDF
-            </Button>
+            
             <Button variant="contained" onClick={handleProductivitySubmit} sx={{ background: "#8b5cf6", "&:hover": { background: "#7c3aed" } }}>
               Submit Record
             </Button>
