@@ -15,7 +15,7 @@ import {
 import {
   Dashboard as DashIcon, Assignment, AssignmentTurnedIn, Calculate, AddCircle,
   ListAlt, Edit as EditIcon, Logout as LogoutIcon, Menu as MenuIcon,
-  MenuOpen as MenuOpenIcon, DarkMode, LightMode, PictureAsPdf as PdfIcon
+  MenuOpen as MenuOpenIcon, DarkMode, LightMode,
 } from "@mui/icons-material";
 
 import { useNavigate, useLocation } from "react-router-dom";
