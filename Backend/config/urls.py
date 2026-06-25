@@ -23,7 +23,16 @@ urlpatterns = [
     path('api/attendance/', views.attendance_api),
 
     path('api/leads/', views.lead_list_create),
+
     path('api/banks/', views.get_bank_list, name='get_bank_list'),
+
+    # Daily Productivity API
+    path(
+        'api/productivity/',
+        views.save_productivity,
+        name='save_productivity'
+    ),
+
     path(
         'api/leads/<int:pk>/update/',
         views.update_lead,

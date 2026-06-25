@@ -31,7 +31,11 @@ import {
   useMediaQuery,
   useTheme,
   ThemeProvider,
-  createTheme
+  createTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from "@mui/material";
 
 import {
@@ -49,6 +53,8 @@ import {
 } from "@mui/icons-material";
 
 import { useNavigate, useLocation } from "react-router-dom";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
 import Attendance from "./Attendance";
 import api from "../api"; 
@@ -60,11 +66,20 @@ function EmployeeDashboard() {
   const [leads, setLeads] = useState([]);
   const [search, setSearch] = useState("");
   
-  // NAYE STATES FILTER KE LIYE
+  // FILTERS
   const [filterEmployee, setFilterEmployee] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
-
   const [empMap, setEmpMap] = useState({});
+
+  // PRODUCTIVITY POPUP STATE
+  const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+  const [productivity, setProductivity] = useState({
+    total_calls: '', 
+    connected_calls: '', 
+    interested: '', 
+    followup: '', 
+    remark: ''
+  });
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -225,7 +240,56 @@ function EmployeeDashboard() {
     navigate("/add-lead", { state: { lead } });
   };
 
-  // NAYA: FILTER LOGIC UPDATE KIYA GAYA HAI
+  // PRODUCTIVITY HANDLERS
+  const handleProductivitySubmit = async () => {
+  try {
+    const res = await api.post("productivity/", {
+      employee_id: employeeData.id,
+      total_calls: productivity.total_calls,
+      connected_calls: productivity.connected_calls,
+      interested: productivity.interested,
+      followup: productivity.followup,
+      remark: productivity.remark,
+    });
+
+    if (res.data.status === "success") {
+      alert("✅ Productivity Saved Successfully");
+
+      setOpenUpdateDialog(false);
+
+      setProductivity({
+        total_calls: "",
+        connected_calls: "",
+        interested: "",
+        followup: "",
+        remark: "",
+      });
+    } else {
+      alert(res.data.message);
+    }
+  } catch (err) {
+    console.error(err);
+    alert("❌ Server Error");
+  }
+};
+
+  const downloadPDFReport = () => {
+    const doc = new jsPDF();
+    doc.text(`Daily Work Report - ${employeeData.name}`, 14, 15);
+    doc.autoTable({
+      head: [['Field', 'Value']],
+      body: [
+        ['Total Calls', productivity.total_calls || 0],
+        ['Connected Calls', productivity.connected_calls || 0],
+        ['Interested Customers', productivity.interested || 0],
+        ['Followup', productivity.followup || 0],
+        ['Remark', productivity.remark || 'N/A'],
+      ],
+      startY: 20
+    });
+    doc.save(`Daily_Report_${employeeData.name}.pdf`);
+  };
+
   const filteredLeads = leads.filter((l) => {
     const matchesSearch = l.fullName?.toLowerCase().includes(search.toLowerCase()) || l.mobile?.includes(search);
     const matchesEmployee = filterEmployee ? l.owner === filterEmployee : true;
@@ -409,6 +473,28 @@ function EmployeeDashboard() {
             </Box>
 
             <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 2 }}>
+              
+              {/* NAYA BUTTON: SUBMIT PRODUCTIVITY */}
+              <Button 
+                variant="contained" 
+                size="small"
+                onClick={() => setOpenUpdateDialog(true)}
+                sx={{ 
+                  background: "#8b5cf6", 
+                  "&:hover": { background: "#7c3aed" },
+                  display: { xs: "none", sm: "flex" } // Hides on very small screens to save space
+                }}
+              >
+                Submit Productivity
+              </Button>
+              {/* Mobile icon equivalent for Productivity */}
+              <IconButton 
+                onClick={() => setOpenUpdateDialog(true)} 
+                sx={{ display: { xs: "flex", sm: "none" }, color: "#8b5cf6" }}
+              >
+                <Assignment />
+              </IconButton>
+
               {/* DARK MODE TOGGLE */}
               <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
                 {darkMode ? <LightMode sx={{ color: "#fbbf24" }} /> : <DarkMode sx={{ color: "#3b82f6" }} />}
@@ -476,7 +562,7 @@ function EmployeeDashboard() {
                   Download Your Lead
                 </Button>
 
-                {/* NAYA: FILTERING SECTION UI */}
+                {/* FILTERING SECTION UI */}
                 <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: 2 }}>
                   <TextField
                     label="Search by name or mobile"
@@ -484,8 +570,6 @@ function EmployeeDashboard() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
-
-                  {/* Employee Dropdown - Yeh superusers ko useful lagega */}
                   <TextField
                     select
                     label="Filter by Employee"
@@ -498,8 +582,6 @@ function EmployeeDashboard() {
                       <MenuItem key={id} value={id}>{name}</MenuItem>
                     ))}
                   </TextField>
-
-                  {/* Status Dropdown */}
                   <TextField
                     select
                     label="Filter by Status"
@@ -620,6 +702,75 @@ function EmployeeDashboard() {
 
           </Box>
         </Box>
+
+        {/* PRODUCTIVITY DIALOG COMPONENT */}
+        <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} fullWidth maxWidth="sm">
+          <DialogTitle sx={{ bgcolor: darkMode ? "#1e293b" : "#fff", color: darkMode ? "#fff" : "#000" }}>
+            Daily Productivity Update
+          </DialogTitle>
+          <DialogContent sx={{ bgcolor: darkMode ? "#1e293b" : "#fff" }}>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12} sm={6}>
+                <TextField 
+                  fullWidth 
+                  label="Total Calls" 
+                  type="number" 
+                  value={productivity.total_calls}
+                  onChange={(e) => setProductivity({...productivity, total_calls: e.target.value})} 
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField 
+                  fullWidth 
+                  label="Connected Calls" 
+                  type="number" 
+                  value={productivity.connected_calls}
+                  onChange={(e) => setProductivity({...productivity, connected_calls: e.target.value})} 
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField 
+                  fullWidth 
+                  label="Interested Customers" 
+                  type="number" 
+                  value={productivity.interested}
+                  onChange={(e) => setProductivity({...productivity, interested: e.target.value})} 
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField 
+                  fullWidth 
+                  label="Followup" 
+                  type="number" 
+                  value={productivity.followup}
+                  onChange={(e) => setProductivity({...productivity, followup: e.target.value})} 
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField 
+                  fullWidth 
+                  label="Any Remark" 
+                  multiline 
+                  rows={3} 
+                  value={productivity.remark}
+                  onChange={(e) => setProductivity({...productivity, remark: e.target.value})} 
+                />
+              </Grid>
+            </Grid>
+          </DialogContent>
+          <DialogActions sx={{ bgcolor: darkMode ? "#1e293b" : "#fff", p: 2 }}>
+            <Button onClick={() => setOpenUpdateDialog(false)} sx={{ color: darkMode ? "#cbd5e1" : "inherit" }}>
+              Cancel
+            </Button>
+            <Button variant="outlined" color="primary" onClick={downloadPDFReport}>
+              Download PDF
+            </Button>
+            <Button variant="contained" color="success" onClick={handleProductivitySubmit}>
+              Submit
+            </Button>
+          </DialogActions>
+        </Dialog>
+
       </Box>
     </ThemeProvider>
   );

@@ -64,3 +64,27 @@ class SoftwareInquiry(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.full_name} - {self.service_type}"
+    
+class DailyProductivity(models.Model):
+    employee = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+
+    date = models.DateField(auto_now_add=True)
+
+    total_calls = models.PositiveIntegerField(default=0)
+    connected_calls = models.PositiveIntegerField(default=0)
+    interested = models.PositiveIntegerField(default=0)
+    followup = models.PositiveIntegerField(default=0)
+
+    remark = models.TextField(blank=True, null=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("employee", "date")
+
+    def __str__(self):
+        return f"{self.employee.employee_id} - {self.date}"
