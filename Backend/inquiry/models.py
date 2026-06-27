@@ -1,6 +1,6 @@
 from django.db import models
 from django.conf import settings
-
+#  LoanInquiry Model
 class LoanInquiry(models.Model):
     full_name = models.CharField(max_length=200)
     email = models.EmailField(blank=True, null=True)
@@ -10,7 +10,7 @@ class LoanInquiry(models.Model):
 
     def __str__(self):
         return self.full_name
-
+# AgriInquiry Model
 class AgriInquiry(models.Model):
     full_name = models.CharField(max_length=200)
     email = models.EmailField(blank=True, null=True)
@@ -20,7 +20,7 @@ class AgriInquiry(models.Model):
 
     def __str__(self):
         return self.full_name
-
+# Attendance Model
 class Attendance(models.Model):
     employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
@@ -31,7 +31,7 @@ class Attendance(models.Model):
 
     def __str__(self):
         return f"{self.employee} - {self.date}"
-
+# Lead Model
 class Lead(models.Model):
     prospectType = models.CharField(max_length=50)
     loanType = models.CharField(max_length=50)
@@ -57,7 +57,7 @@ class Lead(models.Model):
 
     def __str__(self):
         return f"{self.fullName} ({self.mobile})"
-
+# SoftwareInquiry Model
 class SoftwareInquiry(models.Model):
     full_name = models.CharField(max_length=200)
     email = models.EmailField(blank=True, null=True)
@@ -68,7 +68,7 @@ class SoftwareInquiry(models.Model):
     def __str__(self):
         return f"{self.full_name} - {self.service_type}"
 
-# Naya Productivity Model
+#  Productivity Model
 class Productivity(models.Model):
     employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
@@ -83,8 +83,11 @@ class Productivity(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ['-date'] # Latest record upar dikhega
+        ordering = ['-date'] 
         verbose_name_plural = "Productivity Reports"
 
     def __str__(self):
         return f"{self.employee.username} - {self.date}"
+
+# Notification
+ 
