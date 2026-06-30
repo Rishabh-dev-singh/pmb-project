@@ -17,7 +17,6 @@ import Software_Services from "./pages/Software_Services";
 import Finance_Services from "./pages/Finance_Services";
 import Consultancy from "./pages/Consultancy";
 import PrivateRoute from "./pages/PrivateRoute";
-// NAYA: PrivateRoute import kiya
 
 function App() {
   return (

@@ -781,7 +781,8 @@ function EmployeeDashboard() {
             )}
 
             {/* ATTENDANCE */}
-            {activePanel === "attendance" && <Attendance />}
+            {/* UPDATED: Passed employeeId as prop below */}
+            {activePanel === "attendance" && <Attendance employeeId={employeeData.id} />}
 
             {/* EMI */}
             {activePanel === "emi" && (
