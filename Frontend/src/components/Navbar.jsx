@@ -130,6 +130,51 @@ function Navbar() {
           {/* RIGHT SIDE */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
+            {/* PMB CONSULTANCY BUTTON */}
+            {/* <Button
+              component={Link}
+              to="/consultancy"
+              sx={{
+                display: { xs: "none", md: "flex" },
+                background: "linear-gradient(45deg,#6366f1,#4f46e5)", // Unique purple/indigo gradient
+                color: "white",
+                borderRadius: "30px",
+                px: 3,
+                py: 1,
+                fontWeight: 700,
+                textTransform: "none",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                transition: "all 0.3s ease",
+                position: "relative",
+                overflow: "hidden",
+
+                "&:hover": {
+                  transform: "translateY(-3px) scale(1.04)",
+                  boxShadow: "0 8px 24px rgba(79,70,229,0.45)",
+                  background:
+                    "linear-gradient(45deg,#818cf8,#4f46e5)"
+                },
+
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background:
+                    "linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent)",
+                  transition: "0.7s"
+                },
+
+                "&:hover::before": {
+                  left: "100%"
+                }
+              }}
+            >
+              PMB CONSULTANCY
+            </Button> */}
+
             {/* OUR SERVICE BUTTON */}
             <Button
               component={Link}
@@ -253,6 +298,30 @@ function Navbar() {
                 gap: 2
               }}
             >
+
+              {/* PMB CONSULTANCY
+              <Button
+                component={Link}
+                to="/consultancy"
+                fullWidth
+                onClick={() => setOpen(false)}
+                sx={{
+                  background:
+                    "linear-gradient(45deg,#6366f1,#4f46e5)",
+                  color: "white",
+                  borderRadius: "30px",
+                  py: 1.2,
+                  fontWeight: 700,
+                  textTransform: "none",
+
+                  "&:hover": {
+                    background:
+                      "linear-gradient(45deg,#818cf8,#4f46e5)"
+                  }
+                }}
+              >
+               PMB Consultancy
+              </Button> */}
 
               {/* OUR SERVICE */}
               <Button

@@ -299,4 +299,32 @@ def download_productivity_csv(request):
                 record.remark
             ])
 
-        return response
+        return response 
+    
+
+
+def attendance_list(request):
+    emp_id = request.GET.get("employee_id")
+    role = request.GET.get("role")
+
+    super_users = ["3800", "3801", "3802", "3803"]
+
+    if role == "manager" or emp_id in super_users:
+        queryset = Attendance.objects.all().order_by("-date")
+    else:
+        queryset = Attendance.objects.filter(
+            employee__employee_id=emp_id
+        ).order_by("-date")
+
+    data = list(queryset.values(
+        "id",
+        "date",
+        "punch_in",
+        "punch_out",
+        "lunch_start",
+        "lunch_end",
+        "employee__employee_id",
+        "employee__first_name",
+    ))
+
+    return JsonResponse(data, safe=False)

@@ -21,6 +21,7 @@ urlpatterns = [
     path('api/employees/', views.get_employees),
 
     path('api/attendance/', views.attendance_api),
+    path('api/attendance/list/', views.attendance_list), 
 
     path('api/leads/', views.lead_list_create),
     path('api/banks/', views.get_bank_list, name='get_bank_list'),
@@ -45,3 +46,4 @@ urlpatterns += static(
     settings.MEDIA_URL,
     document_root=settings.MEDIA_ROOT
 )
+

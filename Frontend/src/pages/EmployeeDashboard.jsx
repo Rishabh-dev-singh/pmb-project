@@ -22,6 +22,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import jsPDF from "jspdf";
 
 import Attendance from "./Attendance";
+import AttendanceHistory from "./AttendanceHistory";
 import api from "../api"; 
 
 const EMI = React.lazy(() => import("./EMI"));
@@ -781,8 +782,16 @@ function EmployeeDashboard() {
             )}
 
             {/* ATTENDANCE */}
-            {/* UPDATED: Passed employeeId as prop below */}
-            {activePanel === "attendance" && <Attendance employeeId={employeeData.id} />}
+            {activePanel === "attendance" && (
+  <>
+    <Attendance employeeId={employeeData.id} />
+
+    <AttendanceHistory
+      employeeId={employeeData.id}
+      role={employeeData.role}
+    />
+  </>
+)}
 
             {/* EMI */}
             {activePanel === "emi" && (
@@ -899,7 +908,7 @@ function EmployeeDashboard() {
 
       </Box>
     </ThemeProvider>
-  );
+  ); 
 }
 
 export default EmployeeDashboard;

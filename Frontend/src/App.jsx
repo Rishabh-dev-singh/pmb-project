@@ -17,7 +17,10 @@ import Software_Services from "./pages/Software_Services";
 import Finance_Services from "./pages/Finance_Services";
 import Consultancy from "./pages/Consultancy";
 import PrivateRoute from "./pages/PrivateRoute";
-
+import IndustryLogin from "./pages/Industry_requirement/Login";
+// 1. Industry Dashboard Import karein
+import IndustryDashboard from "./pages/Industry_requirement/IndustryDashboard";
+import RequirementForm from "./pages/Industry_requirement/RequirementForm";
 function App() {
   return (
     <BrowserRouter>
@@ -32,7 +35,7 @@ function App() {
 
         <Box sx={{ flex: 1 }}>
           <Routes>
-            {/* PUBLIC ROUTES (Koi bhi dekh sakta hai) */}
+            {/* PUBLIC ROUTES */}
             <Route path="/" element={<Home />} />
             <Route path="/inquiry" element={<Inquiry />} />
             <Route path="/admin-login" element={<AdminLogin />} />
@@ -45,8 +48,12 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/loan-type" element={<LoanType />} />
             <Route path="/agro-product" element={<AgroProduct />} />
-
-            {/* PROTECTED ROUTES (Sirf Login wale Employees dekh sakte hain) */}
+            
+            {/* INDUSTRY ROUTES */}
+            <Route path="/consultancy" element={<IndustryLogin />} />
+            <Route path="/industry-dashboard" element={<IndustryDashboard />} />
+            <Route path="/submit-requirement" element={<RequirementForm />} />
+            {/* PROTECTED ROUTES */}
             <Route
               path="/employee-dashboard"
               element={

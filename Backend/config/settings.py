@@ -6,7 +6,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-+&!@#your-secret-key-here-!@#&*'
 DEBUG = False
-ALLOWED_HOSTS = ['pmb.finance', 'www.pmb.finance']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    'localhost',
+    'pmb.finance',
+    'www.pmb.finance',
+]
 
 INSTALLED_APPS = [
     'corsheaders',
