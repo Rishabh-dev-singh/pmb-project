@@ -50,8 +50,6 @@ function AttendanceHistory({ employeeId, role }) {
       "Employee Name",
       "Date",
       "Punch In",
-      "Lunch Start",
-      "Lunch End",
       "Punch Out",
     ];
 
@@ -61,8 +59,6 @@ function AttendanceHistory({ employeeId, role }) {
       row.employee__first_name || "",
       row.date || "",
       row.punch_in || "-",
-      row.lunch_start || "-",
-      row.lunch_end || "-",
       row.punch_out || "-",
     ]);
 
@@ -104,7 +100,7 @@ function AttendanceHistory({ employeeId, role }) {
       </Box>
 
       {loading ? (
-        <Box sx={{ textAlign: "center", py: 5 }}>
+        <Box sx={{ textAlign: "center", py: 5 }}>v
           <CircularProgress />
         </Box>
       ) : (
@@ -123,8 +119,6 @@ function AttendanceHistory({ employeeId, role }) {
 
                 <TableCell><b>Date</b></TableCell>
                 <TableCell><b>Punch In</b></TableCell>
-                <TableCell><b>Lunch Start</b></TableCell>
-                <TableCell><b>Lunch End</b></TableCell>
                 <TableCell><b>Punch Out</b></TableCell>
               </TableRow>
             </TableHead>
@@ -144,8 +138,6 @@ function AttendanceHistory({ employeeId, role }) {
 
                     <TableCell>{row.date}</TableCell>
                     <TableCell>{row.punch_in || "-"}</TableCell>
-                    <TableCell>{row.lunch_start || "-"}</TableCell>
-                    <TableCell>{row.lunch_end || "-"}</TableCell>
                     <TableCell>{row.punch_out || "-"}</TableCell>
                   </TableRow>
                 ))
