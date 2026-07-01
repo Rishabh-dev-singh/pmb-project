@@ -99,7 +99,7 @@ function AttendanceHistory({ employeeId, role }) {
           startIcon={<DownloadIcon />}
           onClick={downloadCSV}
         >
-          Download Excel
+          Download Attendance
         </Button>
       </Box>
 
