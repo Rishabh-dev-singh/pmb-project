@@ -355,7 +355,7 @@ function EmployeeDashboard() {
     const matchesStatus = filterStatus ? l.progress === filterStatus : true;
     
     return matchesSearch && matchesEmployee && matchesStatus;
-  });
+  });  
 
   const downloadExcel = () => {
     const headers = [
