@@ -2,32 +2,54 @@ import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
-  Button, 
+  Button,
   Box,
   IconButton,
   Drawer,
   List,
   ListItemButton,
   ListItemText,
-  Divider
+  Divider,
+  Menu,
+  MenuItem,
+  Collapse
 } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link, useLocation } from "react-router-dom";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 
 function Navbar() {
-
   const location = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
+  // Dropdown States
+  const [servicesAnchor, setServicesAnchor] = useState(null);
+  const [portalAnchor, setPortalAnchor] = useState(null);
+  
+  // Mobile Collapse States
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [mobilePortalOpen, setMobilePortalOpen] = useState(false);
+
+  // Admin is removed from here as it's now inside the Portal Dropdown
   const navItems = [
     { text: "Home", path: "/" },
     { text: "Submit Inquiry", path: "/inquiry" },
     { text: "Careers", path: "/careers" },
-    { text: "About Us", path: "/about" },
-    { text: "Admin", path: "/admin-login" }
+    { text: "About Us", path: "/about" }
   ];
+
+  // Navigation Handler for Dropdowns
+  const handleNavigate = (path) => {
+    navigate(path);
+    setServicesAnchor(null);
+    setPortalAnchor(null);
+    setOpen(false); // Closes mobile drawer
+  };
 
   const navButtonStyle = (path) => ({
     color: location.pathname === path ? "#0f3c6e" : "white",
@@ -108,7 +130,7 @@ function Navbar() {
             </Link>
           </Box>
 
-          {/* DESKTOP MENU */}
+          {/* DESKTOP MAIN MENU */}
           <Box
             sx={{
               display: { xs: "none", md: "flex" },
@@ -127,58 +149,12 @@ function Navbar() {
             ))}
           </Box>
 
-          {/* RIGHT SIDE */}
+          {/* RIGHT SIDE DESKTOP BUTTONS */}
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
 
-            {/* PMB CONSULTANCY BUTTON */}
-            {/* <Button
-              component={Link}
-              to="/consultancy"
-              sx={{
-                display: { xs: "none", md: "flex" },
-                background: "linear-gradient(45deg,#6366f1,#4f46e5)", // Unique purple/indigo gradient
-                color: "white",
-                borderRadius: "30px",
-                px: 3,
-                py: 1,
-                fontWeight: 700,
-                textTransform: "none",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
-                transition: "all 0.3s ease",
-                position: "relative",
-                overflow: "hidden",
-
-                "&:hover": {
-                  transform: "translateY(-3px) scale(1.04)",
-                  boxShadow: "0 8px 24px rgba(79,70,229,0.45)",
-                  background:
-                    "linear-gradient(45deg,#818cf8,#4f46e5)"
-                },
-
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: "-100%",
-                  width: "100%",
-                  height: "100%",
-                  background:
-                    "linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent)",
-                  transition: "0.7s"
-                },
-
-                "&:hover::before": {
-                  left: "100%"
-                }
-              }}
-            >
-              PMB CONSULTANCY
-            </Button> */}
-
-            {/* OUR SERVICE BUTTON */}
+            {/* 1. OUR SERVICES BUTTON */}
             <Button
-              component={Link}
-              to="/services"
+              onClick={(e) => setServicesAnchor(e.currentTarget)}
               sx={{
                 display: { xs: "none", md: "flex" },
                 background: "linear-gradient(45deg,#ff9800,#ff6b00)",
@@ -196,34 +172,67 @@ function Navbar() {
                 "&:hover": {
                   transform: "translateY(-3px) scale(1.04)",
                   boxShadow: "0 8px 24px rgba(255,140,0,0.45)",
-                  background:
-                    "linear-gradient(45deg,#ffb300,#ff6b00)"
+                  background: "linear-gradient(45deg,#ffb300,#ff6b00)"
                 },
-
-                "&::before": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: "-100%",
-                  width: "100%",
-                  height: "100%",
-                  background:
-                    "linear-gradient(120deg, transparent, rgba(255,255,255,0.4), transparent)",
-                  transition: "0.7s"
-                },
-
-                "&:hover::before": {
-                  left: "100%"
-                }
               }}
             >
-              Our Services
+              PMB Services <KeyboardArrowDownIcon sx={{ ml: 0.5 }} />
             </Button>
+            
+            {/* Our Services Dropdown Menu */}
+            <Menu
+              anchorEl={servicesAnchor}
+              open={Boolean(servicesAnchor)}
+              onClose={() => setServicesAnchor(null)}
+              sx={{ mt: 1 }}
+              PaperProps={{
+                sx: { borderRadius: "15px", p: 1, boxShadow: "0 10px 30px rgba(0,0,0,0.15)" }
+              }}
+            >
+              <MenuItem sx={{ p: 0.5, "&:hover": { background: "transparent" } }}>
+                <Button
+                  fullWidth
+                  onClick={() => handleNavigate("/services")}
+                  sx={{
+                    background: "linear-gradient(45deg,#ff9800,#ff6b00)",
+                    color: "white",
+                    borderRadius: "20px",
+                    px: 3,
+                    py: 1,
+                    fontWeight: 700,
+                    textTransform: "none",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                    "&:hover": { transform: "translateY(-2px)", boxShadow: "0 6px 15px rgba(255,140,0,0.35)", background: "linear-gradient(45deg,#ffb300,#ff6b00)" }
+                  }}
+                >
+                  Business Solutions
+                </Button>
+              </MenuItem>
+              
+              <MenuItem sx={{ p: 0.5, "&:hover": { background: "transparent" } }}>
+                <Button
+                  fullWidth
+                  onClick={() => handleNavigate("/consultancy")}
+                  sx={{
+                    background: "linear-gradient(45deg,#6366f1,#4f46e5)",
+                    color: "white",
+                    borderRadius: "20px",
+                    px: 3,
+                    py: 1,
+                    fontWeight: 700,
+                    textTransform: "none",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                    "&:hover": { transform: "translateY(-2px)", boxShadow: "0 6px 15px rgba(79,70,229,0.35)", background: "linear-gradient(45deg,#818cf8,#4f46e5)" }
+                  }}
+                >
+                  PMB Consultancy
+                </Button>
+              </MenuItem>
+            </Menu>
 
-            {/* EMPLOYEE BUTTON */}
+            {/* 2. PORTAL BUTTON (Employee + Admin) */}
             <Button
-              component={Link}
-              to="/employee-login"
+              onClick={(e) => setPortalAnchor(e.currentTarget)}
               sx={{
                 display: { xs: "none", md: "flex" },
                 background: "linear-gradient(45deg,#22c55e,#16a34a)",
@@ -233,7 +242,7 @@ function Navbar() {
                 py: 1,
                 fontWeight: 700,
                 textTransform: "none",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                 boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
                 transition: "0.3s",
 
                 "&:hover": {
@@ -242,8 +251,59 @@ function Navbar() {
                 }
               }}
             >
-              Employee Portal
+             PMB Access <KeyboardArrowDownIcon sx={{ ml: 0.5 }} />
             </Button>
+
+            {/* Portal Dropdown Menu */}
+            <Menu
+              anchorEl={portalAnchor}
+              open={Boolean(portalAnchor)}
+              onClose={() => setPortalAnchor(null)}
+              sx={{ mt: 1 }}
+              PaperProps={{
+                sx: { borderRadius: "15px", p: 1, boxShadow: "0 10px 30px rgba(0,0,0,0.15)" }
+              }}
+            >
+              <MenuItem sx={{ p: 0.5, "&:hover": { background: "transparent" } }}>
+                <Button
+                  fullWidth
+                  onClick={() => handleNavigate("/employee-login")}
+                  sx={{
+                    background: "linear-gradient(45deg,#22c55e,#16a34a)",
+                    color: "white",
+                    borderRadius: "20px",
+                    px: 3,
+                    py: 1,
+                    fontWeight: 700,
+                    textTransform: "none",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                    "&:hover": { transform: "translateY(-2px)", boxShadow: "0 6px 15px rgba(34,197,94,0.35)", background: "linear-gradient(45deg,#4ade80,#16a34a)" }
+                  }}
+                >
+                  PMB CRM
+                </Button>
+              </MenuItem>
+              
+              <MenuItem sx={{ p: 0.5, "&:hover": { background: "transparent" } }}>
+                <Button
+                  fullWidth
+                  onClick={() => handleNavigate("/admin-login")}
+                  sx={{
+                    background: "linear-gradient(45deg,#0f3c6e,#1f6ed4)",
+                    color: "white",
+                    borderRadius: "20px",
+                    px: 3,
+                    py: 1,
+                    fontWeight: 700,
+                    textTransform: "none",
+                    boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                    "&:hover": { transform: "translateY(-2px)", boxShadow: "0 6px 15px rgba(15,60,110,0.35)", background: "linear-gradient(45deg,#1f6ed4,#2563eb)" }
+                  }}
+                >
+                  Admin Login
+                </Button>
+              </MenuItem>
+            </Menu>
 
             {/* MOBILE MENU ICON */}
             <IconButton
@@ -266,9 +326,10 @@ function Navbar() {
           open={open}
           onClose={() => setOpen(false)}
         >
-          <Box sx={{ width: 260, pt: 3 }}>
+          <Box sx={{ width: 270, pt: 3 }}>
 
             <List>
+              {/* Normal Links */}
               {navItems.map((item) => (
                 <ListItemButton
                   key={item.text}
@@ -279,95 +340,104 @@ function Navbar() {
                 >
                   <ListItemText
                     primary={item.text}
-                    primaryTypographyProps={{
-                      fontWeight: 600
-                    }}
+                    primaryTypographyProps={{ fontWeight: 600 }}
                   />
                 </ListItemButton>
               ))}
+              
+              <Divider sx={{ my: 1 }} />
+
+              {/* MOBILE COLLAPSIBLE: OUR SERVICES */}
+              <ListItemButton onClick={() => setMobileServicesOpen(!mobileServicesOpen)} sx={{ py: 1.5 }}>
+                <ListItemText 
+                  primary="Our Services" 
+                  primaryTypographyProps={{ fontWeight: 600 }} 
+                />
+                {mobileServicesOpen ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+              
+              <Collapse in={mobileServicesOpen} timeout="auto" unmountOnExit>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, px: 3, py: 1 }}>
+                  <Button
+                    fullWidth
+                    onClick={() => handleNavigate("/services")}
+                    sx={{
+                      background: "linear-gradient(45deg,#ff9800,#ff6b00)",
+                      color: "white",
+                      borderRadius: "20px",
+                      py: 1,
+                      fontWeight: 700,
+                      textTransform: "none",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    Business Solutions
+                  </Button>
+
+                  <Button
+                    fullWidth
+                    onClick={() => handleNavigate("/consultancy")}
+                    sx={{
+                      background: "linear-gradient(45deg,#6366f1,#4f46e5)",
+                      color: "white",
+                      borderRadius: "20px",
+                      py: 1,
+                      fontWeight: 700,
+                      textTransform: "none",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    PMB Consultancy
+                  </Button>
+                </Box>
+              </Collapse>
+
+              {/* MOBILE COLLAPSIBLE: PORTAL */}
+              <ListItemButton onClick={() => setMobilePortalOpen(!mobilePortalOpen)} sx={{ py: 1.5 }}>
+                <ListItemText 
+                  primary="Portal" 
+                  primaryTypographyProps={{ fontWeight: 600 }} 
+                />
+                {mobilePortalOpen ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+              
+              <Collapse in={mobilePortalOpen} timeout="auto" unmountOnExit>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, px: 3, py: 1 }}>
+                  <Button
+                    fullWidth
+                    onClick={() => handleNavigate("/employee-login")}
+                    sx={{
+                      background: "linear-gradient(45deg,#22c55e,#16a34a)",
+                      color: "white",
+                      borderRadius: "20px",
+                      py: 1,
+                      fontWeight: 700,
+                      textTransform: "none",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    PMB CRM
+                  </Button>
+
+                  <Button
+                    fullWidth
+                    onClick={() => handleNavigate("/admin-login")}
+                    sx={{
+                      background: "linear-gradient(45deg,#0f3c6e,#1f6ed4)",
+                      color: "white",
+                      borderRadius: "20px",
+                      py: 1,
+                      fontWeight: 700,
+                      textTransform: "none",
+                      boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    Admin Login
+                  </Button>
+                </Box>
+              </Collapse>
+
             </List>
-
-            <Divider sx={{ my: 2 }} />
-
-            {/* MOBILE BUTTONS */}
-            <Box
-              sx={{
-                px: 2,
-                display: "flex",
-                flexDirection: "column",
-                gap: 2
-              }}
-            >
-
-              {/* PMB CONSULTANCY
-              <Button
-                component={Link}
-                to="/consultancy"
-                fullWidth
-                onClick={() => setOpen(false)}
-                sx={{
-                  background:
-                    "linear-gradient(45deg,#6366f1,#4f46e5)",
-                  color: "white",
-                  borderRadius: "30px",
-                  py: 1.2,
-                  fontWeight: 700,
-                  textTransform: "none",
-
-                  "&:hover": {
-                    background:
-                      "linear-gradient(45deg,#818cf8,#4f46e5)"
-                  }
-                }}
-              >
-               PMB Consultancy
-              </Button> */}
-
-              {/* OUR SERVICE */}
-              <Button
-                component={Link}
-                to="/services"
-                fullWidth
-                onClick={() => setOpen(false)}
-                sx={{
-                  background:
-                    "linear-gradient(45deg,#ff9800,#ff6b00)",
-                  color: "white",
-                  borderRadius: "30px",
-                  py: 1.2,
-                  fontWeight: 700,
-                  textTransform: "none",
-
-                  "&:hover": {
-                    background:
-                      "linear-gradient(45deg,#ffb300,#ff6b00)"
-                  }
-                }}
-              >
-               Our Services
-              </Button>
-
-              {/* EMPLOYEE PORTAL */}
-              <Button
-                component={Link}
-                to="/employee-login"
-                fullWidth
-                onClick={() => setOpen(false)}
-                sx={{
-                  background:
-                    "linear-gradient(45deg,#22c55e,#16a34a)",
-                  color: "white",
-                  borderRadius: "30px",
-                  py: 1.2,
-                  fontWeight: 700,
-                  textTransform: "none"
-                }}
-              >
-                Employee Portal
-              </Button>
-
-            </Box>
-
           </Box>
         </Drawer>
 

@@ -41,10 +41,8 @@ class Lead(models.Model):
     requiredLoanAmount = models.CharField(max_length=50)
     location = models.CharField(max_length=200)
     owner = models.CharField(max_length=100)
-    
     bankName = models.CharField(max_length=200, blank=True, null=True)
     rmName = models.CharField(max_length=200, blank=True, null=True)
-    
     progress = models.CharField(max_length=50)
     source = models.CharField(max_length=100, blank=True, null=True)
     subSource = models.CharField(max_length=100, blank=True, null=True)
@@ -88,6 +86,6 @@ class Productivity(models.Model):
 
     def __str__(self):
         return f"{self.employee.username} - {self.date}"
+    
 
-# Notification
- 
+  

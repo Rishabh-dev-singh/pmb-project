@@ -84,7 +84,7 @@ def update_product(request):
 
 
 # -----------------------------------
-# ATTENDANCE
+# ATTENDANCE 
 # -----------------------------------
 @csrf_exempt
 def attendance_api(request):

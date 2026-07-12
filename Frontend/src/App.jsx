@@ -17,7 +17,7 @@ import Software_Services from "./pages/Software_Services";
 import Finance_Services from "./pages/Finance_Services";
 import Consultancy from "./pages/Consultancy";
 import PrivateRoute from "./pages/PrivateRoute";
-import IndustryLogin from "./pages/Industry_requirement/Login";
+import IndustryLogin from "./pages/Industry_requirement/WelcomePage";
 // 1. Industry Dashboard Import karein
 import IndustryDashboard from "./pages/Industry_requirement/IndustryDashboard";
 import RequirementForm from "./pages/Industry_requirement/RequirementForm";
@@ -50,9 +50,9 @@ function App() {
             <Route path="/agro-product" element={<AgroProduct />} />
             
             {/* INDUSTRY ROUTES */}
-            <Route path="/consultancy" element={<IndustryLogin />} />
+             <Route path="/consultancy" element={<IndustryLogin />}/>
             <Route path="/industry-dashboard" element={<IndustryDashboard />} />
-            <Route path="/submit-requirement" element={<RequirementForm />} />
+            <Route path="/submit-requirement" element={<RequirementForm />}/>
             {/* PROTECTED ROUTES */}
             <Route
               path="/employee-dashboard"

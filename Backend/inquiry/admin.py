@@ -6,7 +6,7 @@ class LoanInquiryAdmin(admin.ModelAdmin):
     list_display = ("full_name", "email", "mobile", "loan_type", "created_at")
     list_filter = ("loan_type", "created_at")
     search_fields = ("full_name", "mobile")
-
+    
 @admin.register(AgriInquiry)
 class AgriInquiryAdmin(admin.ModelAdmin):
     list_display = ("full_name", "email", "mobile", "product_name", "created_at")
