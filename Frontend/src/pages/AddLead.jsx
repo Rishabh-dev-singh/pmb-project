@@ -157,7 +157,7 @@ function AddLead() {
     const method = isEditing ? "put" : "post";
 
     try {
-      // NAYA: Using api instead of vanilla fetch
+      
       const res = await api[method](url, payload);
       if (res.status === 200 || res.status === 201) {
         alert(isEditing ? "✅ Lead Updated Successfully" : "✅ Lead Saved Successfully");
