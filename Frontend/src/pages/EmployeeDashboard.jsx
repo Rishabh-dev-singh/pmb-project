@@ -170,10 +170,10 @@ function EmployeeDashboard() {
     }
   };
 
-  // NEW: LABOUR REQUIREMENT FETCH (SAFE ADDITION)
+  // NEW: LABOUR REQUIREMENT FETCH (SAFE ADDITION - URL UPDATED)
   const fetchLabourRequirements = async () => {
     try {
-      const res = await api.get('submit-requirement/');
+      const res = await api.get('industry/submit-requirement/'); // URL Fixed here
       console.log("Labour API Data:", res.data); // Mismatch Debug ke liye console
       setLabourRequirements(res.data);
     } catch (err) {
@@ -181,14 +181,14 @@ function EmployeeDashboard() {
     }
   };
 
-  // NEW: LABOUR REQUIREMENT STATUS UPDATE (SAFE ADDITION)
+  // NEW: LABOUR REQUIREMENT STATUS UPDATE (SAFE ADDITION - URL UPDATED)
   const updateLabourStatus = async (reqId, newStatus) => {
     if (!newStatus) return;
     const confirmChange = window.confirm(`Is requirement ka status '${newStatus}' update karein?`);
     if (!confirmChange) return;
 
     try {
-      const res = await api.patch(`submit-requirement/${reqId}/`, {
+      const res = await api.patch(`industry/submit-requirement/${reqId}/`, { // URL Fixed here
         status: newStatus,
         accepted_by: employeeData.name 
       });

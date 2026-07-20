@@ -1,6 +1,5 @@
 from django.db import models
 
-# Industry options
 INDUSTRY_CHOICES = [
     ("Garments & Textiles", "Garments & Textiles"),
     ("Gems & Jewellery", "Gems & Jewellery"),
@@ -13,7 +12,6 @@ INDUSTRY_CHOICES = [
     ("Manufacturing (Other)", "Manufacturing (Other)"),
 ]
 
-# Worker type options
 WORKER_CHOICES = [
     ("Helper / General Labour", "Helper / General Labour"),
     ("Machine Operator", "Machine Operator"),
@@ -46,13 +44,19 @@ class LabourRequirement(models.Model):
     headcount = models.PositiveIntegerField()
     deployment_date = models.DateField()
     
-    # System Tracking
+    # System Tracking & Management
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(
-        max_length=20, 
-        choices=[('Pending', 'Pending'), ('Processed', 'Processed'), ('Completed', 'Completed')],
+        max_length=50, 
+        choices=[
+            ('Pending', 'Pending'), 
+            ('Accepted', 'Accepted'), 
+            ('Request Completed', 'Request Completed'), 
+            ('Payment Accepted', 'Payment Accepted')
+        ],
         default='Pending'
     )
+    accepted_by = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"{self.company_name} - {self.required_role} ({self.headcount})"
