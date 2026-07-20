@@ -7,8 +7,6 @@ from .models import LabourRequirement
 @api_view(['GET', 'POST', 'PATCH']) 
 @permission_classes([AllowAny])
 def submit_requirement(request, pk=None):
-    
-    # 1. GET: Fetch all requirements for Employee Dashboard
     if request.method == 'GET':
         try:
             requirements = LabourRequirement.objects.all().order_by('-id')
@@ -30,9 +28,8 @@ def submit_requirement(request, pk=None):
                 })
             return JsonResponse(data, safe=False, status=status.HTTP_200_OK)
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_RESET)
 
-    # 2. POST: Create a new labour requirement
     elif request.method == 'POST':
         try:
             data = request.data
@@ -48,33 +45,21 @@ def submit_requirement(request, pk=None):
                 deployment_date=data.get('requiredDate'),
                 status='Pending'
             )
-            return JsonResponse(
-                {"message": "Requirement submitted successfully!"}, 
-                status=status.HTTP_201_CREATED
-            )
+            return JsonResponse({"message": "Requirement submitted successfully!"}, status=status.HTTP_201_CREATED)
         except Exception as e:
-            return JsonResponse(
-                {"error": str(e)}, 
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    # 3. PATCH: Update status and accepted_by name
     elif request.method == 'PATCH':
         try:
             if not pk:
                 return JsonResponse({"error": "Primary key required"}, status=status.HTTP_400_BAD_REQUEST)
-            
             req_obj = LabourRequirement.objects.get(pk=pk)
             data = request.data
-            
             if 'status' in data:
                 req_obj.status = data.get('status')
             if 'accepted_by' in data:
                 req_obj.accepted_by = data.get('accepted_by')
-                
             req_obj.save()
             return JsonResponse({"message": "Updated successfully!"}, status=status.HTTP_200_OK)
-        except LabourRequirement.DoesNotExist:
-            return JsonResponse({"error": "Requirement not found"}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
