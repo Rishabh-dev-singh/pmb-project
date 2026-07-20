@@ -9,13 +9,13 @@ import {
   TextField, CssBaseline, Table, TableBody, TableCell, TableContainer, TableHead,
   TableRow, IconButton, Button, Avatar, Menu, MenuItem, Divider, useMediaQuery,
   useTheme, ThemeProvider, createTheme, Dialog, DialogTitle, DialogContent,
-  DialogActions, Tooltip
+  DialogActions, Tooltip, Select, FormControl, Chip // Added Select, FormControl, Chip for MNC UI
 } from "@mui/material";
 
 import {
   Dashboard as DashIcon, Assignment, AssignmentTurnedIn, Calculate, AddCircle,
   ListAlt, Edit as EditIcon, Logout as LogoutIcon, Menu as MenuIcon,
-  MenuOpen as MenuOpenIcon, DarkMode, LightMode,
+  MenuOpen as MenuOpenIcon, DarkMode, LightMode, AccountCircle // Added AccountCircle for MNC UI
 } from "@mui/icons-material";
 
 import { useNavigate, useLocation } from "react-router-dom";
@@ -47,6 +47,9 @@ function EmployeeDashboard() {
     followup_customers: '', 
     remark: ''
   });
+
+  // NEW: LABOUR REQUIREMENTS STATE (SAFE ADDITION)
+  const [labourRequirements, setLabourRequirements] = useState([]);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
@@ -167,10 +170,54 @@ function EmployeeDashboard() {
     }
   };
 
+  // NEW: LABOUR REQUIREMENT FETCH (SAFE ADDITION)
+  const fetchLabourRequirements = async () => {
+    try {
+      const res = await api.get('submit-requirement/');
+      console.log("Labour API Data:", res.data); // Mismatch Debug ke liye console
+      setLabourRequirements(res.data);
+    } catch (err) {
+      console.error("Failed To Fetch Labour Requirements:", err);
+    }
+  };
+
+  // NEW: LABOUR REQUIREMENT STATUS UPDATE (SAFE ADDITION)
+  const updateLabourStatus = async (reqId, newStatus) => {
+    if (!newStatus) return;
+    const confirmChange = window.confirm(`Is requirement ka status '${newStatus}' update karein?`);
+    if (!confirmChange) return;
+
+    try {
+      const res = await api.patch(`submit-requirement/${reqId}/`, {
+        status: newStatus,
+        accepted_by: employeeData.name 
+      });
+
+      if (res.status === 200 || res.status === 204 || res.status === 201) {
+        fetchLabourRequirements(); 
+      } else {
+        alert("❌ Update failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Server error");
+    }
+  };
+
+  // NEW: MNC STATUS COLOR HELPER (SAFE ADDITION)
+  const getLabourStatusColor = (status) => {
+    const s = (status || "").toLowerCase();
+    if (s === "accepted") return { bg: "#e0f2fe", text: "#0369a1", border: "#bae6fd" }; 
+    if (s === "request completed") return { bg: "#dcfce7", text: "#15803d", border: "#bbf7d0" }; 
+    if (s === "payment accepted") return { bg: "#f3e8ff", text: "#7e22ce", border: "#e9d5ff" }; 
+    return { bg: "#fef9c3", text: "#a16207", border: "#fef08a" }; // Pending
+  };
+
   useEffect(() => {
     if (location.state?.refresh) {
       fetchLeads();
       fetchProductivity(); 
+      fetchLabourRequirements(); // Safe addition
     }
   }, [location]);
 
@@ -402,9 +449,11 @@ function EmployeeDashboard() {
     boxShadow: "0 10px 40px rgba(0,0,0,0.08)"
   };
 
+  // UPDATED: Added Labour Reqs safely without removing anything
   const menuItems = [
     { text: "Overview", icon: <DashIcon />, id: "overview" },
     { text: "Leads", icon: <ListAlt />, id: "leads" },
+    { text: "Labour Reqs", icon: <Assignment />, id: "labour_reqs" }, // SAFELY ADDED
     { text: "Productivity", icon: <AssignmentTurnedIn />, id: "productivity" },
     { text: "Attendance", icon: <Assignment />, id: "attendance" },
     { text: "EMI", icon: <Calculate />, id: "emi" }
@@ -458,6 +507,16 @@ function EmployeeDashboard() {
               <ListItem
                 key={item.id}
                 onClick={() => {
+                  // SAFELY ADDED RESTRICTION LOGIC
+                  if (item.id === "labour_reqs") {
+                    const allowedIds = ["3801", "3803", "3810", "3812"]; 
+                    if (!allowedIds.includes(String(employeeData.id))) {
+                      alert("YOU HAVE NOT ACCESS PLEASE CONTACT IT DEPARTMENT");
+                      return; 
+                    }
+                    fetchLabourRequirements();
+                  }
+
                   setActivePanel(item.id);
                   if (item.id === "leads") fetchLeads();
                   if (item.id === "productivity") fetchProductivity();
@@ -712,6 +771,107 @@ function EmployeeDashboard() {
                     </TableBody>
                   </Table>
                 </TableContainer>
+              </Paper>
+            )}
+
+            {/* NEW: MNC PREMIUM LABOUR REQUIREMENTS TAB (SAFE ADDITION) */}
+            {activePanel === "labour_reqs" && (
+              <Paper sx={{ ...card, overflow: "hidden" }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h5" sx={{ fontWeight: "bold", display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Assignment color="primary" /> Enterprise Labour Assignments
+                  </Typography>
+                </Box>
+
+                {labourRequirements.length === 0 ? (
+                  <Box sx={{ py: 8, textAlign: "center" }}>
+                    <Assignment sx={{ fontSize: 60, color: "text.secondary", opacity: 0.3, mb: 2 }} />
+                    <Typography sx={{ color: "text.secondary", fontSize: "16px", fontWeight: "500" }}>
+                      Abhi tak koi labour requirement assign nahi hui hai.
+                    </Typography>
+                  </Box>
+                ) : (
+                  <TableContainer>
+                    <Table sx={{ minWidth: 1000 }}>
+                      <TableHead sx={{ bgcolor: darkMode ? "#334155" : "#f8fafc" }}>
+                        <TableRow>
+                          {["SR", "Company", "Candidate", "Role", "Headcount", "Deployment", "Handled By", "Status Action"].map((head) => (
+                            <TableCell key={head} sx={{ fontWeight: "bold", color: darkMode ? "#cbd5e1" : "#475569", textTransform: "uppercase", fontSize: "12px" }}>
+                              {head}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {labourRequirements.map((req, index) => {
+                          const statusStyle = getLabourStatusColor(req.status);
+                          return (
+                            <TableRow key={req.id} hover sx={{ transition: "background 0.2s" }}>
+                              <TableCell sx={{ fontWeight: "600" }}>{index + 1}</TableCell>
+
+                              <TableCell>
+                                <Typography sx={{ fontWeight: "600", color: "text.primary" }}>
+                                  {req.company_name || req.companyName || "N/A"}
+                                </Typography>
+                              </TableCell>
+
+                              <TableCell>
+                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                                  <Avatar sx={{ width: 32, height: 32, bgcolor: "#e2e8f0", color: "#64748b", fontSize: "14px", fontWeight: "bold" }}>
+                                    {(req.full_name || req.fullName || "N")[0].toUpperCase()}
+                                  </Avatar>
+                                  <Typography sx={{ fontWeight: "500" }}>{req.full_name || req.fullName || "N/A"}</Typography>
+                                </Box>
+                              </TableCell>
+
+                              <TableCell>
+                                <Chip label={req.required_role || req.requiredRole || "-"} size="small" sx={{ fontWeight: "500" }} />
+                              </TableCell>
+
+                              <TableCell sx={{ fontWeight: "600" }}>{req.headcount || "0"}</TableCell>
+                              <TableCell sx={{ color: "text.secondary", fontWeight: "500" }}>{req.deployment_date || req.deploymentDate || "-"}</TableCell>
+
+                              <TableCell>
+                                {req.accepted_by ? (
+                                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                    <AccountCircle sx={{ color: "#10b981", fontSize: "18px" }} />
+                                    <Typography sx={{ fontSize: "13px", fontWeight: "600", color: "#10b981" }}>{req.accepted_by}</Typography>
+                                  </Box>
+                                ) : (
+                                  <Typography sx={{ fontSize: "13px", fontWeight: "500", color: "text.secondary", fontStyle: "italic" }}>Unassigned</Typography>
+                                )}
+                              </TableCell>
+
+                              <TableCell>
+                                <FormControl size="small" sx={{ minWidth: 160 }}>
+                                  <Select
+                                    value={req.status || "Pending"}
+                                    onChange={(e) => updateLabourStatus(req.id, e.target.value)}
+                                    sx={{
+                                      bgcolor: statusStyle.bg,
+                                      color: statusStyle.text,
+                                      fontWeight: "600",
+                                      fontSize: "13px",
+                                      borderRadius: "8px",
+                                      '& .MuiOutlinedInput-notchedOutline': { borderColor: statusStyle.border },
+                                      '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: statusStyle.text },
+                                      '& .MuiSvgIcon-root': { color: statusStyle.text },
+                                    }}
+                                  >
+                                    <MenuItem value="Pending" sx={{ fontWeight: "500" }}>Pending</MenuItem>
+                                    <MenuItem value="Accepted" sx={{ fontWeight: "500" }}>Accepted</MenuItem>
+                                    <MenuItem value="Request Completed" sx={{ fontWeight: "500" }}>Request Completed</MenuItem>
+                                    <MenuItem value="Payment Accepted" sx={{ fontWeight: "500" }}>Payment Accepted</MenuItem>
+                                  </Select>
+                                </FormControl>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
               </Paper>
             )}
 
