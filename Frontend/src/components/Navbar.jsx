@@ -242,7 +242,7 @@ function Navbar() {
                 py: 1,
                 fontWeight: 700,
                 textTransform: "none",
-                 boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.25)",
                 transition: "0.3s",
 
                 "&:hover": {

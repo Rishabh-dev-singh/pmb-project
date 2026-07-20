@@ -48,6 +48,9 @@ function EmployeeDashboard() {
     remark: ''
   });
 
+  // NEW: LABOUR REQUIREMENTS STATE
+  const [labourRequirements, setLabourRequirements] = useState([]);
+
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -57,7 +60,7 @@ function EmployeeDashboard() {
     id: "",
     designation: "",
     department: "",
-    role: "employee" // NEW: Added role property
+    role: "employee" 
   });
 
   const navigate = useNavigate();
@@ -97,7 +100,7 @@ function EmployeeDashboard() {
           id: userData.id || "N/A",
           designation: userData.designation || "N/A",
           department: userData.department || "N/A",
-          role: userRole // Setting role to state
+          role: userRole 
         });
 
         const empRes = await api.get('employees/');
@@ -108,7 +111,7 @@ function EmployeeDashboard() {
         setEmpMap(map);
 
         fetchLeads(userData.id);
-        fetchProductivity(userData.id, userRole); // Pass role for fetching productivity
+        fetchProductivity(userData.id, userRole); 
 
       } catch (err) {
         console.error("Authentication Error:", err);
@@ -156,7 +159,6 @@ function EmployeeDashboard() {
     }
   };
 
-  // UPDATED: PRODUCTIVITY FETCH API FUNCTION (Accepts Role)
   const fetchProductivity = async (empId = employeeData.id, role = employeeData.role) => {
     if (!empId) return;
     try {
@@ -164,6 +166,17 @@ function EmployeeDashboard() {
       setProductivityList(res.data);
     } catch (err) {
       console.error("Failed To Fetch Productivity:", err);
+    }
+  };
+
+  // NEW: LABOUR REQUIREMENTS FETCH API FUNCTION
+  const fetchLabourRequirements = async (empId = employeeData.id) => {
+    if (!empId) return;
+    try {
+      const res = await api.get(`labour-requirements/?assigned_employee_id=${encodeURIComponent(empId)}`);
+      setLabourRequirements(res.data);
+    } catch (err) {
+      console.error("Failed To Fetch Labour Requirements:", err);
     }
   };
 
@@ -195,11 +208,7 @@ function EmployeeDashboard() {
 
   const updateStatus = async (lead, newStatus) => {
     if (!newStatus) return;
-
-    const confirmChange = window.confirm(
-      `Progress change kare?\n\nFrom: ${lead.progress}\nTo: ${newStatus}`
-    );
-
+    const confirmChange = window.confirm(`Progress change kare?\n\nFrom: ${lead.progress}\nTo: ${newStatus}`);
     if (!confirmChange) return;
 
     try {
@@ -227,7 +236,6 @@ function EmployeeDashboard() {
     navigate("/add-lead", { state: { lead } });
   };
 
-  // PRODUCTIVITY POST API HANDLER
   const handleProductivitySubmit = async () => {
     if (!productivity.total_calls) {
         alert("Please enter Total Calls.");
@@ -248,16 +256,9 @@ function EmployeeDashboard() {
 
       if (res.status === 200 || res.status === 201) {
         alert("✅ Productivity Saved successfully!");
-        
-        fetchProductivity(); // List refresh
-        
-        // Form Reset
+        fetchProductivity(); 
         setProductivity({
-          total_calls: '', 
-          connected_calls: '', 
-          interested_customers: '', 
-          followup_customers: '', 
-          remark: ''
+          total_calls: '', connected_calls: '', interested_customers: '', followup_customers: '', remark: ''
         });
         setOpenUpdateDialog(false);
       } else {
@@ -269,69 +270,43 @@ function EmployeeDashboard() {
     }
   };
 
-  const downloadCurrentPDFReport = () => {
-    generatePDF(productivity, "Current_Draft");
-  };
-
   const downloadRowPDF = (row) => {
-    generatePDF(row, row.date);
-  };
-
-  const generatePDF = (data, dateLabel) => {
     const doc = new jsPDF();
-    doc.text(`Daily Work Report - ${employeeData.name} (${dateLabel})`, 14, 15);
+    doc.text(`Daily Work Report - ${employeeData.name} (${row.date})`, 14, 15);
     doc.autoTable({
       head: [['Field', 'Details']],
       body: [
-        ['Total Calls', data.total_calls || '0'],
-        ['Connected Calls', data.connected_calls || '0'],
-        ['Interested Customers', data.interested_customers || 'N/A'],
-        ['Followup Customers', data.followup_customers || 'N/A'],
-        ['Remark', data.remark || 'N/A'],
+        ['Total Calls', row.total_calls || '0'],
+        ['Connected Calls', row.connected_calls || '0'],
+        ['Interested Customers', row.interested_customers || 'N/A'],
+        ['Followup Customers', row.followup_customers || 'N/A'],
+        ['Remark', row.remark || 'N/A'],
       ],
       startY: 20,
       styles: { cellWidth: 'wrap' },
-      columnStyles: {
-        0: { cellWidth: 50 },
-        1: { cellWidth: 'auto' }
-      }
+      columnStyles: { 0: { cellWidth: 50 }, 1: { cellWidth: 'auto' } }
     });
-    doc.save(`Productivity_Report_${dateLabel}.pdf`);
+    doc.save(`Productivity_Report_${row.date}.pdf`);
   };
 
-  // UPDATED: DOWNLOAD PRODUCTIVITY CSV (Includes SR & Dynamic Employee Name for Managers)
   const downloadProductivityCSV = () => {
     if (productivityList.length === 0) {
       alert("No productivity data available to download.");
       return;
     }
-
-    // Header array setup
     const headers = ["SR"];
-    if (employeeData.role === 'manager') {
-      headers.push("Employee Name");
-    }
+    if (employeeData.role === 'manager') headers.push("Employee Name");
     headers.push("Date", "Total Calls", "Connected Calls", "Interested Customers", "Followup Customers", "Remark");
 
-    // Mapping rows with Auto Serial Number
     const rows = productivityList.map((p, index) => {
-      const rowArray = [
-        `"${index + 1}"` // SR Number Auto Generated
-      ];
-      
-      if (employeeData.role === 'manager') {
-        rowArray.push(`"${p.employee__first_name || employeeData.name}"`);
-      }
-
+      const rowArray = [`"${index + 1}"`];
+      if (employeeData.role === 'manager') rowArray.push(`"${p.employee__first_name || employeeData.name}"`);
       rowArray.push(
-        `"${p.date}"`,
-        `"${p.total_calls}"`,
-        `"${p.connected_calls}"`,
+        `"${p.date}"`, `"${p.total_calls}"`, `"${p.connected_calls}"`,
         `"${(p.interested_customers || "").replace(/"/g, '""')}"`, 
         `"${(p.followup_customers || "").replace(/"/g, '""')}"`,
         `"${(p.remark || "").replace(/"/g, '""')}"`
       );
-
       return rowArray;
     });
 
@@ -353,7 +328,6 @@ function EmployeeDashboard() {
     const matchesSearch = l.fullName?.toLowerCase().includes(search.toLowerCase()) || l.mobile?.includes(search);
     const matchesEmployee = filterEmployee ? l.owner === filterEmployee : true;
     const matchesStatus = filterStatus ? l.progress === filterStatus : true;
-    
     return matchesSearch && matchesEmployee && matchesStatus;
   });  
 
@@ -362,21 +336,12 @@ function EmployeeDashboard() {
       "SR", "Customer Name", "Contact", "Loan Amount", "Created By",
       "Bank Name", "RM Name", "Status", "Lead Date"
     ];
-
     const rows = filteredLeads.map((l, i) => {
       const creatorName = empMap[l.owner] ? ` (${empMap[l.owner]})` : "";
       const createdByField = `"${l.owner || ""}${creatorName}"`;
-      
       return [
-        i + 1,
-        `"${l.fullName || ""}"`, 
-        `"${l.mobile || ""}"`,
-        `"${formatAmount(l.requiredLoanAmount) || ""}"`,
-        createdByField,
-        `"${l.bankName || "-"}"`,
-        `"${l.rmName || "-"}"`,
-        `"${l.progress || ""}"`,
-        `"${formatDate(l.created_at)}"`
+        i + 1, `"${l.fullName || ""}"`, `"${l.mobile || ""}"`, `"${formatAmount(l.requiredLoanAmount) || ""}"`,
+        createdByField, `"${l.bankName || "-"}"`, `"${l.rmName || "-"}"`, `"${l.progress || ""}"`, `"${formatDate(l.created_at)}"`
       ];
     });
 
@@ -402,9 +367,11 @@ function EmployeeDashboard() {
     boxShadow: "0 10px 40px rgba(0,0,0,0.08)"
   };
 
+  // UPDATED MENU ITEMS
   const menuItems = [
     { text: "Overview", icon: <DashIcon />, id: "overview" },
     { text: "Leads", icon: <ListAlt />, id: "leads" },
+    { text: "Labour Reqs", icon: <Assignment />, id: "labour_reqs" }, // NAYA TAB ADD KIYA
     { text: "Productivity", icon: <AssignmentTurnedIn />, id: "productivity" },
     { text: "Attendance", icon: <Assignment />, id: "attendance" },
     { text: "EMI", icon: <Calculate />, id: "emi" }
@@ -458,6 +425,19 @@ function EmployeeDashboard() {
               <ListItem
                 key={item.id}
                 onClick={() => {
+                  // --- RESTRICTION LOGIC ---
+                  if (item.id === "labour_reqs") {
+                    // Allowed IDs: Atar Singh, Rishabh, Lalit, Babali
+                    const allowedIds = ["3801", "3803", "3810", "3812"]; 
+                    
+                    if (!allowedIds.includes(String(employeeData.id))) {
+                      alert("YOU HAVE NOT ACCESS PLEASE CONTACT IT DEPARTMENT");
+                      return; 
+                    }
+                    
+                    fetchLabourRequirements();
+                  }
+
                   setActivePanel(item.id);
                   if (item.id === "leads") fetchLeads();
                   if (item.id === "productivity") fetchProductivity();
@@ -508,24 +488,14 @@ function EmployeeDashboard() {
         }}>
           
           {/* TOP HEADER */}
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              p: { xs: 1.5, md: 2 },
-              bgcolor: "background.paper",
-              boxShadow: 1,
-              position: "sticky",
-              top: 0,
-              zIndex: 1100
-            }}
-          >
+          <Box sx={{
+              display: "flex", justifyContent: "space-between", alignItems: "center",
+              p: { xs: 1.5, md: 2 }, bgcolor: "background.paper", boxShadow: 1,
+              position: "sticky", top: 0, zIndex: 1100
+          }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               {isMobile ? (
-                <IconButton onClick={() => setMobileOpen(true)} color="inherit">
-                  <MenuIcon />
-                </IconButton>
+                <IconButton onClick={() => setMobileOpen(true)} color="inherit"><MenuIcon /></IconButton>
               ) : (
                 <IconButton onClick={() => setSidebarOpen(!sidebarOpen)} color="inherit">
                   {sidebarOpen ? <MenuOpenIcon /> : <MenuIcon />}
@@ -534,36 +504,20 @@ function EmployeeDashboard() {
             </Box>
 
             <Box sx={{ ml: "auto", display: "flex", alignItems: "center", gap: 2 }}>
-              
               <Button 
-                variant="contained" 
-                size="small"
-                onClick={() => setOpenUpdateDialog(true)}
-                sx={{ 
-                  background: "#8b5cf6", 
-                  "&:hover": { background: "#7c3aed" },
-                  display: { xs: "none", sm: "flex" },
-                  fontWeight: "bold",
-                  boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)"
-                }}
+                variant="contained" size="small" onClick={() => setOpenUpdateDialog(true)}
+                sx={{ background: "#8b5cf6", "&:hover": { background: "#7c3aed" }, display: { xs: "none", sm: "flex" }, fontWeight: "bold", boxShadow: "0 4px 12px rgba(139, 92, 246, 0.3)" }}
               >
                 + Update Productivity
               </Button>
-              <IconButton 
-                onClick={() => setOpenUpdateDialog(true)} 
-                sx={{ display: { xs: "flex", sm: "none" }, color: "#8b5cf6" }}
-              >
+              <IconButton onClick={() => setOpenUpdateDialog(true)} sx={{ display: { xs: "flex", sm: "none" }, color: "#8b5cf6" }}>
                 <AssignmentTurnedIn />
               </IconButton>
-
               <IconButton onClick={() => setDarkMode(!darkMode)} color="inherit">
                 {darkMode ? <LightMode sx={{ color: "#fbbf24" }} /> : <DarkMode sx={{ color: "#3b82f6" }} />}
               </IconButton>
-
               <IconButton onClick={handleMenuClick} sx={{ p: 0 }}>
-                <Avatar sx={{ bgcolor: "#38bdf8" }}>
-                  {employeeData.name.charAt(0).toUpperCase()}
-                </Avatar>
+                <Avatar sx={{ bgcolor: "#38bdf8" }}>{employeeData.name.charAt(0).toUpperCase()}</Avatar>
               </IconButton>
             </Box>
 
@@ -589,20 +543,7 @@ function EmployeeDashboard() {
             {activePanel === "overview" && (
               <Grid container spacing={3}>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Paper
-                    sx={{
-                      ...card,
-                      minHeight: "120px",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: 1,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      cursor: "pointer",
-                      textAlign: "center"
-                    }}
-                    onClick={() => navigate("/add-lead")}
-                  >
+                  <Paper sx={{ ...card, minHeight: "120px", display: "flex", flexDirection: "column", gap: 1, justifyContent: "center", alignItems: "center", cursor: "pointer", textAlign: "center" }} onClick={() => navigate("/add-lead")}>
                     <AddCircle sx={{ fontSize: 50, color: darkMode ? "#38bdf8" : "inherit" }} />
                     <Typography>Add New Lead</Typography>
                   </Paper>
@@ -613,11 +554,7 @@ function EmployeeDashboard() {
             {/* LEADS */}
             {activePanel === "leads" && (
               <Paper sx={card}>
-                <Typography variant="h5" sx={{ mb: 2, fontSize: { xs: "20px", md: "30px" }, color: "text.primary" }}>
-                  Lead Tracker
-                </Typography>
-
-                {/* ACTION BUTTONS: Download Leads AND Download Productivity */}
+                <Typography variant="h5" sx={{ mb: 2, fontSize: { xs: "20px", md: "30px" }, color: "text.primary" }}>Lead Tracker</Typography>
                 <Box sx={{ display: "flex", gap: 2, mb: 2, flexDirection: { xs: "column", sm: "row" } }}>
                   <Button variant="contained" onClick={downloadExcel} fullWidth={isMobile} sx={{ background: "#16a34a", "&:hover": { background: "#15803d" } }}>
                     Download Your Lead
@@ -626,8 +563,6 @@ function EmployeeDashboard() {
                     Download Productivity Report
                   </Button>
                 </Box>
-
-                {/* FILTERING SECTION */}
                 <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: 2, mb: 2 }}>
                   <TextField label="Search by name or mobile" fullWidth value={search} onChange={(e) => setSearch(e.target.value)} />
                   <TextField select label="Filter by Employee" value={filterEmployee} onChange={(e) => setFilterEmployee(e.target.value)} sx={{ minWidth: { xs: '100%', md: '200px' } }}>
@@ -650,21 +585,13 @@ function EmployeeDashboard() {
                     <MenuItem value="REJECT">REJECT</MenuItem><MenuItem value="DISBURSEMENT">DISBURSEMENT</MenuItem>
                   </TextField>
                 </Box>
-
                 <TableContainer sx={{ overflowX: "auto" }}>
                   <Table sx={{ minWidth: 1200 }}>
                     <TableHead>
                       <TableRow>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>SR</TableCell>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>Customer Name</TableCell>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>Contact</TableCell>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>Loan Amount</TableCell>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>Created By</TableCell>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>Bank Name</TableCell>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>RM Name</TableCell>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>Status</TableCell>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>Lead Date</TableCell>
-                        <TableCell sx={{ color: "text.primary", fontWeight: "bold" }}>Edit</TableCell>
+                        {["SR", "Customer Name", "Contact", "Loan Amount", "Created By", "Bank Name", "RM Name", "Status", "Lead Date", "Edit"].map((h) => (
+                          <TableCell key={h} sx={{ color: "text.primary", fontWeight: "bold" }}>{h}</TableCell>
+                        ))}
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -674,23 +601,13 @@ function EmployeeDashboard() {
                           <TableCell sx={{ color: "text.primary" }}>{l.fullName}</TableCell>
                           <TableCell sx={{ color: "text.primary" }}>{l.mobile}</TableCell>
                           <TableCell sx={{ color: "text.primary" }}>{formatAmount(l.requiredLoanAmount)}</TableCell>
-                          <TableCell sx={{ color: "text.primary" }}>
-                            {l.owner} {empMap[l.owner] ? <span style={{ color: "#16a34a", fontWeight: "600" }}>({empMap[l.owner]})</span> : ""}
-                          </TableCell>
+                          <TableCell sx={{ color: "text.primary" }}>{l.owner} {empMap[l.owner] ? <span style={{ color: "#16a34a", fontWeight: "600" }}>({empMap[l.owner]})</span> : ""}</TableCell>
                           <TableCell sx={{ color: "text.primary" }}>{l.bankName || "-"}</TableCell>
                           <TableCell sx={{ color: "text.primary" }}>{l.rmName || "-"}</TableCell>
                           <TableCell>
                             <select
-                              value={l.progress || ""}
-                              onChange={(e) => updateStatus(l, e.target.value)}
-                              style={{ 
-                                padding: "8px", 
-                                borderRadius: "8px", 
-                                minWidth: "150px",
-                                background: darkMode ? "#1e293b" : "#fff",
-                                color: darkMode ? "#fff" : "#000",
-                                border: darkMode ? "1px solid #475569" : "1px solid #ccc"
-                              }}
+                              value={l.progress || ""} onChange={(e) => updateStatus(l, e.target.value)}
+                              style={{ padding: "8px", borderRadius: "8px", minWidth: "150px", background: darkMode ? "#1e293b" : "#fff", color: darkMode ? "#fff" : "#000", border: darkMode ? "1px solid #475569" : "1px solid #ccc" }}
                             >
                               <option value="">Select</option>
                               <option>PIPELINE</option><option>DOCUMENT LIST SEND</option><option>DOCUMENT RECIEVED</option>
@@ -703,9 +620,7 @@ function EmployeeDashboard() {
                           </TableCell>
                           <TableCell sx={{ color: "text.primary" }}>{formatDate(l.created_at)}</TableCell>
                           <TableCell>
-                            <IconButton onClick={() => handleEdit(l)}>
-                              <EditIcon sx={{ color: darkMode ? "#38bdf8" : "#1976d2" }} />
-                            </IconButton>
+                            <IconButton onClick={() => handleEdit(l)}><EditIcon sx={{ color: darkMode ? "#38bdf8" : "#1976d2" }} /></IconButton>
                           </TableCell>
                         </TableRow>
                       ))}
@@ -715,30 +630,78 @@ function EmployeeDashboard() {
               </Paper>
             )}
 
-            {/* PRODUCTIVITY HISTORY TAB */}
+            {/* LABOUR REQUIREMENTS (NEW TAB UI) */}
+            {activePanel === "labour_reqs" && (
+              <Paper sx={card}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                  <Typography variant="h5" sx={{ fontSize: { xs: "20px", md: "30px" }, color: "text.primary" }}>
+                    Industry Labour Requirements
+                  </Typography>
+                </Box>
+
+                {labourRequirements.length === 0 ? (
+                  <Typography sx={{ color: "text.secondary", textAlign: "center", py: 5 }}>
+                    Abhi tak koi labour requirement assign nahi hui hai.
+                  </Typography>
+                ) : (
+                  <TableContainer sx={{ overflowX: "auto" }}>
+                    <Table sx={{ minWidth: 800 }}>
+                      <TableHead sx={{ bgcolor: darkMode ? "#334155" : "#f1f5f9" }}>
+                        <TableRow>
+                          <TableCell sx={{ fontWeight: "bold" }}>SR</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Industry/Company Name</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Labour Count</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Skill Type</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {labourRequirements.map((req, index) => (
+                          <TableRow key={req.id} hover>
+                            <TableCell>{index + 1}</TableCell>
+                            {/* Make sure these keys match your backend JSON response */}
+                            <TableCell>{req.industry_name || "N/A"}</TableCell>
+                            <TableCell>{req.required_labour_count || "0"}</TableCell>
+                            <TableCell>{req.skill_type || "-"}</TableCell>
+                            <TableCell>
+                              <span style={{ 
+                                color: req.status === 'Open' ? '#f59e0b' : '#16a34a', 
+                                fontWeight: 'bold',
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                background: req.status === 'Open' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(22, 163, 74, 0.1)'
+                              }}>
+                                {req.status || "Pending"}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <Button size="small" variant="outlined" color="primary">
+                                View Details
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
+              </Paper>
+            )}
+
+            {/* PRODUCTIVITY HISTORY */}
             {activePanel === "productivity" && (
               <Paper sx={card}>
-                <Typography variant="h5" sx={{ mb: 3, fontSize: { xs: "20px", md: "30px" }, color: "text.primary" }}>
-                  Daily Productivity Logs
-                </Typography>
-                
+                <Typography variant="h5" sx={{ mb: 3, fontSize: { xs: "20px", md: "30px" }, color: "text.primary" }}>Daily Productivity Logs</Typography>
                 {productivityList.length === 0 ? (
-                   <Typography sx={{ color: "text.secondary", textAlign: "center", py: 5 }}>
-                     No productivity logs found. Click on 'Update Productivity' to add today's report.
-                   </Typography>
+                   <Typography sx={{ color: "text.secondary", textAlign: "center", py: 5 }}>No productivity logs found. Click on 'Update Productivity' to add today's report.</Typography>
                 ) : (
                   <TableContainer sx={{ overflowX: "auto" }}>
                     <Table sx={{ minWidth: 1000 }}>
                       <TableHead sx={{ bgcolor: darkMode ? "#334155" : "#f1f5f9" }}>
                         <TableRow>
-                          {/* UPDATED: SR NUMBER HEADER */}
                           <TableCell sx={{ fontWeight: "bold", width: "60px" }}>SR</TableCell>
-                          
-                          {/* UPDATED: MANAGER VIEW EMPLOYEE NAME */}
-                          {employeeData.role === 'manager' && (
-                            <TableCell sx={{ fontWeight: "bold" }}>Employee</TableCell>
-                          )}
-
+                          {employeeData.role === 'manager' && <TableCell sx={{ fontWeight: "bold" }}>Employee</TableCell>}
                           <TableCell sx={{ fontWeight: "bold", width: "100px" }}>Date</TableCell>
                           <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Total Calls</TableCell>
                           <TableCell sx={{ fontWeight: "bold", textAlign: "center" }}>Connected</TableCell>
@@ -751,14 +714,8 @@ function EmployeeDashboard() {
                       <TableBody>
                         {productivityList.map((row, index) => (
                           <TableRow key={row.id} hover>
-                            {/* UPDATED: AUTO SERIAL NUMBER */}
                             <TableCell>{index + 1}</TableCell>
-                            
-                            {/* UPDATED: MANAGER VIEW EMPLOYEE NAME DATA */}
-                            {employeeData.role === 'manager' && (
-                               <TableCell>{row.employee__first_name || "Self"}</TableCell>
-                            )}
-
+                            {employeeData.role === 'manager' && <TableCell>{row.employee__first_name || "Self"}</TableCell>}
                             <TableCell>{row.date}</TableCell>
                             <TableCell align="center">{row.total_calls}</TableCell>
                             <TableCell align="center">{row.connected_calls}</TableCell>
@@ -768,7 +725,7 @@ function EmployeeDashboard() {
                             <TableCell align="center">
                               <Tooltip title="Download PDF">
                                 <IconButton onClick={() => downloadRowPDF(row)} sx={{ color: "#ef4444" }}>
-                                  
+                                   {/* PDF Icon if needed */}
                                 </IconButton>
                               </Tooltip>
                             </TableCell>
@@ -783,27 +740,15 @@ function EmployeeDashboard() {
 
             {/* ATTENDANCE */}
             {activePanel === "attendance" && (
-  <>
-    <Attendance employeeId={employeeData.id} />
-
-    <AttendanceHistory
-      employeeId={employeeData.id}
-      role={employeeData.role}
-    />
-  </>
-)}
+              <>
+                <Attendance employeeId={employeeData.id} />
+                <AttendanceHistory employeeId={employeeData.id} role={employeeData.role} />
+              </>
+            )}
 
             {/* EMI */}
             {activePanel === "emi" && (
-              <Suspense
-                fallback={
-                  <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}>
-                    <Typography sx={{ color: "#38bdf8", fontSize: "22px", fontWeight: "bold" }}>
-                      Loading EMI Calculator...
-                    </Typography>
-                  </Box>
-                }
-              >
+              <Suspense fallback={<Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "300px" }}><Typography sx={{ color: "#38bdf8", fontSize: "22px", fontWeight: "bold" }}>Loading EMI Calculator...</Typography></Box>}>
                 <EMI />
               </Suspense>
             )}
@@ -811,98 +756,33 @@ function EmployeeDashboard() {
           </Box>
         </Box>
 
-        {/* PRODUCTIVITY DIALOG COMPONENT */}
+        {/* PRODUCTIVITY DIALOG */}
         <Dialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} fullWidth maxWidth="md">
-          <DialogTitle sx={{ 
-            bgcolor: darkMode ? "#1e293b" : "#f8fafc", 
-            color: darkMode ? "#fff" : "#0f172a",
-            fontWeight: "bold",
-            borderBottom: darkMode ? "1px solid #334155" : "1px solid #e2e8f0"
-          }}>
+          <DialogTitle sx={{ bgcolor: darkMode ? "#1e293b" : "#f8fafc", color: darkMode ? "#fff" : "#0f172a", fontWeight: "bold", borderBottom: darkMode ? "1px solid #334155" : "1px solid #e2e8f0" }}>
             Update Daily Productivity
           </DialogTitle>
           <DialogContent sx={{ bgcolor: darkMode ? "#1e293b" : "#fff", p: { xs: 2, md: 4 } }}>
             <Grid container spacing={3} sx={{ mt: 1 }}>
-              
-              {/* Row 1: Numbers */}
               <Grid item xs={12} sm={6}>
-                <TextField 
-                  fullWidth 
-                  label="Total Calls" 
-                  type="number" 
-                  variant="outlined"
-                  value={productivity.total_calls}
-                  onChange={(e) => setProductivity({...productivity, total_calls: e.target.value})} 
-                />
+                <TextField fullWidth label="Total Calls" type="number" variant="outlined" value={productivity.total_calls} onChange={(e) => setProductivity({...productivity, total_calls: e.target.value})} />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField 
-                  fullWidth 
-                  label="Connected Calls" 
-                  type="number" 
-                  variant="outlined"
-                  value={productivity.connected_calls}
-                  onChange={(e) => setProductivity({...productivity, connected_calls: e.target.value})} 
-                />
+                <TextField fullWidth label="Connected Calls" type="number" variant="outlined" value={productivity.connected_calls} onChange={(e) => setProductivity({...productivity, connected_calls: e.target.value})} />
               </Grid>
-
-              {/* Row 2: Interested Customers */}
               <Grid item xs={12}>
-                <TextField 
-                  fullWidth 
-                  label="Interested Customers (Names)" 
-                  placeholder="Example:&#10;1) Name &#10;2) Name"
-                  multiline 
-                  rows={4} 
-                  variant="outlined"
-                  value={productivity.interested_customers}
-                  onChange={(e) => setProductivity({...productivity, interested_customers: e.target.value})} 
-                  helperText="Please list interested customer names with serial numbers (1, 2, ...)"
-                />
+                <TextField fullWidth label="Interested Customers (Names)" placeholder="Example:&#10;1) Name &#10;2) Name" multiline rows={4} variant="outlined" value={productivity.interested_customers} onChange={(e) => setProductivity({...productivity, interested_customers: e.target.value})} helperText="Please list interested customer names with serial numbers (1, 2, ...)" />
               </Grid>
-
-              {/* Row 3: Followup Customers */}
               <Grid item xs={12}>
-                <TextField 
-                  fullWidth 
-                  label="Followup Customers (Names)" 
-                  placeholder="Example:&#10;1) Name&#10;2) Name"
-                  multiline 
-                  rows={4} 
-                  variant="outlined"
-                  value={productivity.followup_customers}
-                  onChange={(e) => setProductivity({...productivity, followup_customers: e.target.value})} 
-                  helperText="Please list followup customer names with serial numbers (1, 2, ...)"
-                />
+                <TextField fullWidth label="Followup Customers (Names)" placeholder="Example:&#10;1) Name&#10;2) Name" multiline rows={4} variant="outlined" value={productivity.followup_customers} onChange={(e) => setProductivity({...productivity, followup_customers: e.target.value})} helperText="Please list followup customer names with serial numbers (1, 2, ...)" />
               </Grid>
-
-              {/* Row 4: Remarks */}
               <Grid item xs={12}>
-                <TextField 
-                  fullWidth 
-                  label="Any Remark / Notes" 
-                  multiline 
-                  rows={2} 
-                  variant="outlined"
-                  value={productivity.remark}
-                  onChange={(e) => setProductivity({...productivity, remark: e.target.value})} 
-                />
+                <TextField fullWidth label="Any Remark / Notes" multiline rows={2} variant="outlined" value={productivity.remark} onChange={(e) => setProductivity({...productivity, remark: e.target.value})} />
               </Grid>
             </Grid>
           </DialogContent>
-          
-          <DialogActions sx={{ 
-            bgcolor: darkMode ? "#1e293b" : "#f8fafc", 
-            p: 2, 
-            borderTop: darkMode ? "1px solid #334155" : "1px solid #e2e8f0" 
-          }}>
-            <Button onClick={() => setOpenUpdateDialog(false)} sx={{ color: darkMode ? "#cbd5e1" : "inherit" }}>
-              Cancel
-            </Button>
-            
-            <Button variant="contained" onClick={handleProductivitySubmit} sx={{ background: "#8b5cf6", "&:hover": { background: "#7c3aed" } }}>
-              Submit Record
-            </Button>
+          <DialogActions sx={{ bgcolor: darkMode ? "#1e293b" : "#f8fafc", p: 2, borderTop: darkMode ? "1px solid #334155" : "1px solid #e2e8f0" }}>
+            <Button onClick={() => setOpenUpdateDialog(false)} sx={{ color: darkMode ? "#cbd5e1" : "inherit" }}>Cancel</Button>
+            <Button variant="contained" onClick={handleProductivitySubmit} sx={{ background: "#8b5cf6", "&:hover": { background: "#7c3aed" } }}>Submit Record</Button>
           </DialogActions>
         </Dialog>
 
