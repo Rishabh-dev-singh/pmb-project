@@ -48,7 +48,7 @@ function EmployeeDashboard() {
     remark: ''
   });
 
-  // NEW: LABOUR REQUIREMENTS STATE
+  // LABOUR REQUIREMENTS STATE
   const [labourRequirements, setLabourRequirements] = useState([]);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -169,11 +169,10 @@ function EmployeeDashboard() {
     }
   };
 
-  // NEW: LABOUR REQUIREMENTS FETCH API FUNCTION
-  const fetchLabourRequirements = async (empId = employeeData.id) => {
-    if (!empId) return;
+  const fetchLabourRequirements = async () => {
     try {
-      const res = await api.get(`labour-requirements/?assigned_employee_id=${encodeURIComponent(empId)}`);
+      // Yahan endpoint directly list pull kar raha hai
+      const res = await api.get(`labour-requirements/`);
       setLabourRequirements(res.data);
     } catch (err) {
       console.error("Failed To Fetch Labour Requirements:", err);
@@ -231,6 +230,32 @@ function EmployeeDashboard() {
       alert("❌ Server error");
     }
   };
+
+  // --- NEW: LABOUR REQUIREMENT STATUS UPDATE LOGIC ---
+  const updateLabourStatus = async (reqId, newStatus) => {
+    if (!newStatus) return;
+    const confirmChange = window.confirm(`Is requirement ka status '${newStatus}' update karein?`);
+    if (!confirmChange) return;
+
+    try {
+      // Assuming DRF patch endpoint
+      const res = await api.patch(`labour-requirements/${reqId}/`, {
+        status: newStatus,
+        accepted_by: employeeData.name // Taki management ko dikhe kisne accept kiya
+      });
+
+      if (res.status === 200 || res.status === 204 || res.status === 201) {
+        alert("✅ Labour Requirement Updated");
+        fetchLabourRequirements(); // Table ko refresh karne ke liye
+      } else {
+        alert("❌ Update failed");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("❌ Server error");
+    }
+  };
+  // ---------------------------------------------------
 
   const handleEdit = (lead) => {
     navigate("/add-lead", { state: { lead } });
@@ -367,11 +392,10 @@ function EmployeeDashboard() {
     boxShadow: "0 10px 40px rgba(0,0,0,0.08)"
   };
 
-  // UPDATED MENU ITEMS
   const menuItems = [
     { text: "Overview", icon: <DashIcon />, id: "overview" },
     { text: "Leads", icon: <ListAlt />, id: "leads" },
-    { text: "Labour Reqs", icon: <Assignment />, id: "labour_reqs" }, // NAYA TAB ADD KIYA
+    { text: "Labour Reqs", icon: <Assignment />, id: "labour_reqs" }, 
     { text: "Productivity", icon: <AssignmentTurnedIn />, id: "productivity" },
     { text: "Attendance", icon: <Assignment />, id: "attendance" },
     { text: "EMI", icon: <Calculate />, id: "emi" }
@@ -425,9 +449,7 @@ function EmployeeDashboard() {
               <ListItem
                 key={item.id}
                 onClick={() => {
-                  // --- RESTRICTION LOGIC ---
                   if (item.id === "labour_reqs") {
-                    // Allowed IDs: Atar Singh, Rishabh, Lalit, Babali
                     const allowedIds = ["3801", "3803", "3810", "3812"]; 
                     
                     if (!allowedIds.includes(String(employeeData.id))) {
@@ -478,21 +500,10 @@ function EmployeeDashboard() {
         </Drawer>
 
         {/* MAIN CONTAINER */}
-        <Box sx={{ 
-          flexGrow: 1, 
-          width: `calc(100% - ${sidebarWidth}px)`, 
-          transition: "width 0.3s ease",
-          height: "100vh",
-          overflowY: "auto",
-          overflowX: "hidden"
-        }}>
+        <Box sx={{ flexGrow: 1, width: `calc(100% - ${sidebarWidth}px)`, transition: "width 0.3s ease", height: "100vh", overflowY: "auto", overflowX: "hidden" }}>
           
           {/* TOP HEADER */}
-          <Box sx={{
-              display: "flex", justifyContent: "space-between", alignItems: "center",
-              p: { xs: 1.5, md: 2 }, bgcolor: "background.paper", boxShadow: 1,
-              position: "sticky", top: 0, zIndex: 1100
-          }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: { xs: 1.5, md: 2 }, bgcolor: "background.paper", boxShadow: 1, position: "sticky", top: 0, zIndex: 1100 }}>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               {isMobile ? (
                 <IconButton onClick={() => setMobileOpen(true)} color="inherit"><MenuIcon /></IconButton>
@@ -630,7 +641,7 @@ function EmployeeDashboard() {
               </Paper>
             )}
 
-            {/* LABOUR REQUIREMENTS (NEW TAB UI) */}
+            {/* LABOUR REQUIREMENTS */}
             {activePanel === "labour_reqs" && (
               <Paper sx={card}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -645,41 +656,59 @@ function EmployeeDashboard() {
                   </Typography>
                 ) : (
                   <TableContainer sx={{ overflowX: "auto" }}>
-                    <Table sx={{ minWidth: 800 }}>
+                    <Table sx={{ minWidth: 1000 }}>
                       <TableHead sx={{ bgcolor: darkMode ? "#334155" : "#f1f5f9" }}>
                         <TableRow>
                           <TableCell sx={{ fontWeight: "bold" }}>SR</TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>Industry/Company Name</TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>Labour Count</TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>Skill Type</TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>Status</TableCell>
-                          <TableCell sx={{ fontWeight: "bold" }}>Action</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Company Name</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Full Name</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Required Role</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Headcount</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Deployment Date</TableCell>
+                          <TableCell sx={{ fontWeight: "bold", color: "#8b5cf6" }}>Handled By</TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>Action / Status</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {labourRequirements.map((req, index) => (
                           <TableRow key={req.id} hover>
                             <TableCell>{index + 1}</TableCell>
-                            {/* Make sure these keys match your backend JSON response */}
-                            <TableCell>{req.industry_name || "N/A"}</TableCell>
-                            <TableCell>{req.required_labour_count || "0"}</TableCell>
-                            <TableCell>{req.skill_type || "-"}</TableCell>
+                            <TableCell>{req.company_name || req.companyName || "N/A"}</TableCell>
+                            <TableCell>{req.full_name || req.fullName || "N/A"}</TableCell>
+                            <TableCell>{req.required_role || req.requiredRole || "-"}</TableCell>
+                            <TableCell>{req.headcount || "0"}</TableCell>
+                            <TableCell>{req.deployment_date || req.deploymentDate || "-"}</TableCell>
+                            
+                            {/* KISNE ACCEPT KIYA USKA NAAM DIKHEGA */}
                             <TableCell>
-                              <span style={{ 
-                                color: req.status === 'Open' ? '#f59e0b' : '#16a34a', 
-                                fontWeight: 'bold',
-                                padding: '4px 8px',
-                                borderRadius: '4px',
-                                background: req.status === 'Open' ? 'rgba(245, 158, 11, 0.1)' : 'rgba(22, 163, 74, 0.1)'
-                              }}>
-                                {req.status || "Pending"}
+                              <span style={{ fontWeight: "bold", color: req.accepted_by ? "#16a34a" : "#ef4444" }}>
+                                {req.accepted_by || "Not Accepted"}
                               </span>
                             </TableCell>
+
+                            {/* DROPDOWN TO ACCEPT/UPDATE STATUS */}
                             <TableCell>
-                              <Button size="small" variant="outlined" color="primary">
-                                View Details
-                              </Button>
+                              <select
+                                value={req.status || "Pending"}
+                                onChange={(e) => updateLabourStatus(req.id, e.target.value)}
+                                style={{ 
+                                  padding: "8px", 
+                                  borderRadius: "8px", 
+                                  minWidth: "120px", 
+                                  background: darkMode ? "#1e293b" : "#fff", 
+                                  color: darkMode ? "#fff" : "#000", 
+                                  border: darkMode ? "1px solid #475569" : "1px solid #ccc",
+                                  cursor: "pointer",
+                                  fontWeight: "bold"
+                                }}
+                              >
+                                <option value="Pending">Pending</option>
+                                <option value="Accept">Accept</option>
+                                <option value="Working">Working</option>
+                                <option value="Completed">Completed</option>
+                              </select>
                             </TableCell>
+
                           </TableRow>
                         ))}
                       </TableBody>
@@ -725,7 +754,6 @@ function EmployeeDashboard() {
                             <TableCell align="center">
                               <Tooltip title="Download PDF">
                                 <IconButton onClick={() => downloadRowPDF(row)} sx={{ color: "#ef4444" }}>
-                                   {/* PDF Icon if needed */}
                                 </IconButton>
                               </Tooltip>
                             </TableCell>
