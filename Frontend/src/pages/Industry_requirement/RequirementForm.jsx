@@ -41,16 +41,33 @@ function RequirementForm() {
     setLoading(true);
     
     try {
-      // Backend API call
-      const response = await api.post('/industry/submit-requirement/', formData);
+      const payload = {
+        full_name: formData.name,
+        mobile: formData.mobile,
+        email: formData.email,
+        company_name: formData.companyName,
+        company_address: formData.companyAddress,
+        industry_sector: formData.industryType,
+        required_role: formData.workerType,
+        headcount: Number(formData.workerCount),
+        deployment_date: formData.requiredDate,
+      };
+
+      // Backend API call with transformed payload
+      const response = await api.post("/industry/submit-requirement/", payload);
       
       if (response.status === 201 || response.status === 200) {
         alert("Requirement submitted successfully!");
         handleReset();
       }
     } catch (error) {
-      console.error("Submission Error:", error);
-      alert("Failed to submit. Please check your connection.");
+      console.error(error.response?.data);
+
+      if (error.response?.data) {
+        alert(JSON.stringify(error.response.data, null, 2));
+      } else {
+        alert("Network Error");
+      }
     } finally {
       setLoading(false);
     }
