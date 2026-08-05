@@ -122,7 +122,7 @@ def lead_list_create(request):
     if request.method == "GET":
         owner = request.GET.get("owner")
         role = request.GET.get("role")
-        super_users = ["3800", "3801", "3802", "3803"]
+        super_users = ["3800", "3801", "3802", "3803", "3814"]  # Added 3814
         if role == "manager" or owner in super_users:
             queryset = Lead.objects.all()
         else:
@@ -213,7 +213,7 @@ def productivity_list_create(request):
     if request.method == "GET":
         emp_id = request.GET.get("employee_id")
         role = request.GET.get("role")
-        super_users = ["3800", "3801", "3802", "3803"]
+        super_users = ["3800", "3801", "3802", "3803", "3814"]  # Added 3814
 
         # Agar user manager hai ya super_user list mein hai, toh sabka data dikhao
         if role == "manager" or emp_id in super_users:
@@ -261,7 +261,7 @@ def download_productivity_csv(request):
     if request.method == "GET":
         emp_id = request.GET.get("employee_id")
         role = request.GET.get("role")
-        super_users = ["3800", "3801", "3802", "3803"]
+        super_users = ["3800", "3801", "3802", "3803", "3814"]  # Added 3814
 
         # Sirf Super Users aur Managers download kar sakte hain
         if role != "manager" and emp_id not in super_users:
@@ -307,7 +307,7 @@ def attendance_list(request):
     emp_id = request.GET.get("employee_id")
     role = request.GET.get("role")
 
-    super_users = ["3800", "3801", "3802", "3803"]
+    super_users = ["3800", "3801", "3802", "3803", "3814"]  # Added 3814
 
     if role == "manager" or emp_id in super_users:
         queryset = Attendance.objects.all().order_by("-date")
