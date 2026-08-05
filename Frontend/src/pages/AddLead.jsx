@@ -23,8 +23,8 @@ function AddLead() {
   const existingLead = location.state?.lead;
   const isEditing = !!existingLead;
 
-  // SUPER USER CHECK
-  const isSuperUser = ["3800", "3801", "3802", "3803"].includes(currentEmpId);
+  // SUPER USER CHECK (3814 Added Here)
+  const isSuperUser = ["3800", "3801", "3802", "3803", "3814"].includes(currentEmpId);
 
   useEffect(() => {
     // 1. Fetch Current Logged-in User Profile (Replaces localStorage)
