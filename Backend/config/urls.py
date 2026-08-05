@@ -20,6 +20,7 @@ urlpatterns = [
 
     path('api/attendance/', views.attendance_api),
     path('api/attendance/list/', views.attendance_list), 
+    path('api/attendance/today/', views.get_today_attendance, name='get_today_attendance'),
 
     path('api/leads/', views.lead_list_create),
     path('api/banks/', views.get_bank_list, name='get_bank_list'),

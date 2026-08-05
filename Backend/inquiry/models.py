@@ -23,11 +23,19 @@ class AgriInquiry(models.Model):
 # Attendance Model
 class Attendance(models.Model):
     employee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    date = models.DateField(auto_now_add=True)
+    date = models.DateField()
     punch_in = models.TimeField(null=True, blank=True)
     punch_out = models.TimeField(null=True, blank=True)
     lunch_start = models.TimeField(null=True, blank=True)
     lunch_end = models.TimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["employee", "date"],
+                name="unique_employee_date"
+            )
+        ]
 
     def __str__(self):
         return f"{self.employee} - {self.date}"

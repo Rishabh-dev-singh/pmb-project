@@ -94,6 +94,84 @@ function Attendance({ employeeId }) {
     }
   }, []);
 
+  // ---------------------------------------------------------------------------
+  // NEW FIX: Synchronize attendance state from backend on component load.
+  // Overrides localStorage if there's an active/finished punch in the database.
+  // ---------------------------------------------------------------------------
+  useEffect(() => {
+    const syncAttendance = async () => {
+      const currentEmpId = employeeId || localStorage.getItem("employeeId");
+      if (!currentEmpId) return;
+
+      const now = new Date();
+      // Use exact format expected by API (YYYY-MM-DD)
+      const dateStr = now.toISOString().split("T")[0];
+
+      try {
+        const res = await axios.get(
+          `https://pmb.finance/api/attendance/today/?employee_id=${currentEmpId}&date=${dateStr}`
+        );
+
+        if (res.data && res.data.status === "success") {
+          const { punch_in, punch_out } = res.data;
+
+          // Helper to convert backend format "09:10:25 AM" to local ISO string for timer compatibility
+          const convertToISO = (time12h) => {
+            if (!time12h) return null;
+            const [time, modifier] = time12h.split(" ");
+            let [hours, minutes, seconds] = time.split(":");
+            hours = parseInt(hours, 10);
+            
+            if (hours === 12 && modifier === "AM") hours = 0;
+            if (hours < 12 && modifier === "PM") hours += 12;
+
+            const d = new Date();
+            d.setHours(hours, parseInt(minutes, 10), parseInt(seconds, 10), 0);
+            return d.toISOString();
+          };
+
+          if (punch_in && !punch_out) {
+            // User is currently punched in but hasn't punched out yet
+            const isoPunchIn = convertToISO(punch_in);
+            setStatus("Punched In");
+            setPunchInTime(isoPunchIn);
+            
+            // Sync local storage to match backend truth
+            localStorage.setItem("attendanceStatus", "Punched In");
+            localStorage.setItem("punchInTime", isoPunchIn);
+            localStorage.removeItem("punchOutTime");
+            
+          } else if (punch_in && punch_out) {
+            // User has completed their shift for today
+            const isoPunchIn = convertToISO(punch_in);
+            setStatus("Punched Out");
+            setPunchInTime(isoPunchIn);
+            setPunchOutTime(punch_out);
+            
+            // Sync local storage to match backend truth
+            localStorage.setItem("attendanceStatus", "Punched Out");
+            localStorage.setItem("punchInTime", isoPunchIn);
+            localStorage.setItem("punchOutTime", punch_out);
+          }
+        } else if (res.data && res.data.status === "not_found") {
+          // No record for today, ensure state resets to "Not Punched In" 
+          setStatus("Not Punched In");
+          setPunchInTime(null);
+          setPunchOutTime(null);
+          
+          localStorage.setItem("attendanceStatus", "Not Punched In");
+          localStorage.removeItem("punchInTime");
+          localStorage.removeItem("punchOutTime");
+        }
+      } catch (err) {
+        console.error("Attendance sync error:", err);
+      }
+    };
+
+    syncAttendance();
+  }, [employeeId]);
+  // ---------------------------------------------------------------------------
+
   useEffect(() => {
     let interval;
     if (status === "Punched In" && punchInTime) {

@@ -122,7 +122,7 @@ def lead_list_create(request):
     if request.method == "GET":
         owner = request.GET.get("owner")
         role = request.GET.get("role")
-        super_users = ["3800", "3801", "3802", "3803", "3814"]  # Added 3814
+        super_users = ["3800", "3801", "3802", "3803", "3814"] 
         if role == "manager" or owner in super_users:
             queryset = Lead.objects.all()
         else:
@@ -270,7 +270,7 @@ def download_productivity_csv(request):
         # Saara data fetch karein
         records = Productivity.objects.all().order_by("-date", "employee__first_name")
 
-        # HttpResponse setup for CSV                     
+        # HttpResponse setup for CSV                    
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="productivity_report.csv"'
 
@@ -328,3 +328,33 @@ def attendance_list(request):
     ))
 
     return JsonResponse(data, safe=False)
+
+
+# ---------------------------------------------------------------------------
+# FIXED: Added dedicated backend endpoint to fetch today's active attendance status
+# for cross-device/browser state synchronization as requested by the user.
+# ---------------------------------------------------------------------------
+@csrf_exempt
+def get_today_attendance(request):
+    try:
+        emp_id = request.GET.get("employee_id")
+        date_str = request.GET.get("date")
+        
+        if not emp_id or not date_str:
+            return JsonResponse({"status": "error", "message": "Missing parameters"}, status=400)
+            
+        date_obj = datetime.strptime(date_str, "%Y-%m-%d").date()
+        attendance = Attendance.objects.filter(employee__employee_id=emp_id, date=date_obj).first()
+        
+        if not attendance:
+            return JsonResponse({"status": "not_found"})
+            
+        return JsonResponse({
+            "status": "success",
+            "punch_in": attendance.punch_in.strftime("%I:%M:%S %p") if attendance.punch_in else None,
+            "punch_out": attendance.punch_out.strftime("%I:%M:%S %p") if attendance.punch_out else None,
+            "lunch_start": attendance.lunch_start.strftime("%I:%M:%S %p") if attendance.lunch_start else None,
+            "lunch_end": attendance.lunch_end.strftime("%I:%M:%S %p") if attendance.lunch_end else None,
+        })
+    except Exception as e:
+        return JsonResponse({"status": "error", "message": str(e)}, status=500)
