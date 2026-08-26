@@ -246,7 +246,6 @@ function AddLead() {
               <button onClick={openMap} style={{ background: "#16a34a", color: "#fff", border: "none", padding: "10px 18px", borderRadius: "8px", cursor: "pointer", whiteSpace: "nowrap" }}>📍 Map</button>
             </div>
           </div>
-
           {/* MIDDLE COLUMN */}
           <div style={{ display: "flex", flexDirection: "column" }}>
             <label style={labelStyle}>Firm Name</label>
@@ -254,7 +253,7 @@ function AddLead() {
 
             <label style={labelStyle}>Sub Source</label>
             <input name="subSource" value={formData.subSource || ""} onChange={handleChange} style={inputStyle} />
-
+  
             <label style={labelStyle}>Bank Name</label>
             <input list="bank-list" name="bankName" value={formData.bankName || ""} onChange={handleChange} style={inputStyle} placeholder="Type or Select Bank" />
             <datalist id="bank-list">
@@ -298,7 +297,7 @@ function AddLead() {
                 }} 
               />
             )}
-            
+           
             {isSuperUser && formData.owner && (
               <span style={{ 
                 fontSize: "13px", 
@@ -311,7 +310,7 @@ function AddLead() {
                   : "⚠️ Please Select Valid ID"}
               </span>
             )}
-              
+             
             <label style={labelStyle}>Status *</label>
             <select {...fieldProps("progress")}>
                <option value="">Select</option>
@@ -363,3 +362,6 @@ function AddLead() {
 }
 
 export default AddLead;
+
+
+

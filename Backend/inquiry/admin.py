@@ -46,3 +46,6 @@ class ProductivityAdmin(admin.ModelAdmin):
     list_filter = ("date", "employee")
     search_fields = ("employee__username", "remark")
     date_hierarchy = 'date'
+
+
+    

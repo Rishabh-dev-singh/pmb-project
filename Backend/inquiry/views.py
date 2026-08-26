@@ -1,6 +1,6 @@
 import json
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
@@ -307,7 +307,7 @@ def attendance_list(request):
     emp_id = request.GET.get("employee_id")
     role = request.GET.get("role")
 
-    super_users = ["3800", "3801", "3802", "3803", "3814"]  # Added 3814
+    super_users = ["3800", "3801", "3802", "3814"]
 
     if role == "manager" or emp_id in super_users:
         queryset = Attendance.objects.all().order_by("-date")
@@ -316,16 +316,74 @@ def attendance_list(request):
             employee__employee_id=emp_id
         ).order_by("-date")
 
-    data = list(queryset.values(
-        "id",
-        "date",
-        "punch_in",
-        "punch_out",
-        "lunch_start",
-        "lunch_end",
-        "employee__employee_id",
-        "employee__first_name",
-    ))
+    records = queryset.select_related("employee")
+
+    data = []
+
+    # Attendance rules:
+    # 1. Punch In after 10:10 AM -> Half Day
+    # 2. No Punch Out -> Absent
+    # 3. Less than 8 hours net working time -> Half Day
+    # 4. 8+ hours, Punch In at/before 10:10 AM -> Present
+    LATE_CUTOFF = datetime.strptime("10:10:00", "%H:%M:%S").time()
+    REQUIRED_WORK_SECONDS = 8 * 60 * 60
+
+    for record in records:
+        working_seconds = 0
+
+        if record.punch_in and record.punch_out:
+            start = datetime.combine(record.date, record.punch_in)
+            end = datetime.combine(record.date, record.punch_out)
+
+            if end >= start:
+                working_seconds = int((end - start).total_seconds())
+
+                # Lunch break is excluded only when both lunch punches exist.
+                if record.lunch_start and record.lunch_end:
+                    lunch_start = datetime.combine(record.date, record.lunch_start)
+                    lunch_end = datetime.combine(record.date, record.lunch_end)
+
+                    if lunch_end >= lunch_start:
+                        lunch_seconds = int((lunch_end - lunch_start).total_seconds())
+                        working_seconds = max(0, working_seconds - lunch_seconds)
+
+        working_hours = (
+            f"{working_seconds // 3600}h "
+            f"{(working_seconds % 3600) // 60}m"
+        )
+
+        if not record.punch_in:
+            attendance_status = "Absent"
+        elif not record.punch_out:
+            attendance_status = "Absent"
+        elif record.punch_in > LATE_CUTOFF:
+            attendance_status = "Half Day"
+        elif working_seconds < REQUIRED_WORK_SECONDS:
+            attendance_status = "Half Day"
+        else:
+            attendance_status = "Present"
+
+        late_status = (
+            "Late" if record.punch_in and record.punch_in > LATE_CUTOFF
+            else "On Time"
+        )
+
+        data.append({
+            "id": record.id,
+            "date": record.date,
+            # Month is returned separately so the CRM can show
+            # Date -> Month and filter by month.
+            "month": record.date.strftime("%B"),
+            "punch_in": record.punch_in,
+            "punch_out": record.punch_out,
+            "lunch_start": record.lunch_start,
+            "lunch_end": record.lunch_end,
+            "employee__employee_id": record.employee.employee_id,
+            "employee__first_name": record.employee.first_name,
+            "working_hours": working_hours if record.punch_in and record.punch_out else "-",
+            "late_status": late_status,
+            "attendance_status": attendance_status,
+        })
 
     return JsonResponse(data, safe=False)
 

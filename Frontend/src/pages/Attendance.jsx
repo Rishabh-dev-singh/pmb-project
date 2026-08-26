@@ -69,6 +69,7 @@ function Attendance({ employeeId }) {
       })
     );
 
+    
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         async (pos) => {
