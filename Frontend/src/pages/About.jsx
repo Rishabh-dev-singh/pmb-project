@@ -8,7 +8,6 @@ import {
   Divider,
   Card,
   CardContent,
-  Avatar,
   Stack
 } from "@mui/material";
 
@@ -17,6 +16,7 @@ import BusinessHead from "../assets/Bussiness_Head.png";
 import ItHead from "../assets/IT_Head.png";
 import LegalHead from "../assets/Legel_Head.jpeg";
 import FinanceHead from "../assets/CFO.jpeg";
+import ChoiceImg from "../assets/Choice.jpeg";
 
 function About() {
   const primaryColor = "#0f4c81"; // Modern Corporate Blue
@@ -202,7 +202,7 @@ function About() {
 
                 <Box 
                   sx={{ 
-                    flex: { xs: "none", md: "0 0 35%" }, // Fixed Width issue
+                    flex: { xs: "none", md: "0 0 35%" }, 
                     bgcolor: primaryColor, 
                     display: "flex", 
                     flexDirection: "column", 
@@ -221,7 +221,7 @@ function About() {
                       height: { xs: 150, md: 180 }, 
                       borderRadius: "50%",
                       objectFit: "cover",
-                      objectPosition: "top center", // Protects hair/head cut
+                      objectPosition: "top center", 
                       border: "5px solid rgba(255,255,255,0.2)", 
                       mb: 2 
                     }}  
@@ -296,7 +296,7 @@ function About() {
                 desc: "Experienced Software and AI/ML Engineer with strong expertise in software development, artificial intelligence, machine learning, and modern technologies. Holds a Master's Degree in Computer Science with excellent academic performance and has successfully worked on multiple software and AI-driven projects. Passionate about building scalable systems, innovative products, and modern technology solutions while leading technical excellence and digital transformation."
               },
               {
-                name: "Ms. Santosh Soni Advocate",               
+                name: "Ms. Santosh Soni Advocate",              
                 role: "Head of Legal & Compliance",
                 img: LegalHead,
                 desc: "Experienced legal and compliance professional with strong expertise in corporate law, regulatory compliance, contract management, and legal advisory services. Responsible for overseeing legal affairs, contracts, and compliance frameworks across the organization. Known for ensuring transparent and legally compliant operations while safeguarding the company's interests. Committed to upholding high standards of corporate governance."
@@ -306,6 +306,12 @@ function About() {
                 role: "Head of Finance & Accounts",
                 img: FinanceHead,
                 desc: "Accomplished Finance and Accounts professional with over 18 years of experience across manufacturing, banking, NBFC, and financial services sectors. Expertise in financial reporting, GST compliance, taxation, audit management, budgeting, MIS reporting, inventory control, and business finance. Proven track record of driving financial excellence, regulatory compliance, operational efficiency, and strategic decision-making."
+              },
+              {
+                name: "Mr. Aditya Singhal",
+                role: "Independent Director",
+                img: ChoiceImg,
+                desc: "Serves as an Independent Director, bringing a thoughtful and objective approach to the Board. He contributes valuable perspectives to strategic planning, governance, and effective decision-making. His professional experience and strong analytical approach support the organisation in achieving its long-term objectives. As an Independent Director, he is committed to promoting transparency, responsible governance, and sustainable growth."
               }
             ].map((leader, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
