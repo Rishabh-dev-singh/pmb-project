@@ -336,12 +336,12 @@ function AddLead() {
                <option value="DISBURSEMENT">DISBURSEMENT</option>
             </select>
           </div>
-
+ 
           {/* RIGHT COLUMN */}
           <div style={{ display: "flex", flexDirection: "column" }}>
             <label style={labelStyle}>Next Date</label>
             <input type="date" name="nextDate" value={formData.nextDate || ""} onChange={handleChange} style={inputStyle} />
-            
+             
             <label style={labelStyle}>Next Time</label>
             <input type="time" name="nextTime" value={formData.nextTime || ""} onChange={handleChange} style={inputStyle} />
             

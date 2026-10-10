@@ -81,6 +81,7 @@ function Finance_Services() {
         fontFamily: "'Poppins', sans-serif"
       }}
     >
+  
       {/* Background Glow Effects */}
       <Box sx={{ position: "absolute", width: 500, height: 500, background: "#2563eb", filter: "blur(200px)", opacity: 0.15, left: -150, top: "10%", borderRadius: "50%", pointerEvents: 'none' }} />
       <Box sx={{ position: "absolute", width: 500, height: 500, background: "#06b6d4", filter: "blur(200px)", opacity: 0.12, right: -150, bottom: "30%", borderRadius: "50%", pointerEvents: 'none' }} />

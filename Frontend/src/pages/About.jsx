@@ -10,6 +10,11 @@ import {
   CardContent,
   Stack
 } from "@mui/material";
+import {
+  VerifiedUser,
+  LocationOn,
+  Receipt
+} from "@mui/icons-material";
 
 import MdImg from "../assets/MD_img.jpeg";
 import BusinessHead from "../assets/Bussiness_Head.png";
@@ -79,11 +84,130 @@ function About() {
           >
             Empowering Financial Growth & Promoting Sustainable Organic Living
           </Typography>
+
+          {/* GSTIN Badge UPAR */}
+          <Box
+            sx={{
+              mt: 3.5,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 1.5,
+              px: { xs: 2.5, sm: 3.5 },
+              py: 1,
+              borderRadius: "50px",
+              bgcolor: "rgba(255, 255, 255, 0.15)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(255, 255, 255, 0.35)",
+              boxShadow: "0 6px 20px rgba(0,0,0,0.15)"
+            }}
+          >
+            <VerifiedUser sx={{ color: "#81c784", fontSize: { xs: "1.2rem", sm: "1.4rem" } }} />
+            <Typography
+              sx={{
+                fontSize: { xs: "0.85rem", sm: "1rem" },
+                fontWeight: 700,
+                letterSpacing: "1px",
+                color: "#fff"
+              }}
+            >
+              GSTIN :{" "}
+              <span style={{ color: "#a5d6a7", fontWeight: 800, letterSpacing: "1.5px" }}>
+                08NDJPS3328N1ZL
+              </span>
+            </Typography>
+          </Box>
         </Container>
       </Box>
 
-      <Container maxWidth="xl" sx={{ mt: 6 }}>
+      <Container maxWidth="xl" sx={{ mt: { xs: 4, md: 6 } }}>
         
+        {/* ================= COMPANY REGISTRATION & ADDRESS ================= */}
+        <Paper
+          elevation={0}
+          sx={{
+            p: { xs: 2.5, md: 3 },
+            mb: 4.5,
+            borderRadius: "18px",
+            bgcolor: "#fff",
+            border: "1px solid rgba(15, 76, 129, 0.12)",
+            boxShadow: "0 8px 25px rgba(0,0,0,0.04)"
+          }}
+        >
+          <Grid container spacing={3} alignItems="center">
+            {/* GSTIN Box */}
+            <Grid item xs={12} md={4}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box
+                  sx={{
+                    bgcolor: "rgba(15, 76, 129, 0.08)",
+                    p: 1.5,
+                    borderRadius: "14px",
+                    color: primaryColor,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <Receipt sx={{ fontSize: 32 }} />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.8px" }}
+                  >
+                    GST Identification Number
+                  </Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 800, color: primaryColor, letterSpacing: "1px", mt: 0.3 }}>
+                    08NDJPS3328N1ZL
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+
+            {/* Address Box */}
+            <Grid item xs={12} md={8}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 2,
+                  pl: { md: 3 },
+                  borderLeft: { md: "2px solid #eef2f6" }
+                }}
+              >
+                <Box
+                  sx={{
+                    bgcolor: "rgba(76, 175, 80, 0.1)",
+                    p: 1.5,
+                    borderRadius: "14px",
+                    color: secondaryColor,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    mt: 0.5
+                  }}
+                >
+                  <LocationOn sx={{ fontSize: 32 }} />
+                </Box>
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.8px" }}
+                  >
+                    Registered Company Address
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: 600, color: "#2d3748", lineHeight: 1.6, mt: 0.3 }}
+                  >
+                    PLOT NO - A64, Building NO: Sanjeevani city, Mohanpura watika road, Jaipur, Rajasthan – 303905
+                  </Typography>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+
         {/* ================= ABOUT US & STATS SECTION ================= */}
 
         <Grid container spacing={4}>
@@ -248,15 +372,31 @@ function About() {
                   <Grid container spacing={3}>
                     <Grid item xs={12} sm={6}>
                       <Typography sx={{ fontWeight: 700, color: primaryColor, display: "flex", alignItems: "center", gap: 1 }}>
-                        📍 Office Address
+                        📍 Registered Address
                       </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        605, Okay Plus Square <br />
-                        Patel Marg, Mansarover <br />
-                        Jaipur, Rajasthan – 302020
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.8, lineHeight: 1.6 }}>
+                        Plot No - A64, Sanjeevani City <br />
+                        Mohanpura Watika Road <br />
+                        Jaipur, Rajasthan – 303905
+                      </Typography>
+
+                      <Typography sx={{ fontWeight: 700, color: primaryColor, display: "flex", alignItems: "center", gap: 1, mt: 2 }}>
+                        🏢 Corporate Office
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.8, lineHeight: 1.6 }}>
+                        605, Okay Plus Square, Patel Marg <br />
+                        Mansarover, Jaipur, Rajasthan – 302020
                       </Typography>
                     </Grid>
                     <Grid item xs={12} sm={6}>
+                      <Box sx={{ mb: 2 }}>
+                        <Typography sx={{ fontWeight: 700, color: primaryColor, display: "flex", alignItems: "center", gap: 1 }}>
+                          🏛️ GSTIN
+                        </Typography>
+                        <Typography variant="body2" sx={{ mt: 0.5, fontWeight: 700, color: primaryColor, letterSpacing: "0.5px" }}>
+                          08NDJPS3328N1ZL
+                        </Typography>
+                      </Box>
                       <Box sx={{ mb: 2 }}>
                         <Typography sx={{ fontWeight: 700, color: primaryColor, display: "flex", alignItems: "center", gap: 1 }}>
                           📞 Phone
@@ -367,3 +507,4 @@ function About() {
 }
 
 export default About;
+
