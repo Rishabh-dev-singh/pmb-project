@@ -434,7 +434,7 @@ function About() {
               },
               {
                 name: "Mr. Rishabh Dev Singh",
-                role: "IT Head",
+                role: "THECHNICAL LEAD - AI/ML & SOFTWARE DEVELOPMENT",
                 img: ItHead,
                 desc: "Experienced Software and AI/ML Engineer with strong expertise in software development, artificial intelligence, machine learning, and modern technologies. Holds a Master's Degree in Computer Science with excellent academic performance and has successfully worked on multiple software and AI-driven projects. Passionate about building scalable systems, innovative products, and modern technology solutions while leading technical excellence and digital transformation."
               },
@@ -510,3 +510,4 @@ function About() {
 }
 
 export default About;
+
